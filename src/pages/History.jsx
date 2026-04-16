@@ -6,6 +6,7 @@ import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import ManualRoundForm from '../components/round/ManualRoundForm';
+import FeedbackModal from '../components/ai/FeedbackModal';
 
 function avg(arr) {
   const vals = arr.filter((v) => v != null && !isNaN(v));
@@ -25,6 +26,7 @@ export default function History() {
   const { rounds, loading, saveRound } = useRounds();
   const navigate = useNavigate();
   const [showManual, setShowManual] = useState(false);
+  const [feedbackRoundId, setFeedbackRoundId] = useState(null);
 
   if (loading) return <LoadingSpinner />;
 
@@ -77,8 +79,7 @@ export default function History() {
           {rounds.map((r) => (
             <Card
               key={r.id}
-              onClick={() => !r.isManualEntry && navigate(`/round/${r.id}`)}
-              className={r.isManualEntry ? 'cursor-default' : ''}
+              onClick={() => navigate(`/round/${r.id}`)}
             >
               <div className="flex items-center justify-between">
                 <div className="flex-1 min-w-0">
@@ -109,13 +110,30 @@ export default function History() {
                     )}
                   </div>
                 </div>
-                <div className="text-center ml-3 shrink-0">
+                <div className="flex flex-col items-end gap-1 ml-3 shrink-0">
                   <span className="text-2xl font-black text-golf-700">{r.totalScore}</span>
+                  {r.hasAIResponse && (
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); setFeedbackRoundId(r.id); }}
+                      className="text-[10px] bg-blue-100 text-blue-700 rounded-md px-2 py-0.5 font-medium !min-h-0"
+                    >
+                      💬 AI Feedback
+                    </button>
+                  )}
                 </div>
               </div>
             </Card>
           ))}
         </div>
+      )}
+
+      {/* AI Feedback modal */}
+      {feedbackRoundId && (
+        <FeedbackModal
+          roundId={feedbackRoundId}
+          onClose={() => setFeedbackRoundId(null)}
+        />
       )}
     </div>
   );

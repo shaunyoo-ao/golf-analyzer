@@ -25,7 +25,12 @@ export async function saveProfile(uid, data) {
 }
 
 export async function updateHandicapIndex(uid, handicapIndex) {
-  await updateDoc(doc(db, 'users', uid, 'profile', 'data'), { handicapIndex });
+  // Use setDoc with merge so it works even if the profile doc doesn't exist yet
+  await setDoc(
+    doc(db, 'users', uid, 'profile', 'data'),
+    { handicapIndex },
+    { merge: true }
+  );
 }
 
 // ─── Rounds ──────────────────────────────────────────────────────────────────

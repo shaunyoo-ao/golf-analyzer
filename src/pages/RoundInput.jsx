@@ -36,6 +36,29 @@ function emptyRound() {
   };
 }
 
+function SaveProgress({ step }) {
+  const steps = [
+    { label: 'Saving round data...', pct: 33 },
+    { label: 'Computing handicap...', pct: 66 },
+    { label: 'Complete!', pct: 100 },
+  ];
+  const current = steps[(step - 1)] || steps[0];
+  return (
+    <div className="w-full flex flex-col gap-2 py-2">
+      <div className="flex justify-between text-sm text-golf-700 font-medium px-1">
+        <span>{current.label}</span>
+        <span>{current.pct}%</span>
+      </div>
+      <div className="w-full h-2 bg-golf-100 rounded-full overflow-hidden">
+        <div
+          className="h-full bg-golf-600 rounded-full transition-all duration-500"
+          style={{ width: `${current.pct}%` }}
+        />
+      </div>
+    </div>
+  );
+}
+
 export default function RoundInput() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -45,7 +68,8 @@ export default function RoundInput() {
   const { saveResponse } = useAIResponse(id);
 
   const [form, setForm] = useState(emptyRound());
-  const [saving, setSaving] = useState(false);
+  const [saveStep, setSaveStep] = useState(0); // 0=idle 1=saving 2=handicap 3=done
+  const [saveError, setSaveError] = useState(null);
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
@@ -72,10 +96,20 @@ export default function RoundInput() {
 
   const handleSave = async () => {
     if (!validate()) return;
-    setSaving(true);
-    const roundId = await saveRound({ ...form, id });
-    setSaving(false);
-    if (!id) navigate(`/round/${roundId}`);
+    setSaveError(null);
+    setSaveStep(1);
+    try {
+      const roundId = await saveRound({ ...form, id }, (step) => setSaveStep(step));
+      setSaveStep(3);
+      // Brief pause so user sees "Complete", then navigate
+      setTimeout(() => {
+        setSaveStep(0);
+        if (!id) navigate(`/round/${roundId}`);
+      }, 900);
+    } catch (err) {
+      setSaveError(err?.message || 'Save failed. Please try again.');
+      setSaveStep(0);
+    }
   };
 
   if (loading) return <LoadingSpinner />;
@@ -188,10 +222,17 @@ export default function RoundInput() {
         />
       </CollapsibleSection>
 
-      {/* ── Save button ── */}
-      <Button fullWidth size="lg" onClick={handleSave} disabled={saving}>
-        {saving ? 'Saving…' : id ? 'Update Round' : 'Save Round'}
-      </Button>
+      {/* ── Save button / progress bar ── */}
+      {saveStep === 0 ? (
+        <Button fullWidth size="lg" onClick={handleSave}>
+          {id ? 'Update Round' : 'Save Round'}
+        </Button>
+      ) : (
+        <SaveProgress step={saveStep} />
+      )}
+      {saveError && (
+        <p className="text-sm text-red-500 text-center px-2">{saveError}</p>
+      )}
 
       {/* ── Section 5: AI Analysis (only visible after saving) ── */}
       {id && (

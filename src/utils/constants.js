@@ -1,7 +1,7 @@
 // ─── Club lists ─────────────────────────────────────────────────────────────
 export const WOODS = ['Driver', '3 Wood', '5 Wood'];
 export const HYBRIDS = ['2 Hybrid', '3 Hybrid', '4 Hybrid'];
-export const IRONS = ['2 Iron', '3 Iron', '4 Iron', '5 Iron', '6 Iron', '7 Iron', '8 Iron', '9 Iron'];
+export const IRONS = ['3 Iron', '4 Iron', '5 Iron', '6 Iron', '7 Iron', '8 Iron', '9 Iron'];
 export const WEDGES = [
   { key: 'pw', label: 'PW (Pitching Wedge)' },
   { key: 'gw', label: 'GW (Gap Wedge)' },
@@ -20,9 +20,9 @@ export const ALL_CLUBS = [
 export const DIRECTION_CLUB_GROUPS = [
   { key: 'driver',      label: 'Driver' },
   { key: 'woodHybrid',  label: 'Wood / Hybrid' },
-  { key: 'longIron',    label: 'Long Iron (2–4)' },
-  { key: 'middleIron',  label: 'Middle Iron (5–7)' },
-  { key: 'shortIron',   label: 'Short Iron (8–9)' },
+  { key: 'longIron',    label: 'Long Iron (3–5)' },
+  { key: 'middleIron',  label: 'Middle Iron (6–9)' },
+  { key: 'wedge',       label: 'Wedge (P–S)' },
 ];
 
 // ─── Swing stage marker configuration ───────────────────────────────────────

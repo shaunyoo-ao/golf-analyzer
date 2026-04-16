@@ -100,7 +100,7 @@ export default function History() {
                     {r.longestDriveMeter && (
                       <span className="text-[10px] text-golf-400">🏌 {r.longestDriveMeter}m</span>
                     )}
-                    {r.lostBalls != null && (
+                    {Number(r.lostBalls) > 0 && (
                       <span className="text-[10px] text-golf-400">⚪ {r.lostBalls} lost</span>
                     )}
                     {r.scoreDifferential != null && (

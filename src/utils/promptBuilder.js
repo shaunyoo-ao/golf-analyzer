@@ -67,10 +67,9 @@ export function buildPrompt(profile, round, options = {}) {
         course_name: r.courseName,
         country: r.country,
         total_score: r.totalScore,
-        score_differential: r.scoreDifferential ?? null,
+        score_differential: r.scoreDifferential != null ? Number(r.scoreDifferential.toFixed(3)) : null,
         longest_drive_m: r.longestDriveMeter ?? null,
         lost_balls: r.lostBalls ?? null,
-        is_manual_entry: r.isManualEntry ?? false,
       }));
   }
 

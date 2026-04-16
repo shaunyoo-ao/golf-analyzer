@@ -313,7 +313,33 @@ export default function RoundInput() {
         <p className="text-sm text-red-500 text-center px-2">{saveError}</p>
       )}
 
-      {/* ── Delete (only when editing) ── */}
+      {/* ── Section 5: AI Analysis (only visible after saving) ── */}
+      {id && (
+        <CollapsibleSection
+          title="🤖 AI Analysis"
+          subtitle="Generate prompt · Paste response"
+        >
+          <div className="flex flex-col gap-4">
+            <div>
+              <p className="text-xs font-bold text-golf-600 uppercase tracking-wide mb-2">
+                1. Generate Prompt
+              </p>
+              <AIPromptBox profile={profile} round={form} allRounds={rounds} />
+            </div>
+            <div>
+              <p className="text-xs font-bold text-golf-600 uppercase tracking-wide mb-2">
+                2. Paste AI Response
+              </p>
+              <AIResponseBox
+                onSave={saveResponse}
+                existingResponse={aiResponse}
+              />
+            </div>
+          </div>
+        </CollapsibleSection>
+      )}
+
+      {/* ── Delete (only when editing, at the very bottom) ── */}
       {id && saveStep === 0 && (
         confirmDelete ? (
           <div className="flex gap-2">
@@ -333,35 +359,6 @@ export default function RoundInput() {
             Delete Round
           </Button>
         )
-      )}
-
-      {/* ── Section 5: AI Analysis (only visible after saving) ── */}
-      {id && (
-        <div className="rounded-2xl border-2 border-blue-200 overflow-hidden">
-          <CollapsibleSection
-            title="AI Analysis"
-            subtitle="Generate prompt · Paste response"
-            className="border-0 bg-blue-50"
-          >
-            <div className="flex flex-col gap-4">
-              <div>
-                <p className="text-xs font-bold text-blue-600 uppercase tracking-wide mb-2">
-                  1. Generate Prompt
-                </p>
-                <AIPromptBox profile={profile} round={form} allRounds={rounds} />
-              </div>
-              <div>
-                <p className="text-xs font-bold text-blue-600 uppercase tracking-wide mb-2">
-                  2. Paste AI Response
-                </p>
-                <AIResponseBox
-                  onSave={saveResponse}
-                  existingResponse={aiResponse}
-                />
-              </div>
-            </div>
-          </CollapsibleSection>
-        </div>
       )}
     </div>
   );

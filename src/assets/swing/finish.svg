@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 320" fill="none">
+  <rect width="200" height="320" fill="#2d4a2d"/>
+  <!-- Head (looking toward target) -->
+  <circle cx="92" cy="40" r="18" fill="#e8e8e8"/>
+  <!-- Neck -->
+  <rect x="86" y="56" width="12" height="14" rx="4" fill="#e8e8e8"/>
+  <!-- Torso (fully rotated through) -->
+  <rect x="68" y="70" width="52" height="68" rx="8" fill="#d0d0d0" transform="rotate(-20 94 104)"/>
+  <!-- Left arm (high follow-through) -->
+  <rect x="50" y="44" width="16" height="60" rx="7" fill="#e8e8e8" transform="rotate(-40 58 44)"/>
+  <!-- Right arm (wrapped around) -->
+  <rect x="110" y="60" width="16" height="58" rx="7" fill="#e8e8e8" transform="rotate(-30 118 60)"/>
+  <!-- Left leg (straight, weight transferred) -->
+  <rect x="74" y="136" width="20" height="84" rx="8" fill="#222" transform="rotate(-8 74 136)"/>
+  <!-- Right leg (toe only, weight forward) -->
+  <rect x="106" y="140" width="20" height="80" rx="8" fill="#222" transform="rotate(12 116 140)"/>
+  <!-- Left foot (planted) -->
+  <ellipse cx="78" cy="226" rx="18" ry="8" fill="#333"/>
+  <!-- Right foot (on toes) -->
+  <ellipse cx="120" cy="226" rx="14" ry="6" fill="#333"/>
+  <!-- Club shaft (high finish) -->
+  <line x1="56" y1="30" x2="104" y2="100" stroke="#c8a44a" stroke-width="3" stroke-linecap="round"/>
+  <!-- Club head -->
+  <ellipse cx="54" cy="28" rx="12" ry="5" fill="#c8a44a" transform="rotate(50 54 28)"/>
+</svg>

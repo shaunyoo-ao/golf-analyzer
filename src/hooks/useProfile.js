@@ -35,6 +35,23 @@ export function useProfile() {
       })
       .catch((err) => {
         setError(err.message);
+        // Fall back to defaults so the page renders instead of infinite spinner
+        setProfile({
+          name: user.displayName || '',
+          email: user.email || '',
+          photoURL: user.photoURL || '',
+          age: '',
+          gender: '',
+          heightCm: '',
+          weightKg: '',
+          handedness: '',
+          aiFeedbackLanguage: 'ko',
+          handicapIndex: null,
+          clubDistances: {},
+          favoriteCourses: [],
+          courseTrophies: [],
+          accountCreatedAt: new Date().toISOString(),
+        });
         setLoading(false);
       });
   }, [user]);

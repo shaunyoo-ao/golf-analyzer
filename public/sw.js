@@ -1,4 +1,4 @@
-const CACHE = 'handi0-v1';
+const CACHE = 'handi0-v3';
 const PRECACHE = ['/', '/index.html'];
 
 self.addEventListener('install', (e) => {

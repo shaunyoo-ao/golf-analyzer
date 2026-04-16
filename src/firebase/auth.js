@@ -9,6 +9,7 @@ import {
 import { auth } from './config';
 
 const provider = new GoogleAuthProvider();
+provider.setCustomParameters({ prompt: 'select_account' });
 
 // Ensure session persists across browser restarts
 setPersistence(auth, browserLocalPersistence).catch(() => {});

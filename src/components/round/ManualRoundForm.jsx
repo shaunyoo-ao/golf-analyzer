@@ -27,6 +27,7 @@ function emptyForm() {
     longestDriveMeter: '',
     lostBalls: '',
     holes: {},
+    avgGir: '',
     isManualEntry: true,
   };
 }
@@ -84,7 +85,7 @@ export default function ManualRoundForm({ onSave, onClose }) {
             </div>
           </div>
 
-          <div className="px-4 pt-4 pb-6 flex flex-col gap-3">
+          <div className="px-4 pt-4 pb-28 flex flex-col gap-3">
             {/* Required fields */}
             <Input
               label="Course Name"
@@ -172,8 +173,23 @@ export default function ManualRoundForm({ onSave, onClose }) {
             </div>
 
             {/* Optional hole-by-hole */}
-            <CollapsibleSection title="Hole-by-Hole" subtitle="Optional">
-              <HoleScoreGrid holes={form.holes} onChange={(v) => set('holes', v)} />
+            <CollapsibleSection title="Hole-by-Hole" subtitle="Optional · Score & Putts">
+              <div className="flex flex-col gap-4">
+                <Input
+                  label="Average GIR (%)"
+                  id="m-avgGir"
+                  type="number"
+                  inputMode="decimal"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  value={form.avgGir || ''}
+                  onChange={(e) => set('avgGir', e.target.value)}
+                  placeholder="—"
+                  hint="Greens in Regulation % for this round"
+                />
+                <HoleScoreGrid holes={form.holes} onChange={(v) => set('holes', v)} />
+              </div>
             </CollapsibleSection>
 
             {/* Save */}

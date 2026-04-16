@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useProfile } from '../hooks/useProfile';
 import { useAuth } from '../context/AuthContext';
 import { signOutUser } from '../firebase/auth';
-import { golfExperienceMonths } from '../utils/dateHelpers';
 import PersonalInfoForm from '../components/profile/PersonalInfoForm';
 import ClubDistanceForm from '../components/profile/ClubDistanceForm';
 import CollapsibleSection from '../components/ui/CollapsibleSection';
@@ -22,8 +21,6 @@ export default function Profile() {
   }, [profile]);
 
   if (loading || !form) return <LoadingSpinner />;
-
-  const expMonths = golfExperienceMonths(form.accountCreatedAt);
 
   const handleSave = async () => {
     setSaving(true);
@@ -63,7 +60,6 @@ export default function Profile() {
         <PersonalInfoForm
           profile={form}
           onChange={setForm}
-          experienceMonths={expMonths}
         />
       </CollapsibleSection>
 

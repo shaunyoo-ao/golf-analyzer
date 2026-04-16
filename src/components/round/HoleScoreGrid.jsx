@@ -1,10 +1,10 @@
 /**
- * 18-hole grid: Score, GIR toggle, Putts — two rows of 9.
+ * 18-hole grid: Score + Putts per hole (GIR is entered as a single round-level average).
  */
 const HOLES = Array.from({ length: 18 }, (_, i) => i + 1);
 
 function HoleCell({ hole, data = {}, onChange }) {
-  const { score = '', gir = false, putts = '' } = data;
+  const { score = '', putts = '' } = data;
 
   return (
     <div className="flex flex-col items-center gap-1 min-w-[34px]">
@@ -18,25 +18,10 @@ function HoleCell({ hole, data = {}, onChange }) {
         min="1"
         max="15"
         value={score}
-        onChange={(e) => onChange({ score: e.target.value, gir, putts })}
+        onChange={(e) => onChange({ score: e.target.value, putts })}
         placeholder="—"
         className="w-8 h-8 text-center text-sm font-semibold rounded-lg border border-golf-200 bg-white focus:outline-none focus:ring-1 focus:ring-golf-500 text-golf-900"
       />
-
-      {/* GIR toggle */}
-      <button
-        type="button"
-        onClick={() => onChange({ score, gir: !gir, putts })}
-        className={[
-          'w-8 h-6 rounded text-[9px] font-bold border transition-colors',
-          gir
-            ? 'bg-golf-600 text-white border-golf-600'
-            : 'bg-white text-golf-400 border-golf-200',
-        ].join(' ')}
-        title={gir ? 'GIR: Yes' : 'GIR: No'}
-      >
-        GIR
-      </button>
 
       {/* Putts */}
       <input
@@ -45,7 +30,7 @@ function HoleCell({ hole, data = {}, onChange }) {
         min="0"
         max="6"
         value={putts}
-        onChange={(e) => onChange({ score, gir, putts: e.target.value })}
+        onChange={(e) => onChange({ score, putts: e.target.value })}
         placeholder="—"
         className="w-8 h-8 text-center text-sm rounded-lg border border-golf-200 bg-white focus:outline-none focus:ring-1 focus:ring-golf-500 text-golf-600"
       />
@@ -66,7 +51,6 @@ export default function HoleScoreGrid({ holes = {}, onChange }) {
       {/* Legend */}
       <div className="flex items-center gap-4 text-[10px] text-golf-500">
         <span className="font-bold text-golf-600">Score</span>
-        <span className="text-golf-600 font-bold">GIR</span>
         <span className="text-golf-500">Putts</span>
       </div>
 

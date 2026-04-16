@@ -31,6 +31,7 @@ function emptyRound() {
     longestDriveMeter: '',
     lostBalls: '',
     holes: {},
+    avgGir: '',
     clubDirections: {},
     swingForm: emptySwingForm(),
   };
@@ -202,8 +203,23 @@ export default function RoundInput() {
       </CollapsibleSection>
 
       {/* ── Section 2: Hole-by-hole ── */}
-      <CollapsibleSection title="Hole-by-Hole" subtitle="Optional · Score, GIR, Putts">
-        <HoleScoreGrid holes={form.holes} onChange={(v) => set('holes', v)} />
+      <CollapsibleSection title="Hole-by-Hole" subtitle="Optional · Score & Putts per hole">
+        <div className="flex flex-col gap-4">
+          <Input
+            label="Average GIR (%)"
+            id="avgGir"
+            type="number"
+            inputMode="decimal"
+            min="0"
+            max="100"
+            step="0.1"
+            value={form.avgGir || ''}
+            onChange={(e) => set('avgGir', e.target.value)}
+            placeholder="—"
+            hint="Greens in Regulation % for this round"
+          />
+          <HoleScoreGrid holes={form.holes} onChange={(v) => set('holes', v)} />
+        </div>
       </CollapsibleSection>
 
       {/* ── Section 3: Club Directions ── */}

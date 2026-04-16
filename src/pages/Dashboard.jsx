@@ -24,7 +24,7 @@ export default function Dashboard() {
   if (profileLoading || roundsLoading) return <LoadingSpinner />;
 
   const handicapIndex = profile?.handicapIndex;
-  const expMonths = golfExperienceMonths(profile?.accountCreatedAt);
+  const expMonths = golfExperienceMonths(profile?.golfStartDate);
 
   const scores = rounds.map((r) => Number(r.totalScore)).filter(Boolean);
   const avgScore = scores.length

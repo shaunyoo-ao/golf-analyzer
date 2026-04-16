@@ -2,16 +2,16 @@
 
 /* ─── Tailwind v4 custom theme (golf green palette) ────────────────────────── */
 @theme {
-  --color-golf-900: #1a2e1a;
-  --color-golf-800: #2d4a2d;
-  --color-golf-700: #3d6b3d;
-  --color-golf-600: #4d8a4d;
-  --color-golf-500: #5ea85e;
-  --color-golf-400: #7dc47d;
-  --color-golf-300: #a8d8a8;
-  --color-golf-200: #c8e8c8;
-  --color-golf-100: #e8f5e8;
-  --color-golf-50:  #f4faf4;
+  --color-golf-900: #1c3620;
+  --color-golf-800: #2e5434;
+  --color-golf-700: #3e7645;
+  --color-golf-600: #4e9856;
+  --color-golf-500: #60b468;
+  --color-golf-400: #82cc88;
+  --color-golf-300: #aadcae;
+  --color-golf-200: #c8eacc;
+  --color-golf-100: #e4f7e6;
+  --color-golf-50:  #f2fbf3;
   --color-golf-cream: #f5f0e8;
 
   /* Samsung Galaxy S25 optimised — 360px min, 412px typical viewport */
@@ -36,7 +36,7 @@ html {
 body {
   margin: 0;
   padding: 0;
-  background-color: #1a2e1a;
+  background-color: #1c3620;
   color: #1a2e1a;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR',
     sans-serif;

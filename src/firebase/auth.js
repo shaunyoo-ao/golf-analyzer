@@ -1,6 +1,6 @@
 import {
   GoogleAuthProvider,
-  signInWithPopup,
+  signInWithRedirect,
   signOut,
   setPersistence,
   browserLocalPersistence,
@@ -8,13 +8,13 @@ import {
 import { auth } from './config';
 
 const provider = new GoogleAuthProvider();
+provider.setCustomParameters({ prompt: 'select_account' });
 
 // Ensure session persists across browser restarts
 setPersistence(auth, browserLocalPersistence).catch(() => {});
 
 export async function signInWithGoogle() {
-  const result = await signInWithPopup(auth, provider);
-  return result.user;
+  await signInWithRedirect(auth, provider);
 }
 
 export async function signOutUser() {

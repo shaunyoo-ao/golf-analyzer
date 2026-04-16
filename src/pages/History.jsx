@@ -1,0 +1,122 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useRounds } from '../hooks/useRounds';
+import { formatDate } from '../utils/dateHelpers';
+import Card from '../components/ui/Card';
+import Button from '../components/ui/Button';
+import LoadingSpinner from '../components/ui/LoadingSpinner';
+import ManualRoundForm from '../components/round/ManualRoundForm';
+
+function avg(arr) {
+  const vals = arr.filter((v) => v != null && !isNaN(v));
+  return vals.length ? Math.round(vals.reduce((a, b) => a + b, 0) / vals.length) : null;
+}
+
+function StatCard({ label, value }) {
+  return (
+    <div className="flex-1 flex flex-col items-center bg-white rounded-2xl p-3 border border-golf-100">
+      <span className="text-lg font-black text-golf-800">{value ?? '—'}</span>
+      <span className="text-[10px] text-golf-500 text-center mt-0.5 leading-tight">{label}</span>
+    </div>
+  );
+}
+
+export default function History() {
+  const { rounds, loading, saveRound } = useRounds();
+  const navigate = useNavigate();
+  const [showManual, setShowManual] = useState(false);
+
+  if (loading) return <LoadingSpinner />;
+
+  const scores = rounds.map((r) => Number(r.totalScore)).filter(Boolean);
+  const drives = rounds.map((r) => r.longestDriveMeter ? Number(r.longestDriveMeter) : null);
+  const lostBalls = rounds.map((r) => r.lostBalls != null ? Number(r.lostBalls) : null);
+
+  const handleManualSave = async (roundData) => {
+    await saveRound(roundData);
+    setShowManual(false);
+  };
+
+  return (
+    <div className="flex flex-col gap-4">
+      {/* Stats */}
+      <div className="flex gap-2">
+        <StatCard label="Avg Score" value={avg(scores)} />
+        <StatCard label="Best Score" value={scores.length ? Math.min(...scores) : null} />
+        <StatCard label="Avg Drive (m)" value={avg(drives)} />
+        <StatCard label="Avg Lost" value={avg(lostBalls)} />
+      </div>
+
+      {/* Header row */}
+      <div className="flex items-center justify-between">
+        <p className="text-xs font-bold text-golf-600 uppercase tracking-wide">
+          All Rounds ({rounds.length})
+        </p>
+        <Button size="sm" variant="secondary" onClick={() => setShowManual(true)}>
+          + Previous Round
+        </Button>
+      </div>
+
+      {/* Manual round form modal */}
+      {showManual && (
+        <ManualRoundForm
+          onSave={handleManualSave}
+          onClose={() => setShowManual(false)}
+        />
+      )}
+
+      {/* Round list */}
+      {rounds.length === 0 ? (
+        <Card className="text-center py-8">
+          <p className="text-4xl mb-2">📋</p>
+          <p className="text-golf-700 font-medium">No rounds logged yet</p>
+          <p className="text-golf-400 text-sm mt-1">Log your first round to see history</p>
+        </Card>
+      ) : (
+        <div className="flex flex-col gap-2">
+          {rounds.map((r) => (
+            <Card
+              key={r.id}
+              onClick={() => !r.isManualEntry && navigate(`/round/${r.id}`)}
+              className={r.isManualEntry ? 'cursor-default' : ''}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-semibold text-golf-900 truncate">
+                      {r.courseName}
+                    </p>
+                    {r.isManualEntry && (
+                      <span className="text-[9px] bg-golf-100 text-golf-600 rounded px-1 py-0.5 shrink-0">
+                        manual
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-golf-500 mt-0.5">
+                    {r.country} · {formatDate(r.date)}
+                  </p>
+                  <div className="flex gap-3 mt-1">
+                    {r.longestDriveMeter && (
+                      <span className="text-[10px] text-golf-400">🏌 {r.longestDriveMeter}m</span>
+                    )}
+                    {r.lostBalls != null && (
+                      <span className="text-[10px] text-golf-400">⚪ {r.lostBalls} lost</span>
+                    )}
+                    {r.scoreDifferential != null && (
+                      <span className="text-[10px] text-golf-400">
+                        Diff: {r.scoreDifferential.toFixed(1)}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <div className="text-center ml-3 shrink-0">
+                  <span className="text-2xl font-black text-golf-700">{r.totalScore}</span>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}

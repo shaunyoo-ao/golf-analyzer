@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 320" fill="none">
+  <rect width="200" height="320" fill="#2d4a2d"/>
+  <!-- Head -->
+  <circle cx="98" cy="46" r="18" fill="#e8e8e8"/>
+  <!-- Neck -->
+  <rect x="92" y="62" width="12" height="14" rx="4" fill="#e8e8e8"/>
+  <!-- Torso (slightly rotated through) -->
+  <rect x="72" y="76" width="52" height="68" rx="8" fill="#d0d0d0" transform="rotate(-5 98 110)"/>
+  <!-- Left arm (extended, impact) -->
+  <rect x="52" y="80" width="16" height="64" rx="7" fill="#e8e8e8" transform="rotate(30 60 80)"/>
+  <!-- Right arm -->
+  <rect x="126" y="80" width="16" height="56" rx="7" fill="#e8e8e8" transform="rotate(-15 134 80)"/>
+  <!-- Left leg (slightly bent) -->
+  <rect x="76" y="142" width="20" height="80" rx="8" fill="#222" transform="rotate(-5 76 142)"/>
+  <!-- Right leg -->
+  <rect x="106" y="142" width="20" height="80" rx="8" fill="#222" transform="rotate(5 116 142)"/>
+  <!-- Left foot -->
+  <ellipse cx="82" cy="228" rx="18" ry="8" fill="#333"/>
+  <!-- Right foot -->
+  <ellipse cx="118" cy="228" rx="18" ry="8" fill="#333"/>
+  <!-- Club shaft (impact zone) -->
+  <line x1="80" y1="136" x2="94" y2="264" stroke="#c8a44a" stroke-width="3" stroke-linecap="round"/>
+  <!-- Club head at ball -->
+  <ellipse cx="93" cy="266" rx="12" ry="5" fill="#c8a44a" transform="rotate(-5 93 266)"/>
+  <!-- Ball -->
+  <circle cx="88" cy="264" r="5" fill="white"/>
+</svg>

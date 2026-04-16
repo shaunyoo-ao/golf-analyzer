@@ -1,7 +1,6 @@
 import {
   GoogleAuthProvider,
   signInWithRedirect,
-  getRedirectResult,
   signOut,
   setPersistence,
   browserLocalPersistence,
@@ -16,11 +15,6 @@ setPersistence(auth, browserLocalPersistence).catch(() => {});
 
 export async function signInWithGoogle() {
   await signInWithRedirect(auth, provider);
-}
-
-export async function handleRedirectResult() {
-  const result = await getRedirectResult(auth);
-  return result?.user ?? null;
 }
 
 export async function signOutUser() {

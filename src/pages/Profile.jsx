@@ -87,7 +87,7 @@ export default function Profile() {
 
       {/* Sign out */}
       <Button fullWidth variant="ghost" onClick={handleSignOut}>
-        Sign Out
+        Log Out
       </Button>
 
       {/* Copyright */}

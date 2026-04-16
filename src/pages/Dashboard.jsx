@@ -2,11 +2,9 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useProfile } from '../hooks/useProfile';
 import { useRounds } from '../hooks/useRounds';
-import { buildPrompt } from '../utils/promptBuilder';
 import { golfExperienceMonths, formatDate } from '../utils/dateHelpers';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
-import CollapsibleSection from '../components/ui/CollapsibleSection';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import FeedbackModal from '../components/ai/FeedbackModal';
 
@@ -24,7 +22,6 @@ export default function Dashboard() {
   const { profile, loading: profileLoading } = useProfile();
   const { rounds, loading: roundsLoading } = useRounds();
   const navigate = useNavigate();
-  const [copied, setCopied] = useState(false);
   const [feedbackRoundId, setFeedbackRoundId] = useState(null);
 
   if (profileLoading || roundsLoading) return <LoadingSpinner />;
@@ -39,27 +36,6 @@ export default function Dashboard() {
   const bestScore = scores.length ? Math.min(...scores) : null;
   const recentRounds = rounds.slice(0, 3);
 
-  const latestRound = rounds[0];
-  const language = profile?.aiFeedbackLanguage || 'ko';
-  const promptStr = latestRound
-    ? JSON.stringify(buildPrompt(profile, latestRound, { language }), null, 2)
-    : '';
-
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(promptStr);
-    } catch {
-      const el = document.createElement('textarea');
-      el.value = promptStr;
-      document.body.appendChild(el);
-      el.select();
-      document.execCommand('copy');
-      document.body.removeChild(el);
-    }
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
   return (
     <div className="flex flex-col gap-4">
       {/* Handicap card */}
@@ -71,7 +47,7 @@ export default function Dashboard() {
           {handicapIndex != null ? handicapIndex : '—'}
         </p>
         {handicapIndex == null && (
-          <p className="text-golf-400 text-xs mt-2">Log 8+ rounds with course data to unlock</p>
+          <p className="text-golf-400 text-xs mt-2">Log 8+ rounds to unlock</p>
         )}
       </Card>
 
@@ -134,30 +110,6 @@ export default function Dashboard() {
           <p className="text-golf-700 font-medium">No rounds yet</p>
           <p className="text-golf-400 text-sm mt-1">Log your first round to get started</p>
         </Card>
-      )}
-
-      {/* AI Prompt — latest round */}
-      {latestRound && (
-        <CollapsibleSection
-          title="AI Prompt"
-          subtitle="Latest round · Copy to clipboard"
-          className="border-blue-200 bg-blue-50"
-        >
-          <div className="flex flex-col gap-3">
-            <textarea
-              readOnly
-              value={promptStr}
-              rows={8}
-              className="w-full rounded-xl border border-blue-200 bg-white px-3 py-2 text-xs text-gray-700 font-mono resize-none focus:outline-none"
-            />
-            <Button fullWidth onClick={handleCopy} variant={copied ? 'secondary' : 'primary'}>
-              {copied ? '✓ Copied!' : 'Copy Prompt to Clipboard'}
-            </Button>
-            <p className="text-xs text-blue-400 text-center">
-              Paste into any AI chat (ChatGPT, Claude, Gemini…)
-            </p>
-          </div>
-        </CollapsibleSection>
       )}
 
       {/* AI Feedback modal */}

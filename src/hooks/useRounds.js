@@ -39,23 +39,25 @@ export function useRounds() {
 
       let finalData = { ...roundData };
 
-      // Compute score differential if rating data is present
-      if (finalData.courseRating && finalData.slopeRating && finalData.totalScore) {
+      // Compute score differential for any round with a total score.
+      // Use provided CR/SR or WHS defaults (72.0 / 113) so manual rounds also qualify.
+      if (finalData.totalScore) {
+        const cr = finalData.courseRating ? Number(finalData.courseRating) : 72;
+        const sr = finalData.slopeRating ? Number(finalData.slopeRating) : 113;
         finalData.scoreDifferential = scoreDifferential(
-          Number(finalData.totalScore),
-          Number(finalData.courseRating),
-          Number(finalData.slopeRating)
+          Number(finalData.totalScore), cr, sr
         );
       }
 
       onStep?.(1); // Step 1: writing round document
+      // Strip id from data before writing to Firestore (undefined id causes addDoc error)
+      const { id: docId, ...dataToSave } = finalData;
       let roundId;
-      if (finalData.id) {
-        const { id, ...rest } = finalData;
-        await updateRound(user.uid, id, rest);
-        roundId = id;
+      if (docId) {
+        await updateRound(user.uid, docId, dataToSave);
+        roundId = docId;
       } else {
-        roundId = await addRound(user.uid, finalData);
+        roundId = await addRound(user.uid, dataToSave);
       }
 
       onStep?.(2); // Step 2: refresh list + compute handicap

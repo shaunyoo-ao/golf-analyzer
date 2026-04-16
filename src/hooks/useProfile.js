@@ -27,6 +27,7 @@ export function useProfile() {
             handicapIndex: null,
             clubDistances: {},
             favoriteCourses: [],
+            courseTrophies: [],
             accountCreatedAt: new Date().toISOString(),
           }
         );

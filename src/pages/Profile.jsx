@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useProfile } from '../hooks/useProfile';
 import { useAuth } from '../context/AuthContext';
+import { useInstallPrompt } from '../hooks/useInstallPrompt';
 import { signOutUser } from '../firebase/auth';
 import PersonalInfoForm from '../components/profile/PersonalInfoForm';
 import ClubDistanceForm from '../components/profile/ClubDistanceForm';
 import FavoriteCourseForm from '../components/profile/FavoriteCourseForm';
+import CourseTrophySection from '../components/profile/CourseTrophySection';
 import CollapsibleSection from '../components/ui/CollapsibleSection';
 import Button from '../components/ui/Button';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
@@ -13,6 +15,7 @@ import Card from '../components/ui/Card';
 export default function Profile() {
   const { user } = useAuth();
   const { profile, loading, updateProfile } = useProfile();
+  const { canInstall, installApp } = useInstallPrompt();
   const [form, setForm] = useState(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -37,6 +40,13 @@ export default function Profile() {
 
   return (
     <div className="flex flex-col gap-3">
+      {/* Install app banner */}
+      {canInstall && (
+        <Button fullWidth variant="secondary" onClick={installApp}>
+          📲 홈 화면에 앱 추가
+        </Button>
+      )}
+
       {/* User identity card */}
       <Card className="flex items-center gap-4">
         {user?.photoURL ? (
@@ -80,6 +90,15 @@ export default function Profile() {
         />
       </CollapsibleSection>
 
+      {/* Trophies */}
+      <CollapsibleSection title="🏆 Trophies" subtitle="Course records · Best scores">
+        <CourseTrophySection
+          trophies={form.courseTrophies || []}
+          uid={user?.uid}
+          onChange={(trophies) => setForm((f) => ({ ...f, courseTrophies: trophies }))}
+        />
+      </CollapsibleSection>
+
       {/* Save */}
       <Button fullWidth size="lg" onClick={handleSave} disabled={saving}>
         {saving ? 'Saving…' : saved ? '✓ Saved' : 'Save Profile'}
@@ -93,7 +112,7 @@ export default function Profile() {
       {/* Copyright */}
       <p className="text-center text-[11px] text-golf-400 leading-relaxed pt-1 pb-4">
         Copyright ⓒ 2026, shaun.yoo.ao All rights reserved.{'\n'}
-        <br />Version 1.0.1
+        <br />Version 1.0.2
       </p>
     </div>
   );

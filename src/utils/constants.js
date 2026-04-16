@@ -16,8 +16,14 @@ export const ALL_CLUBS = [
   ...WEDGES.map((w) => w.label),
 ];
 
-// Clubs that have directional tendency (used in ClubDirectionPanel)
-export const DIRECTION_CLUBS = ['Driver', '3 Iron', '4 Iron', '5 Iron', '6 Iron', '7 Iron', '8 Iron', '9 Iron'];
+// 5-category club direction groups (used in ClubDirectionPanel)
+export const DIRECTION_CLUB_GROUPS = [
+  { key: 'driver',      label: 'Driver' },
+  { key: 'woodHybrid',  label: 'Wood / Hybrid' },
+  { key: 'longIron',    label: 'Long Iron (2–4)' },
+  { key: 'middleIron',  label: 'Middle Iron (5–7)' },
+  { key: 'shortIron',   label: 'Short Iron (8–9)' },
+];
 
 // ─── Swing stage marker configuration ───────────────────────────────────────
 // x/y are percentages relative to the image container (left/top)
@@ -77,7 +83,7 @@ export const MARKER_POSITIONS = {
 
 // ─── Countries ───────────────────────────────────────────────────────────────
 export const COUNTRIES = [
-  'South Korea', 'United States', 'Japan', 'Australia', 'United Kingdom',
+  'South Korea', 'South Africa', 'United States', 'Japan', 'Australia', 'United Kingdom',
   'Canada', 'Germany', 'France', 'Spain', 'Thailand', 'Singapore',
   'China', 'Taiwan', 'Philippines', 'Indonesia', 'Vietnam', 'Malaysia',
   'New Zealand', 'Ireland', 'Sweden', 'Other',

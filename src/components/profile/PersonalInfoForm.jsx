@@ -1,6 +1,6 @@
 import Input from '../ui/Input';
 import Select from '../ui/Select';
-import Toggle from '../ui/Toggle';
+import { golfExperienceMonths } from '../../utils/dateHelpers';
 
 const GENDER_OPTIONS = [
   { value: '', label: 'Select gender' },
@@ -20,8 +20,12 @@ const LANGUAGE_OPTIONS = [
   { value: 'en', label: 'English' },
 ];
 
-export default function PersonalInfoForm({ profile, onChange, experienceMonths }) {
+export default function PersonalInfoForm({ profile, onChange }) {
   const set = (key, val) => onChange({ ...profile, [key]: val });
+
+  const expMonths = profile.golfStartDate
+    ? golfExperienceMonths(profile.golfStartDate)
+    : 0;
 
   return (
     <div className="flex flex-col gap-4">
@@ -87,13 +91,16 @@ export default function PersonalInfoForm({ profile, onChange, experienceMonths }
         onChange={(e) => set('handedness', e.target.value)}
       />
 
-      {/* Golf Experience (read-only) */}
+      {/* Golf Experience — manual start date */}
       <div className="flex flex-col gap-1">
-        <label className="text-sm font-medium text-golf-800">Golf Experience</label>
-        <div className="w-full rounded-xl border border-golf-200 bg-golf-50 px-4 py-3 text-base text-golf-700 min-h-[44px]">
-          {experienceMonths != null ? `${experienceMonths} months` : '—'}
-        </div>
-        <p className="text-xs text-golf-400">Calculated from account creation date</p>
+        <Input
+          label="Golf Start Date"
+          id="golfStartDate"
+          type="date"
+          value={profile.golfStartDate || ''}
+          onChange={(e) => set('golfStartDate', e.target.value)}
+          hint={`Golf Experience: ${expMonths} month${expMonths !== 1 ? 's' : ''}`}
+        />
       </div>
 
       {/* AI Feedback Language */}

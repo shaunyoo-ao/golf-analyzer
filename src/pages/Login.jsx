@@ -71,7 +71,7 @@ export default function Login() {
         <p className="text-golf-500 text-[11px] leading-relaxed">
           Copyright ⓒ 2026, shaun.yoo.ao All rights reserved.
           <br />
-          Version 1.0.0
+          Version 1.0.1
         </p>
       </footer>
     </div>

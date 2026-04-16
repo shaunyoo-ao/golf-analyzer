@@ -31,6 +31,7 @@ export function buildPrompt(profile, round, options = {}) {
     weight_kg: profile?.weightKg || null,
     handedness: profile?.handedness || '',
     handicap_index: profile?.handicapIndex ?? null,
+    club_distances_unit: 'm',
     club_distances: profile?.clubDistances || {},
   };
 
@@ -38,11 +39,13 @@ export function buildPrompt(profile, round, options = {}) {
     date: round?.date || '',
     course_name: round?.courseName || '',
     country: round?.country || '',
+    tee_box: round?.teeBox || null,
     total_score: round?.totalScore || null,
     course_rating: round?.courseRating || null,
     slope_rating: round?.slopeRating || null,
     longest_drive_m: round?.longestDriveMeter || null,
     lost_balls: round?.lostBalls || null,
+    avg_gir_pct: round?.avgGir || null,
     holes: round?.holes || [],
     club_directions: round?.clubDirections || {},
     swing_form: round?.swingForm || {},

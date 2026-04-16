@@ -5,12 +5,13 @@ export default function CollapsibleSection({
   subtitle,
   badge,
   defaultOpen = false,
+  className = '',
   children,
 }) {
   const [open, setOpen] = useState(defaultOpen);
 
   return (
-    <div className="border border-golf-200 rounded-2xl overflow-hidden bg-white">
+    <div className={`border border-golf-200 rounded-2xl overflow-hidden bg-white ${className}`}>
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}

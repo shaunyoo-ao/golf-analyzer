@@ -98,7 +98,8 @@ CRITICAL RULES:
 3. If you cannot provide meaningful content for a field, use an empty string "" or empty array [].
 4. "highlighted_markers" should reference specific swing form markers from the data when available.
 5. "club_practice_plan" must be specific to the clubs showing directional issues.
-6. All Korean text must be natural, conversational, and actionable.`;
+6. All Korean text must be natural, conversational, and actionable.
+7. 제공된 국가의 일반적인 골프 코스 난이도, 홀별 파 구성, 코스 레이아웃 특성을 참고하여 분석에 활용하라.`;
 
 export const SYSTEM_INSTRUCTION_EN = `Analyze the provided golf data. If previous round data exists in this chat session's history, synthesize the new data with the past records to provide comprehensive, cumulative feedback tracking the user's progress or recurring issues. Output MUST be a single JSON object. JSON keys MUST be in English. JSON values MUST be written in English.
 
@@ -108,7 +109,8 @@ CRITICAL RULES:
 3. If you cannot provide meaningful content for a field, use an empty string "" or empty array [].
 4. "highlighted_markers" should reference specific swing form markers from the data when available.
 5. "club_practice_plan" must be specific to the clubs showing directional issues.
-6. All text must be natural, conversational, and actionable.`;
+6. All text must be natural, conversational, and actionable.
+7. Reference the typical course difficulty, hole par distribution, and layout characteristics of golf courses in the provided country when relevant to your analysis.`;
 
 export const EXPECTED_OUTPUT_FORMAT_KO = {
   overall_assessment: '<전반적인 라운드 평가 (문자열)>',

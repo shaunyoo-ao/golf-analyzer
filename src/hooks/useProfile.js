@@ -26,6 +26,7 @@ export function useProfile() {
             aiFeedbackLanguage: 'ko',
             handicapIndex: null,
             clubDistances: {},
+            favoriteCourses: [],
             accountCreatedAt: new Date().toISOString(),
           }
         );

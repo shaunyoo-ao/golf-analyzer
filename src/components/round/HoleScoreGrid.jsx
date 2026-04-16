@@ -7,9 +7,9 @@ function HoleCell({ hole, data = {}, onChange }) {
   const { score = '', putts = '' } = data;
 
   return (
-    <div className="flex flex-col items-center gap-1 min-w-[34px]">
+    <div className="flex flex-col items-center gap-0.5">
       {/* Hole number */}
-      <span className="text-[10px] font-bold text-golf-600 w-full text-center">{hole}</span>
+      <span className="text-[9px] font-bold text-golf-600 w-full text-center leading-tight">{hole}</span>
 
       {/* Score */}
       <input
@@ -20,7 +20,7 @@ function HoleCell({ hole, data = {}, onChange }) {
         value={score}
         onChange={(e) => onChange({ score: e.target.value, putts })}
         placeholder="—"
-        className="w-8 h-8 text-center text-sm font-semibold rounded-lg border border-golf-200 bg-white focus:outline-none focus:ring-1 focus:ring-golf-500 text-golf-900"
+        className="w-full h-8 text-center text-xs font-semibold rounded-md border border-golf-200 bg-white focus:outline-none focus:ring-1 focus:ring-golf-500 text-golf-900 px-0"
       />
 
       {/* Putts */}
@@ -32,7 +32,7 @@ function HoleCell({ hole, data = {}, onChange }) {
         value={putts}
         onChange={(e) => onChange({ score, putts: e.target.value })}
         placeholder="—"
-        className="w-8 h-8 text-center text-sm rounded-lg border border-golf-200 bg-white focus:outline-none focus:ring-1 focus:ring-golf-500 text-golf-600"
+        className="w-full h-8 text-center text-xs rounded-md border border-golf-200 bg-white focus:outline-none focus:ring-1 focus:ring-golf-500 text-golf-600 px-0"
       />
     </div>
   );
@@ -57,7 +57,7 @@ export default function HoleScoreGrid({ holes = {}, onChange }) {
       {/* Front 9 */}
       <div>
         <p className="text-xs font-semibold text-golf-600 mb-2">Front 9</p>
-        <div className="flex gap-1 overflow-x-auto pb-1">
+        <div className="grid grid-cols-9 gap-0.5">
           {front9.map((h) => (
             <HoleCell
               key={h}
@@ -72,7 +72,7 @@ export default function HoleScoreGrid({ holes = {}, onChange }) {
       {/* Back 9 */}
       <div>
         <p className="text-xs font-semibold text-golf-600 mb-2">Back 9</p>
-        <div className="flex gap-1 overflow-x-auto pb-1">
+        <div className="grid grid-cols-9 gap-0.5">
           {back9.map((h) => (
             <HoleCell
               key={h}

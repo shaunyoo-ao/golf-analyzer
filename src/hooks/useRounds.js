@@ -34,17 +34,13 @@ export function useRounds() {
   }, [fetchRounds]);
 
   const saveRound = useCallback(
-    async (roundData) => {
+    async (roundData, onStep) => {
       if (!user) return;
 
       let finalData = { ...roundData };
 
       // Compute score differential if rating data is present
-      if (
-        finalData.courseRating &&
-        finalData.slopeRating &&
-        finalData.totalScore
-      ) {
+      if (finalData.courseRating && finalData.slopeRating && finalData.totalScore) {
         finalData.scoreDifferential = scoreDifferential(
           Number(finalData.totalScore),
           Number(finalData.courseRating),
@@ -52,6 +48,7 @@ export function useRounds() {
         );
       }
 
+      onStep?.(1); // Step 1: writing round document
       let roundId;
       if (finalData.id) {
         const { id, ...rest } = finalData;
@@ -61,7 +58,7 @@ export function useRounds() {
         roundId = await addRound(user.uid, finalData);
       }
 
-      // Refresh rounds and recompute handicap
+      onStep?.(2); // Step 2: refresh list + compute handicap
       const updated = await getRounds(user.uid);
       setRounds(updated);
 
@@ -70,6 +67,7 @@ export function useRounds() {
         await updateHandicapIndex(user.uid, newHI);
       }
 
+      onStep?.(3); // Step 3: done
       return roundId;
     },
     [user]

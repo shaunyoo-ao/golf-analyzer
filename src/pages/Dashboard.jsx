@@ -1,10 +1,14 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useProfile } from '../hooks/useProfile';
 import { useRounds } from '../hooks/useRounds';
+import { buildPrompt } from '../utils/promptBuilder';
 import { golfExperienceMonths, formatDate } from '../utils/dateHelpers';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
+import CollapsibleSection from '../components/ui/CollapsibleSection';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
+import FeedbackModal from '../components/ai/FeedbackModal';
 
 function StatCard({ label, value, sub }) {
   return (
@@ -20,6 +24,8 @@ export default function Dashboard() {
   const { profile, loading: profileLoading } = useProfile();
   const { rounds, loading: roundsLoading } = useRounds();
   const navigate = useNavigate();
+  const [copied, setCopied] = useState(false);
+  const [feedbackRoundId, setFeedbackRoundId] = useState(null);
 
   if (profileLoading || roundsLoading) return <LoadingSpinner />;
 
@@ -32,6 +38,27 @@ export default function Dashboard() {
     : null;
   const bestScore = scores.length ? Math.min(...scores) : null;
   const recentRounds = rounds.slice(0, 3);
+
+  const latestRound = rounds[0];
+  const language = profile?.aiFeedbackLanguage || 'ko';
+  const promptStr = latestRound
+    ? JSON.stringify(buildPrompt(profile, latestRound, { language }), null, 2)
+    : '';
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(promptStr);
+    } catch {
+      const el = document.createElement('textarea');
+      el.value = promptStr;
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand('copy');
+      document.body.removeChild(el);
+    }
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   return (
     <div className="flex flex-col gap-4">
@@ -74,8 +101,8 @@ export default function Dashboard() {
                 onClick={() => navigate(`/round/${r.id}`)}
                 className="flex items-center justify-between"
               >
-                <div>
-                  <p className="text-sm font-semibold text-golf-900">{r.courseName}</p>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-golf-900 truncate">{r.courseName}</p>
                   <p className="text-xs text-golf-500">
                     {r.country} · {formatDate(r.date)}
                     {r.isManualEntry && (
@@ -83,7 +110,18 @@ export default function Dashboard() {
                     )}
                   </p>
                 </div>
-                <span className="text-xl font-black text-golf-700">{r.totalScore}</span>
+                <div className="flex items-center gap-2 shrink-0">
+                  {r.hasAIResponse && (
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); setFeedbackRoundId(r.id); }}
+                      className="text-xs bg-blue-100 text-blue-700 rounded-lg px-2 py-1 font-medium !min-h-0"
+                    >
+                      💬 AI
+                    </button>
+                  )}
+                  <span className="text-xl font-black text-golf-700">{r.totalScore}</span>
+                </div>
               </Card>
             ))}
           </div>
@@ -96,6 +134,38 @@ export default function Dashboard() {
           <p className="text-golf-700 font-medium">No rounds yet</p>
           <p className="text-golf-400 text-sm mt-1">Log your first round to get started</p>
         </Card>
+      )}
+
+      {/* AI Prompt — latest round */}
+      {latestRound && (
+        <CollapsibleSection
+          title="AI Prompt"
+          subtitle="Latest round · Copy to clipboard"
+          className="border-blue-200 bg-blue-50"
+        >
+          <div className="flex flex-col gap-3">
+            <textarea
+              readOnly
+              value={promptStr}
+              rows={8}
+              className="w-full rounded-xl border border-blue-200 bg-white px-3 py-2 text-xs text-gray-700 font-mono resize-none focus:outline-none"
+            />
+            <Button fullWidth onClick={handleCopy} variant={copied ? 'secondary' : 'primary'}>
+              {copied ? '✓ Copied!' : 'Copy Prompt to Clipboard'}
+            </Button>
+            <p className="text-xs text-blue-400 text-center">
+              Paste into any AI chat (ChatGPT, Claude, Gemini…)
+            </p>
+          </div>
+        </CollapsibleSection>
+      )}
+
+      {/* AI Feedback modal */}
+      {feedbackRoundId && (
+        <FeedbackModal
+          roundId={feedbackRoundId}
+          onClose={() => setFeedbackRoundId(null)}
+        />
       )}
     </div>
   );

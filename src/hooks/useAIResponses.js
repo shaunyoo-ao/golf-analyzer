@@ -1,28 +1,32 @@
-import { useState, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { getAIResponse, saveAIResponse } from '../firebase/firestore';
+import { getAIResponse, saveAIResponse, updateRound } from '../firebase/firestore';
 
 export function useAIResponse(roundId) {
   const { user } = useAuth();
   const [aiResponse, setAIResponse] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const fetchResponse = useCallback(async () => {
+  useEffect(() => {
     if (!user || !roundId) return;
     setLoading(true);
-    const data = await getAIResponse(user.uid, roundId);
-    setAIResponse(data);
-    setLoading(false);
+    getAIResponse(user.uid, roundId)
+      .then((data) => {
+        setAIResponse(data);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
   }, [user, roundId]);
 
   const saveResponse = useCallback(
     async (data) => {
       if (!user || !roundId) return;
       await saveAIResponse(user.uid, roundId, data);
+      await updateRound(user.uid, roundId, { hasAIResponse: true });
       setAIResponse(data);
     },
     [user, roundId]
   );
 
-  return { aiResponse, loading, fetchResponse, saveResponse };
+  return { aiResponse, loading, saveResponse };
 }

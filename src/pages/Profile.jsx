@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { signOutUser } from '../firebase/auth';
 import PersonalInfoForm from '../components/profile/PersonalInfoForm';
 import ClubDistanceForm from '../components/profile/ClubDistanceForm';
+import FavoriteCourseForm from '../components/profile/FavoriteCourseForm';
 import CollapsibleSection from '../components/ui/CollapsibleSection';
 import Button from '../components/ui/Button';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
@@ -71,6 +72,14 @@ export default function Profile() {
         />
       </CollapsibleSection>
 
+      {/* Favorite Courses */}
+      <CollapsibleSection title="Favorite Courses" subtitle="Preload into round entry">
+        <FavoriteCourseForm
+          favorites={form.favoriteCourses || []}
+          onChange={(courses) => setForm((f) => ({ ...f, favoriteCourses: courses }))}
+        />
+      </CollapsibleSection>
+
       {/* Save */}
       <Button fullWidth size="lg" onClick={handleSave} disabled={saving}>
         {saving ? 'Saving…' : saved ? '✓ Saved' : 'Save Profile'}
@@ -80,6 +89,12 @@ export default function Profile() {
       <Button fullWidth variant="ghost" onClick={handleSignOut}>
         Sign Out
       </Button>
+
+      {/* Copyright */}
+      <p className="text-center text-[11px] text-golf-400 leading-relaxed pt-1 pb-4">
+        Copyright ⓒ 2026, shaun.yoo.ao All rights reserved.{'\n'}
+        <br />Version 1.0.1
+      </p>
     </div>
   );
 }

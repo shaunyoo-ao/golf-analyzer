@@ -70,7 +70,10 @@ export async function addRound(uid, roundData) {
 }
 
 export async function updateRound(uid, roundId, data) {
-  await updateDoc(doc(db, 'users', uid, 'rounds', roundId), data);
+  await updateDoc(doc(db, 'users', uid, 'rounds', roundId), {
+    ...data,
+    updatedAt: new Date().toISOString().slice(0, 10),
+  });
 }
 
 export async function deleteRound(uid, roundId) {

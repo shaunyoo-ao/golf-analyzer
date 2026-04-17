@@ -21,20 +21,26 @@ export default function FavoriteCourseForm({ favorites = [], onChange }) {
   const [adding, setAdding] = useState(false);
   const [form, setForm] = useState(emptyFav());
   const [error, setError] = useState('');
+  const [saving, setSaving] = useState(false);
 
   const set = (key, val) => setForm((f) => ({ ...f, [key]: val }));
 
-  const handleAdd = () => {
+  const handleAdd = async () => {
     if (!form.courseName.trim()) { setError('Course name is required'); return; }
     if (!form.country) { setError('Country is required'); return; }
-    onChange([...favorites, { ...form }]);
-    setForm(emptyFav());
-    setError('');
-    setAdding(false);
+    setSaving(true);
+    try {
+      await onChange([...favorites, { ...form }]);
+      setForm(emptyFav());
+      setError('');
+      setAdding(false);
+    } finally {
+      setSaving(false);
+    }
   };
 
-  const handleRemove = (idx) => {
-    onChange(favorites.filter((_, i) => i !== idx));
+  const handleRemove = async (idx) => {
+    await onChange(favorites.filter((_, i) => i !== idx));
   };
 
   return (
@@ -114,8 +120,8 @@ export default function FavoriteCourseForm({ favorites = [], onChange }) {
           />
           {error && <p className="text-xs text-red-500">{error}</p>}
           <div className="flex gap-2">
-            <Button fullWidth onClick={handleAdd}>Add Course</Button>
-            <Button fullWidth variant="ghost" onClick={() => { setAdding(false); setError(''); }}>Cancel</Button>
+            <Button fullWidth onClick={handleAdd} disabled={saving}>{saving ? 'Saving…' : 'Add & Save'}</Button>
+            <Button fullWidth variant="ghost" onClick={() => { setAdding(false); setError(''); }} disabled={saving}>Cancel</Button>
           </div>
         </div>
       ) : (

@@ -93,29 +93,37 @@ export default function Profile() {
         />
       </CollapsibleSection>
 
-      {/* Favorite Courses */}
-      <CollapsibleSection title="Favorite Courses" subtitle="Preload into round entry">
-        <FavoriteCourseForm
-          favorites={form.favoriteCourses || []}
-          onChange={(courses) => setForm((f) => ({ ...f, favoriteCourses: courses }))}
-        />
-      </CollapsibleSection>
-
-      {/* Trophies */}
-      <CollapsibleSection title="🏆 Trophies" subtitle="Course records · Best scores">
-        <CourseTrophySection
-          trophies={form.courseTrophies || []}
-          uid={user?.uid}
-          onChange={(trophies) => setForm((f) => ({ ...f, courseTrophies: trophies }))}
-        />
-      </CollapsibleSection>
-
-      {/* Save */}
+      {/* Save (Personal Info + Club Distances only) */}
       {saveError && <p className="text-sm text-red-500 text-center">{saveError}</p>}
       {saveStep > 0
         ? <SaveProgressBar steps={SAVE_STEPS} step={saveStep} />
         : <Button fullWidth size="lg" onClick={handleSave}>Save Profile</Button>
       }
+
+      {/* Favorite Courses — immediate save on Add/Remove */}
+      <CollapsibleSection title="Favorite Courses" subtitle="Preload into round entry">
+        <FavoriteCourseForm
+          favorites={form.favoriteCourses || []}
+          onChange={async (courses) => {
+            const updated = { ...form, favoriteCourses: courses };
+            setForm(updated);
+            await updateProfile(updated);
+          }}
+        />
+      </CollapsibleSection>
+
+      {/* Trophies — immediate save on Add/Edit/Delete */}
+      <CollapsibleSection title="🏆 Trophies" subtitle="Course records · Best scores">
+        <CourseTrophySection
+          trophies={form.courseTrophies || []}
+          uid={user?.uid}
+          onChange={async (trophies) => {
+            const updated = { ...form, courseTrophies: trophies };
+            setForm(updated);
+            await updateProfile(updated);
+          }}
+        />
+      </CollapsibleSection>
 
       {/* Sign out */}
       <Button fullWidth variant="ghost" onClick={handleSignOut}>
@@ -125,7 +133,7 @@ export default function Profile() {
       {/* Copyright */}
       <p className="text-center text-[11px] text-golf-400 leading-relaxed pt-1 pb-4">
         Copyright ⓒ 2026, shaun.yoo.ao All rights reserved.{'\n'}
-        <br />Version 1.0.2
+        <br />Version 1.0.3
       </p>
     </div>
   );

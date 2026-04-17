@@ -56,7 +56,7 @@ export default function HoleScoreGrid({ holes = {}, onChange }) {
 
       {/* Front 9 */}
       <div>
-        <p className="text-xs font-semibold text-golf-600 mb-2">Front 9</p>
+        <p className="text-xs font-semibold text-golf-600 mb-2">Front 9 (OUT)</p>
         <div className="grid grid-cols-9 gap-0.5">
           {front9.map((h) => (
             <HoleCell
@@ -71,7 +71,7 @@ export default function HoleScoreGrid({ holes = {}, onChange }) {
 
       {/* Back 9 */}
       <div>
-        <p className="text-xs font-semibold text-golf-600 mb-2">Back 9</p>
+        <p className="text-xs font-semibold text-golf-600 mb-2">Back 9 (IN)</p>
         <div className="grid grid-cols-9 gap-0.5">
           {back9.map((h) => (
             <HoleCell

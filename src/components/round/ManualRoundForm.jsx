@@ -11,6 +11,7 @@ import Button from '../ui/Button';
 import SaveProgressBar from '../ui/SaveProgressBar';
 import HoleScoreGrid from './HoleScoreGrid';
 import CollapsibleSection from '../ui/CollapsibleSection';
+import JsonAutoFill from './JsonAutoFill';
 
 const COUNTRY_OPTIONS = [
   { value: '', label: 'Select country' },
@@ -96,6 +97,11 @@ export default function ManualRoundForm({ onSave, onClose }) {
           </div>
 
           <div className="px-4 pt-4 pb-28 flex flex-col gap-3">
+            {/* Auto-fill via JSON */}
+            <CollapsibleSection title="Auto-fill via JSON" subtitle="Paste AI-generated data instantly">
+              <JsonAutoFill onApply={(patch) => setForm((f) => ({ ...f, ...patch }))} />
+            </CollapsibleSection>
+
             {/* Required fields */}
             <Input
               label="Course Name"

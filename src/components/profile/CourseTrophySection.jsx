@@ -10,12 +10,12 @@ export default function CourseTrophySection({ trophies = [], uid, onChange }) {
     return a.courseName.localeCompare(b.courseName);
   });
 
-  const handleSave = (updated) => {
+  const handleSave = async (updated) => {
     const exists = trophies.find((t) => t.id === updated.id);
     const next = exists
       ? trophies.map((t) => (t.id === updated.id ? updated : t))
       : [...trophies, updated];
-    onChange(next);
+    await onChange(next);
     setModal(null);
   };
 

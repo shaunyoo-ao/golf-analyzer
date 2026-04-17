@@ -80,7 +80,7 @@ export default function TrophyEntryModal({ trophy, uid, onSave, onDelete, onClos
       if (imageBlob) {
         imageUrl = await uploadTrophyImage(uid, id, imageBlob);
       }
-      onSave({ ...form, id, bestScore: Number(form.bestScore), imageUrl });
+      await onSave({ ...form, id, bestScore: Number(form.bestScore), imageUrl });
       setSaveStep(2);
     } catch {
       setSaveStep(0);
@@ -88,7 +88,7 @@ export default function TrophyEntryModal({ trophy, uid, onSave, onDelete, onClos
   };
 
   const handleDelete = async () => {
-    setSaving(true);
+    setSaveStep(1);
     if (trophy?.imageUrl) await deleteTrophyImage(uid, trophy.id);
     onDelete(trophy.id);
   };

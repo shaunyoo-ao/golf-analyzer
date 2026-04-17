@@ -109,7 +109,7 @@ export default function TrophyEntryModal({ trophy, uid, onSave, onDelete, onClos
         </div>
 
         {/* Form */}
-        <div className="overflow-y-auto px-4 pb-6 flex flex-col gap-3">
+        <div className="overflow-y-auto px-4 pb-24 flex flex-col gap-3">
           {/* Image */}
           <div className="flex items-center gap-3">
             <div

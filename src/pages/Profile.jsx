@@ -78,7 +78,7 @@ export default function Profile() {
       </Card>
 
       {/* Personal Info */}
-      <CollapsibleSection title="Personal Info" subtitle="Age, height, weight, language" defaultOpen>
+      <CollapsibleSection title="Personal Info" subtitle="Age, height, weight, language">
         <PersonalInfoForm
           profile={form}
           onChange={setForm}

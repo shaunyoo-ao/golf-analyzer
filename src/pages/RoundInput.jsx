@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useRounds, useRound } from '../hooks/useRounds';
-import { useProfile } from '../hooks/useProfile';
+import { useRound } from '../hooks/useRounds';
+import { useData } from '../context/DataContext';
 import { useAIResponse } from '../hooks/useAIResponses';
 import { todayISO, formatDate } from '../utils/dateHelpers';
 import { emptySwingForm } from '../components/round/SwingFormPanel';
@@ -73,8 +73,7 @@ function SaveProgress({ step }) {
 export default function RoundInput() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { saveRound, removeRound, rounds } = useRounds();
-  const { profile } = useProfile();
+  const { saveRound, removeRound, rounds, profile } = useData();
   const { round: existingRound, loading } = useRound(id);
   const { saveResponse, aiResponse } = useAIResponse(id);
 
@@ -289,7 +288,7 @@ export default function RoundInput() {
       </CollapsibleSection>
 
       {/* ── Section 2: Hole-by-hole ── */}
-      <CollapsibleSection title="Hole-by-Hole" subtitle="Optional · Score & Putts per hole">
+      <CollapsibleSection title="Hole-by-Hole" subtitle="Optional · Score & Putts per hole" defaultOpen>
         <div className="flex flex-col gap-4">
           <Input
             label="Average GIR (%)"

@@ -24,8 +24,10 @@ export async function uploadTrophyImage(uid, trophyId, blob) {
       return url;
     })
     .catch((err) => {
-      console.error('[Storage] error code:', err?.code, 'message:', err?.message, err);
-      throw new Error(`Upload failed (${err?.code ?? 'unknown'}): ${err?.message ?? err}`);
+      const code = err?.code ?? 'unknown';
+      const msg = err?.message ?? String(err);
+      console.error('[Storage] error:', code, msg);
+      throw new Error(`[${code}] ${msg}`);
     });
 
   const timeout = new Promise((_, reject) =>

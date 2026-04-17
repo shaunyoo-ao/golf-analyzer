@@ -54,7 +54,7 @@ export default function Profile() {
       {/* Install app banner */}
       {canInstall && (
         <Button fullWidth variant="secondary" onClick={installApp}>
-          📲 홈 화면에 앱 추가
+          📲 Install to App Launcher
         </Button>
       )}
 

@@ -42,6 +42,7 @@ export default function TrophyEntryModal({ trophy, uid, onSave, onDelete, onClos
   const [previewUrl, setPreviewUrl] = useState(trophy?.imageUrl || null);
   const [imageBlob, setImageBlob] = useState(null);
   const [saveStep, setSaveStep] = useState(0);
+  const [saveError, setSaveError] = useState(null);
   const [errors, setErrors] = useState({});
 
   const SAVE_STEPS = [
@@ -73,6 +74,7 @@ export default function TrophyEntryModal({ trophy, uid, onSave, onDelete, onClos
 
   const handleSave = async () => {
     if (!validate()) return;
+    setSaveError(null);
     setSaveStep(1);
     try {
       let imageUrl = form.imageUrl;
@@ -82,7 +84,8 @@ export default function TrophyEntryModal({ trophy, uid, onSave, onDelete, onClos
       }
       await onSave({ ...form, id, bestScore: Number(form.bestScore), imageUrl });
       setSaveStep(2);
-    } catch {
+    } catch (err) {
+      setSaveError(err?.message || 'Save failed. Please try again.');
       setSaveStep(0);
     }
   };
@@ -175,6 +178,7 @@ export default function TrophyEntryModal({ trophy, uid, onSave, onDelete, onClos
             />
           </div>
 
+          {saveError && <p className="text-sm text-red-500 text-center">{saveError}</p>}
           {saveStep > 0
             ? <SaveProgressBar steps={SAVE_STEPS} step={saveStep} />
             : <Button fullWidth size="lg" onClick={handleSave}>Save</Button>

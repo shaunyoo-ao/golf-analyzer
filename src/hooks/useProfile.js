@@ -8,53 +8,40 @@ export function useProfile() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
+  const fetchProfile = useCallback(async () => {
     if (!user) return;
     setLoading(true);
+    const defaults = {
+      name: user.displayName || '',
+      email: user.email || '',
+      photoURL: user.photoURL || '',
+      age: '',
+      gender: '',
+      heightCm: '',
+      weightKg: '',
+      handedness: '',
+      aiFeedbackLanguage: 'ko',
+      handicapIndex: null,
+      clubDistances: {},
+      favoriteCourses: [],
+      courseTrophies: [],
+      accountCreatedAt: new Date().toISOString(),
+    };
     getProfile(user.uid)
       .then((data) => {
-        setProfile(
-          data || {
-            name: user.displayName || '',
-            email: user.email || '',
-            photoURL: user.photoURL || '',
-            age: '',
-            gender: '',
-            heightCm: '',
-            weightKg: '',
-            handedness: '',
-            aiFeedbackLanguage: 'ko',
-            handicapIndex: null,
-            clubDistances: {},
-            favoriteCourses: [],
-            courseTrophies: [],
-            accountCreatedAt: new Date().toISOString(),
-          }
-        );
+        setProfile(data || defaults);
         setLoading(false);
       })
       .catch((err) => {
         setError(err.message);
-        // Fall back to defaults so the page renders instead of infinite spinner
-        setProfile({
-          name: user.displayName || '',
-          email: user.email || '',
-          photoURL: user.photoURL || '',
-          age: '',
-          gender: '',
-          heightCm: '',
-          weightKg: '',
-          handedness: '',
-          aiFeedbackLanguage: 'ko',
-          handicapIndex: null,
-          clubDistances: {},
-          favoriteCourses: [],
-          courseTrophies: [],
-          accountCreatedAt: new Date().toISOString(),
-        });
+        setProfile(defaults);
         setLoading(false);
       });
   }, [user]);
+
+  useEffect(() => {
+    fetchProfile();
+  }, [fetchProfile]);
 
   const updateProfile = useCallback(
     async (data) => {
@@ -65,5 +52,5 @@ export function useProfile() {
     [user]
   );
 
-  return { profile, loading, error, updateProfile };
+  return { profile, loading, error, updateProfile, refetch: fetchProfile };
 }

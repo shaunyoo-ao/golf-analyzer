@@ -1,9 +1,11 @@
 import { Outlet } from 'react-router-dom';
 import TopBar from './TopBar';
 import BottomNav from './BottomNav';
+import { DataProvider } from '../../context/DataContext';
 
 export default function AppShell() {
   return (
+    <DataProvider>
     <div className="min-h-screen bg-golf-50 max-w-[412px] mx-auto relative">
       {/* Layered paper-cut background */}
       <div className="fixed inset-0 max-w-[412px] mx-auto pointer-events-none z-0">
@@ -29,5 +31,6 @@ export default function AppShell() {
 
       <BottomNav />
     </div>
+    </DataProvider>
   );
 }

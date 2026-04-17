@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useProfile } from '../hooks/useProfile';
+import { useData } from '../context/DataContext';
 import { useAuth } from '../context/AuthContext';
 import { useInstallPrompt } from '../hooks/useInstallPrompt';
 import { signOutUser } from '../firebase/auth';
@@ -14,7 +14,7 @@ import Card from '../components/ui/Card';
 
 export default function Profile() {
   const { user } = useAuth();
-  const { profile, loading, updateProfile } = useProfile();
+  const { profile, profileLoading, hasLoaded, updateProfile } = useData();
   const { canInstall, installApp } = useInstallPrompt();
   const [form, setForm] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -24,7 +24,7 @@ export default function Profile() {
     if (profile) setForm(profile);
   }, [profile]);
 
-  if (loading || !form) return <LoadingSpinner />;
+  if (!hasLoaded && (profileLoading || !form)) return <LoadingSpinner />;
 
   const handleSave = async () => {
     setSaving(true);

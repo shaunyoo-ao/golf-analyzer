@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useRounds } from '../hooks/useRounds';
+import { useData } from '../context/DataContext';
 import { formatDate } from '../utils/dateHelpers';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
@@ -23,12 +23,12 @@ function StatCard({ label, value }) {
 }
 
 export default function History() {
-  const { rounds, loading, saveRound } = useRounds();
+  const { rounds, roundsLoading, hasLoaded, saveRound } = useData();
   const navigate = useNavigate();
   const [showManual, setShowManual] = useState(false);
   const [feedbackRoundId, setFeedbackRoundId] = useState(null);
 
-  if (loading) return <LoadingSpinner />;
+  if (!hasLoaded && roundsLoading) return <LoadingSpinner />;
 
   const scores = rounds.map((r) => Number(r.totalScore)).filter(Boolean);
   const drives = rounds.map((r) => r.longestDriveMeter ? Number(r.longestDriveMeter) : null);

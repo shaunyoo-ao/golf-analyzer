@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useProfile } from '../hooks/useProfile';
-import { useRounds } from '../hooks/useRounds';
+import { useData } from '../context/DataContext';
 import { golfExperienceMonths, formatDate } from '../utils/dateHelpers';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
@@ -19,12 +18,11 @@ function StatCard({ label, value, sub }) {
 }
 
 export default function Dashboard() {
-  const { profile, loading: profileLoading } = useProfile();
-  const { rounds, loading: roundsLoading } = useRounds();
+  const { profile, profileLoading, rounds, roundsLoading, hasLoaded } = useData();
   const navigate = useNavigate();
   const [feedbackRoundId, setFeedbackRoundId] = useState(null);
 
-  if (profileLoading || roundsLoading) return <LoadingSpinner />;
+  if (!hasLoaded && (profileLoading || roundsLoading)) return <LoadingSpinner />;
 
   const handicapIndex = profile?.handicapIndex;
   const expMonths = golfExperienceMonths(profile?.golfStartDate);

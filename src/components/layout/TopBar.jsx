@@ -1,4 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useData } from '../../context/DataContext';
 
 const TITLES = {
   '/': 'Dashboard',
@@ -6,6 +7,8 @@ const TITLES = {
   '/profile': 'Profile',
   '/history': 'History',
 };
+
+const REFRESH_PATHS = new Set(['/', '/history', '/profile']);
 
 function getTitle(pathname) {
   if (pathname.startsWith('/round/') && pathname.endsWith('/ai')) return 'AI Feedback';
@@ -16,10 +19,12 @@ function getTitle(pathname) {
 export default function TopBar() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { refresh, refreshing } = useData();
   const title = getTitle(location.pathname);
   const canGoBack =
     location.pathname !== '/' &&
     !Object.keys(TITLES).slice(1).includes(location.pathname);
+  const showRefresh = REFRESH_PATHS.has(location.pathname);
 
   return (
     <header className="fixed top-0 left-0 right-0 z-40 bg-golf-800 safe-top">
@@ -38,6 +43,28 @@ export default function TopBar() {
           <span className="text-golf-400 text-xl mr-2">⛳</span>
         )}
         <h1 className="text-white font-bold text-lg flex-1">{title}</h1>
+        {showRefresh && (
+          <button
+            onClick={refresh}
+            disabled={refreshing}
+            className="p-1 text-golf-300 hover:text-white min-h-[44px] min-w-[44px] flex items-center justify-center disabled:opacity-50"
+            aria-label="Refresh"
+          >
+            <svg
+              className={`w-5 h-5 transition-transform ${refreshing ? 'animate-spin' : ''}`}
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M23 4v6h-6" />
+              <path d="M1 20v-6h6" />
+              <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15" />
+            </svg>
+          </button>
+        )}
       </div>
     </header>
   );

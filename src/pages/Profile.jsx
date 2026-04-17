@@ -20,6 +20,7 @@ export default function Profile() {
   const [form, setForm] = useState(null);
   const [saveStep, setSaveStep] = useState(0);
   const [saveError, setSaveError] = useState(null);
+  const [confirmLogout, setConfirmLogout] = useState(false);
 
   const SAVE_STEPS = [
     { label: 'Saving profile...', pct: 50 },
@@ -44,8 +45,6 @@ export default function Profile() {
       setSaveStep(0);
     }
   };
-
-  const [confirmLogout, setConfirmLogout] = useState(false);
 
   const handleSignOut = async () => {
     await signOutUser();

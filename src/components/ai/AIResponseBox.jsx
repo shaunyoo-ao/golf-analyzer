@@ -1,12 +1,18 @@
 import { useState } from 'react';
 import Button from '../ui/Button';
+import SaveProgressBar from '../ui/SaveProgressBar';
 import FeedbackModal from './FeedbackModal';
 
 export default function AIResponseBox({ onSave, existingResponse }) {
   const [raw, setRaw] = useState('');
   const [error, setError] = useState('');
-  const [saving, setSaving] = useState(false);
+  const [saveStep, setSaveStep] = useState(0);
   const [modalOpen, setModalOpen] = useState(false);
+
+  const SAVE_STEPS = [
+    { label: 'Saving response...', pct: 50 },
+    { label: 'Saved!', pct: 100 },
+  ];
   const [savedParsed, setSavedParsed] = useState(null);
 
   const displayParsed = savedParsed || existingResponse?.parsed;
@@ -20,15 +26,15 @@ export default function AIResponseBox({ onSave, existingResponse }) {
       setError('Invalid JSON. Paste the raw AI response without extra text.');
       return;
     }
-    setSaving(true);
+    setSaveStep(1);
     try {
       await onSave({ rawResponse: raw, parsed });
       setSavedParsed(parsed);
-      setModalOpen(true);
+      setSaveStep(2);
+      setTimeout(() => { setSaveStep(0); setModalOpen(true); }, 800);
     } catch (err) {
       setError(err?.message || 'Save failed. Please try again.');
-    } finally {
-      setSaving(false);
+      setSaveStep(0);
     }
   };
 
@@ -45,9 +51,10 @@ export default function AIResponseBox({ onSave, existingResponse }) {
 
       {error && <p className="text-sm text-red-500">{error}</p>}
 
-      <Button fullWidth onClick={handleSaveAndVisualize} disabled={!raw.trim() || saving}>
-        {saving ? 'Saving...' : 'Save & Visualize'}
-      </Button>
+      {saveStep > 0
+        ? <SaveProgressBar steps={SAVE_STEPS} step={saveStep} />
+        : <Button fullWidth onClick={handleSaveAndVisualize} disabled={!raw.trim()}>Save & Visualize</Button>
+      }
 
       {displayParsed && (
         <Button fullWidth variant="secondary" onClick={() => setModalOpen(true)}>

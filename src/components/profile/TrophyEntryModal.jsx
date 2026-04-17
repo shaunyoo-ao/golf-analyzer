@@ -3,6 +3,7 @@ import { COUNTRIES } from '../../utils/constants';
 import { uploadTrophyImage, deleteTrophyImage } from '../../firebase/storage';
 import { useAuth } from '../../context/AuthContext';
 import Button from '../ui/Button';
+import SaveProgressBar from '../ui/SaveProgressBar';
 import Input from '../ui/Input';
 import Select from '../ui/Select';
 
@@ -40,8 +41,13 @@ export default function TrophyEntryModal({ trophy, uid, onSave, onDelete, onClos
   });
   const [previewUrl, setPreviewUrl] = useState(trophy?.imageUrl || null);
   const [imageBlob, setImageBlob] = useState(null);
-  const [saving, setSaving] = useState(false);
+  const [saveStep, setSaveStep] = useState(0);
   const [errors, setErrors] = useState({});
+
+  const SAVE_STEPS = [
+    { label: 'Saving trophy...', pct: 50 },
+    { label: 'Saved!', pct: 100 },
+  ];
   const [confirmDelete, setConfirmDelete] = useState(false);
   const fileRef = useRef();
 
@@ -67,7 +73,7 @@ export default function TrophyEntryModal({ trophy, uid, onSave, onDelete, onClos
 
   const handleSave = async () => {
     if (!validate()) return;
-    setSaving(true);
+    setSaveStep(1);
     try {
       let imageUrl = form.imageUrl;
       const id = trophy?.id || crypto.randomUUID();
@@ -75,8 +81,9 @@ export default function TrophyEntryModal({ trophy, uid, onSave, onDelete, onClos
         imageUrl = await uploadTrophyImage(uid, id, imageBlob);
       }
       onSave({ ...form, id, bestScore: Number(form.bestScore), imageUrl });
-    } finally {
-      setSaving(false);
+      setSaveStep(2);
+    } catch {
+      setSaveStep(0);
     }
   };
 
@@ -168,9 +175,10 @@ export default function TrophyEntryModal({ trophy, uid, onSave, onDelete, onClos
             />
           </div>
 
-          <Button fullWidth size="lg" onClick={handleSave} disabled={saving}>
-            {saving ? 'Saving…' : 'Save'}
-          </Button>
+          {saveStep > 0
+            ? <SaveProgressBar steps={SAVE_STEPS} step={saveStep} />
+            : <Button fullWidth size="lg" onClick={handleSave}>Save</Button>
+          }
 
           {isEdit && (
             confirmDelete ? (
@@ -178,7 +186,7 @@ export default function TrophyEntryModal({ trophy, uid, onSave, onDelete, onClos
                 <Button fullWidth variant="ghost" onClick={() => setConfirmDelete(false)}>
                   Cancel
                 </Button>
-                <Button fullWidth onClick={handleDelete} className="bg-red-500 hover:bg-red-600 text-white" disabled={saving}>
+                <Button fullWidth onClick={handleDelete} className="bg-red-500 hover:bg-red-600 text-white" disabled={saveStep > 0}>
                   Yes, Delete
                 </Button>
               </div>

@@ -20,8 +20,20 @@ export async function getProfile(uid) {
   return snap.exists() ? snap.data() : null;
 }
 
+function stripUndefined(obj) {
+  if (Array.isArray(obj)) return obj.map(stripUndefined);
+  if (obj !== null && typeof obj === 'object') {
+    return Object.fromEntries(
+      Object.entries(obj)
+        .filter(([, v]) => v !== undefined)
+        .map(([k, v]) => [k, stripUndefined(v)])
+    );
+  }
+  return obj;
+}
+
 export async function saveProfile(uid, data) {
-  await setDoc(doc(db, 'users', uid, 'profile', 'data'), data, { merge: true });
+  await setDoc(doc(db, 'users', uid, 'profile', 'data'), stripUndefined(data), { merge: true });
 }
 
 export async function updateHandicapIndex(uid, handicapIndex) {

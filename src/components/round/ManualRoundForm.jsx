@@ -8,6 +8,7 @@ import { todayISO } from '../../utils/dateHelpers';
 import Input from '../ui/Input';
 import Select from '../ui/Select';
 import Button from '../ui/Button';
+import SaveProgressBar from '../ui/SaveProgressBar';
 import HoleScoreGrid from './HoleScoreGrid';
 import CollapsibleSection from '../ui/CollapsibleSection';
 
@@ -35,7 +36,12 @@ function emptyForm() {
 export default function ManualRoundForm({ onSave, onClose }) {
   const [form, setForm] = useState(emptyForm());
   const [errors, setErrors] = useState({});
-  const [saving, setSaving] = useState(false);
+  const [saveStep, setSaveStep] = useState(0);
+
+  const SAVE_STEPS = [
+    { label: 'Saving round...', pct: 50 },
+    { label: 'Saved!', pct: 100 },
+  ];
 
   const set = (key, val) => setForm((f) => ({ ...f, [key]: val }));
 
@@ -51,9 +57,13 @@ export default function ManualRoundForm({ onSave, onClose }) {
 
   const handleSave = async () => {
     if (!validate()) return;
-    setSaving(true);
-    await onSave(form);
-    setSaving(false);
+    setSaveStep(1);
+    try {
+      await onSave(form);
+      setSaveStep(2);
+    } catch {
+      setSaveStep(0);
+    }
   };
 
   return (
@@ -193,9 +203,10 @@ export default function ManualRoundForm({ onSave, onClose }) {
             </CollapsibleSection>
 
             {/* Save */}
-            <Button fullWidth size="lg" onClick={handleSave} disabled={saving}>
-              {saving ? 'Saving…' : 'Save Previous Round'}
-            </Button>
+            {saveStep > 0
+              ? <SaveProgressBar steps={SAVE_STEPS} step={saveStep} />
+              : <Button fullWidth size="lg" onClick={handleSave}>Save Previous Round</Button>
+            }
           </div>
         </div>
       </div>

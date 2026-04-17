@@ -11,14 +11,20 @@ import CollapsibleSection from '../components/ui/CollapsibleSection';
 import Button from '../components/ui/Button';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import Card from '../components/ui/Card';
+import SaveProgressBar from '../components/ui/SaveProgressBar';
 
 export default function Profile() {
   const { user } = useAuth();
   const { profile, profileLoading, hasLoaded, updateProfile } = useData();
   const { canInstall, installApp } = useInstallPrompt();
   const [form, setForm] = useState(null);
-  const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
+  const [saveStep, setSaveStep] = useState(0);
+  const [saveError, setSaveError] = useState(null);
+
+  const SAVE_STEPS = [
+    { label: 'Saving profile...', pct: 50 },
+    { label: 'Saved!', pct: 100 },
+  ];
 
   useEffect(() => {
     if (profile) setForm(profile);
@@ -27,11 +33,16 @@ export default function Profile() {
   if (!form) return <LoadingSpinner />;
 
   const handleSave = async () => {
-    setSaving(true);
-    await updateProfile(form);
-    setSaving(false);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+    setSaveError(null);
+    setSaveStep(1);
+    try {
+      await updateProfile(form);
+      setSaveStep(2);
+      setTimeout(() => setSaveStep(0), 2000);
+    } catch (err) {
+      setSaveError(err?.message || 'Save failed. Please try again.');
+      setSaveStep(0);
+    }
   };
 
   const handleSignOut = async () => {
@@ -100,9 +111,11 @@ export default function Profile() {
       </CollapsibleSection>
 
       {/* Save */}
-      <Button fullWidth size="lg" onClick={handleSave} disabled={saving}>
-        {saving ? 'Saving…' : saved ? '✓ Saved' : 'Save Profile'}
-      </Button>
+      {saveError && <p className="text-sm text-red-500 text-center">{saveError}</p>}
+      {saveStep > 0
+        ? <SaveProgressBar steps={SAVE_STEPS} step={saveStep} />
+        : <Button fullWidth size="lg" onClick={handleSave}>Save Profile</Button>
+      }
 
       {/* Sign out */}
       <Button fullWidth variant="ghost" onClick={handleSignOut}>

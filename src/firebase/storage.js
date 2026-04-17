@@ -8,12 +8,33 @@ function getStorageInstance() {
 }
 
 export async function uploadTrophyImage(uid, trophyId, blob) {
-  const storageRef = ref(getStorageInstance(), `users/${uid}/trophies/${trophyId}.jpg`);
+  const storage = getStorageInstance();
+  console.log('[Storage] bucket:', storage.app.options.storageBucket);
+  console.log('[Storage] uid:', uid, 'path:', `users/${uid}/trophies/${trophyId}.jpg`);
+
+  const storageRef = ref(storage, `users/${uid}/trophies/${trophyId}.jpg`);
+
   const uploadPromise = uploadBytes(storageRef, blob, { contentType: 'image/jpeg' })
-    .then(() => getDownloadURL(storageRef));
+    .then((snapshot) => {
+      console.log('[Storage] uploadBytes OK, fetching download URL...');
+      return getDownloadURL(snapshot.ref);
+    })
+    .then((url) => {
+      console.log('[Storage] download URL OK');
+      return url;
+    })
+    .catch((err) => {
+      console.error('[Storage] error code:', err?.code, 'message:', err?.message, err);
+      throw new Error(`Upload failed (${err?.code ?? 'unknown'}): ${err?.message ?? err}`);
+    });
+
   const timeout = new Promise((_, reject) =>
-    setTimeout(() => reject(new Error('Upload timed out. Check Firebase Storage is enabled and security rules allow writes.')), 30000)
+    setTimeout(() => {
+      console.error('[Storage] timed out after 30s — check Storage rules and bucket name');
+      reject(new Error('Upload timed out (30s). Open browser console for details.'));
+    }, 30000)
   );
+
   return Promise.race([uploadPromise, timeout]);
 }
 

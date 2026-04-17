@@ -59,8 +59,8 @@ function parseJsonIntoForm(jsonStr) {
   if (d.country) patch.country = d.country;
   if (d.tee_box != null) patch.teeBox = String(d.tee_box);
   if (d.total_score != null && d.total_score !== '') patch.totalScore = String(d.total_score);
-  if (d.course_rating != null && typeof d.course_rating === 'number') patch.courseRating = String(d.course_rating);
-  if (d.slope_rating != null && typeof d.slope_rating === 'number') patch.slopeRating = String(d.slope_rating);
+  if (d.course_rating != null && d.course_rating !== '' && !isNaN(Number(d.course_rating))) patch.courseRating = String(d.course_rating);
+  if (d.slope_rating != null && d.slope_rating !== '' && !isNaN(Number(d.slope_rating))) patch.slopeRating = String(d.slope_rating);
   if (d.longest_drive_m != null) patch.longestDriveMeter = String(d.longest_drive_m);
   // lost_balls: only set if explicitly provided as a number; null → leave empty
   if (typeof d.lost_balls === 'number') patch.lostBalls = String(d.lost_balls);

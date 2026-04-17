@@ -24,7 +24,7 @@ export default function Profile() {
     if (profile) setForm(profile);
   }, [profile]);
 
-  if (!hasLoaded && (profileLoading || !form)) return <LoadingSpinner />;
+  if (!form) return <LoadingSpinner />;
 
   const handleSave = async () => {
     setSaving(true);

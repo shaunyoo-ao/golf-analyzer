@@ -28,34 +28,46 @@ const TEE_OPTIONS = [
 ];
 
 const JSON_TEMPLATE = JSON.stringify({
-  date: "",
+  date: "YYYY.MM.DD also supported",
   course_name: "",
   country: "",
   tee_box: null,
   total_score: "",
-  course_rating: null,
-  slope_rating: null,
+  course_rating: "Search course/slope rating for this tee_box; if null, use White",
+  slope_rating: "Search course/slope rating for this tee_box; if null, use White",
   longest_drive_m: null,
-  lost_balls: "",
+  lost_balls: null,
   avg_gir_pct: "",
   holes: Object.fromEntries(
     Array.from({ length: 18 }, (_, i) => [String(i + 1), { putts: "", score: "" }])
   ),
 }, null, 2);
 
+function normalizeDate(raw) {
+  // Support YYYY.MM.DD → YYYY-MM-DD
+  if (typeof raw === 'string' && /^\d{4}\.\d{2}\.\d{2}$/.test(raw.trim())) {
+    return raw.trim().replace(/\./g, '-');
+  }
+  return raw;
+}
+
 function parseJsonIntoForm(jsonStr) {
   const d = JSON.parse(jsonStr);
   const patch = {};
-  if (d.date) patch.date = d.date;
+  if (d.date) patch.date = normalizeDate(d.date);
   if (d.course_name) patch.courseName = d.course_name;
   if (d.country) patch.country = d.country;
   if (d.tee_box != null) patch.teeBox = String(d.tee_box);
   if (d.total_score != null && d.total_score !== '') patch.totalScore = String(d.total_score);
-  if (d.course_rating != null) patch.courseRating = String(d.course_rating);
-  if (d.slope_rating != null) patch.slopeRating = String(d.slope_rating);
+  if (d.course_rating != null && typeof d.course_rating === 'number') patch.courseRating = String(d.course_rating);
+  if (d.slope_rating != null && typeof d.slope_rating === 'number') patch.slopeRating = String(d.slope_rating);
   if (d.longest_drive_m != null) patch.longestDriveMeter = String(d.longest_drive_m);
-  if (d.lost_balls != null && d.lost_balls !== '') patch.lostBalls = String(d.lost_balls);
-  if (d.avg_gir_pct != null && d.avg_gir_pct !== '') patch.avgGir = String(d.avg_gir_pct);
+  // lost_balls: only set if explicitly provided as a number; null → leave empty
+  if (typeof d.lost_balls === 'number') patch.lostBalls = String(d.lost_balls);
+  if (d.avg_gir_pct != null && d.avg_gir_pct !== '') {
+    // Strip trailing % if present (e.g. "16.7%" → "16.7")
+    patch.avgGir = String(d.avg_gir_pct).replace(/%$/, '').trim();
+  }
   if (d.holes && typeof d.holes === 'object') {
     patch.holes = Object.fromEntries(
       Object.entries(d.holes).map(([k, v]) => [

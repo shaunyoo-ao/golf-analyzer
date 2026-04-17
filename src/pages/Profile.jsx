@@ -45,6 +45,8 @@ export default function Profile() {
     }
   };
 
+  const [confirmLogout, setConfirmLogout] = useState(false);
+
   const handleSignOut = async () => {
     await signOutUser();
   };
@@ -126,9 +128,20 @@ export default function Profile() {
       </CollapsibleSection>
 
       {/* Sign out */}
-      <Button fullWidth variant="ghost" onClick={handleSignOut}>
-        Log Out
-      </Button>
+      {confirmLogout ? (
+        <div className="flex gap-2">
+          <Button fullWidth variant="ghost" onClick={() => setConfirmLogout(false)}>
+            Cancel
+          </Button>
+          <Button fullWidth onClick={handleSignOut} className="bg-red-500 hover:bg-red-600 text-white">
+            Yes, Log Out
+          </Button>
+        </div>
+      ) : (
+        <Button fullWidth variant="ghost" onClick={() => setConfirmLogout(true)}>
+          Log Out
+        </Button>
+      )}
 
       {/* Copyright */}
       <p className="text-center text-[11px] text-golf-400 leading-relaxed pt-1 pb-4">

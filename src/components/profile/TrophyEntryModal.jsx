@@ -1,7 +1,5 @@
 import { useState, useRef } from 'react';
 import { COUNTRIES } from '../../utils/constants';
-import { uploadTrophyImage, deleteTrophyImage } from '../../firebase/storage';
-import { useAuth } from '../../context/AuthContext';
 import Button from '../ui/Button';
 import SaveProgressBar from '../ui/SaveProgressBar';
 import Input from '../ui/Input';
@@ -9,7 +7,7 @@ import Select from '../ui/Select';
 
 const COUNTRY_OPTIONS = [{ value: '', label: 'Select country' }, ...COUNTRIES.map((c) => ({ value: c, label: c }))];
 
-function cropToSquareBlob(file) {
+function cropToSquareDataUrl(file) {
   return new Promise((resolve, reject) => {
     const img = new Image();
     const url = URL.createObjectURL(file);
@@ -19,11 +17,11 @@ function cropToSquareBlob(file) {
       const sx = (img.width - size) / 2;
       const sy = (img.height - size) / 2;
       const canvas = document.createElement('canvas');
-      canvas.width = 400;
-      canvas.height = 400;
+      canvas.width = 200;
+      canvas.height = 200;
       const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, sx, sy, size, size, 0, 0, 400, 400);
-      canvas.toBlob((blob) => resolve(blob), 'image/jpeg', 0.8);
+      ctx.drawImage(img, sx, sy, size, size, 0, 0, 200, 200);
+      resolve(canvas.toDataURL('image/jpeg', 0.65));
     };
     img.onerror = reject;
     img.src = url;
@@ -40,7 +38,7 @@ export default function TrophyEntryModal({ trophy, uid, onSave, onDelete, onClos
     imageUrl: trophy?.imageUrl || null,
   });
   const [previewUrl, setPreviewUrl] = useState(trophy?.imageUrl || null);
-  const [imageBlob, setImageBlob] = useState(null);
+  const [imageDataUrl, setImageDataUrl] = useState(null);
   const [saveStep, setSaveStep] = useState(0);
   const [saveError, setSaveError] = useState(null);
   const [errors, setErrors] = useState({});
@@ -57,9 +55,9 @@ export default function TrophyEntryModal({ trophy, uid, onSave, onDelete, onClos
   const handleImageSelect = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const blob = await cropToSquareBlob(file);
-    setImageBlob(blob);
-    setPreviewUrl(URL.createObjectURL(blob));
+    const dataUrl = await cropToSquareDataUrl(file);
+    setImageDataUrl(dataUrl);
+    setPreviewUrl(dataUrl);
   };
 
   const validate = () => {
@@ -77,11 +75,8 @@ export default function TrophyEntryModal({ trophy, uid, onSave, onDelete, onClos
     setSaveError(null);
     setSaveStep(1);
     try {
-      let imageUrl = form.imageUrl;
+      const imageUrl = imageDataUrl ?? form.imageUrl;
       const id = trophy?.id || crypto.randomUUID();
-      if (imageBlob) {
-        imageUrl = await uploadTrophyImage(uid, id, imageBlob);
-      }
       await onSave({ ...form, id, bestScore: Number(form.bestScore), imageUrl });
       setSaveStep(2);
     } catch (err) {
@@ -92,7 +87,6 @@ export default function TrophyEntryModal({ trophy, uid, onSave, onDelete, onClos
 
   const handleDelete = async () => {
     setSaveStep(1);
-    if (trophy?.imageUrl) await deleteTrophyImage(uid, trophy.id);
     onDelete(trophy.id);
   };
 

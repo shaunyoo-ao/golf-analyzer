@@ -98,7 +98,7 @@ export default function Dashboard() {
   const girVals = rounds.map((r) => r.avgGir ? Number(r.avgGir) : null).filter(Boolean);
   const puttsVals = rounds.map((r) => {
     const hv = Object.values(r.holes || {}).filter((h) => h?.putts);
-    return hv.length >= 9 ? hv.reduce((a, h) => a + Number(h.putts || 0), 0) : null;
+    return hv.length >= 9 ? hv.reduce((a, h) => a + Number(h.putts || 0), 0) / hv.length : null;
   }).filter((v) => v !== null);
 
   const mDrive = mean(driveVals);

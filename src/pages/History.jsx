@@ -8,20 +8,6 @@ import LoadingSpinner from '../components/ui/LoadingSpinner';
 import ManualRoundForm from '../components/round/ManualRoundForm';
 import FeedbackModal from '../components/ai/FeedbackModal';
 
-function avg(arr) {
-  const vals = arr.filter((v) => v != null && !isNaN(v));
-  return vals.length ? Math.round(vals.reduce((a, b) => a + b, 0) / vals.length) : null;
-}
-
-function StatCard({ label, value }) {
-  return (
-    <div className="flex-1 flex flex-col items-center bg-white rounded-2xl p-3 border border-golf-100">
-      <span className="text-lg font-black text-golf-800">{value ?? '—'}</span>
-      <span className="text-[10px] text-golf-500 text-center mt-0.5 leading-tight">{label}</span>
-    </div>
-  );
-}
-
 export default function History() {
   const { rounds, roundsLoading, hasLoaded, saveRound } = useData();
   const navigate = useNavigate();
@@ -30,10 +16,6 @@ export default function History() {
 
   if (!hasLoaded && roundsLoading) return <LoadingSpinner />;
 
-  const scores = rounds.map((r) => Number(r.totalScore)).filter(Boolean);
-  const drives = rounds.map((r) => r.longestDriveMeter ? Number(r.longestDriveMeter) : null);
-  const lostBalls = rounds.map((r) => r.lostBalls != null ? Number(r.lostBalls) : null);
-
   const handleManualSave = async (roundData) => {
     await saveRound(roundData);
     setShowManual(false);
@@ -41,14 +23,6 @@ export default function History() {
 
   return (
     <div className="flex flex-col gap-4">
-      {/* Stats */}
-      <div className="flex gap-2">
-        <StatCard label="Avg Score" value={avg(scores)} />
-        <StatCard label="Best Score" value={scores.length ? Math.min(...scores) : null} />
-        <StatCard label="Avg Drive (m)" value={avg(drives)} />
-        <StatCard label="Avg Lost" value={avg(lostBalls)} />
-      </div>
-
       {/* Header row */}
       <div className="flex items-center justify-between">
         <p className="text-xs font-bold text-golf-600 uppercase tracking-wide">

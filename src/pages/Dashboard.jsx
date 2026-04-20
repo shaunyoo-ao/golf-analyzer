@@ -1,4 +1,5 @@
 import { useData } from '../context/DataContext';
+import { golfExperienceMonths } from '../utils/dateHelpers';
 import Card from '../components/ui/Card';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 
@@ -18,8 +19,8 @@ function trend(values, higherIsBetter) {
 
 function StatCard({ label, value, trendVal }) {
   return (
-    <div className="flex-1 flex flex-col items-center bg-golf-800 rounded-2xl p-3 border border-golf-700 min-w-0 gap-0.5">
-      <span className="text-xl font-black text-white">{value ?? '—'}</span>
+    <div className="flex flex-col items-center bg-golf-800 rounded-2xl p-3 border border-golf-700 min-w-0 gap-0.5">
+      <span className="text-xl font-black text-white leading-tight">{value ?? '—'}</span>
       <span className="text-[10px] text-golf-400 text-center leading-tight">{label}</span>
       {trendVal != null && (
         <span className={`text-xs leading-none ${trendVal ? 'text-green-400' : 'text-red-400'}`}>
@@ -86,6 +87,7 @@ export default function Dashboard() {
   if (!hasLoaded && (profileLoading || roundsLoading)) return <LoadingSpinner />;
 
   const handicapIndex = profile?.handicapIndex;
+  const expMonths = golfExperienceMonths(profile?.golfStartDate);
 
   const scores = rounds.map((r) => Number(r.totalScore)).filter(Boolean);
   const avgScore = scores.length ? Math.round(mean(scores)) : null;
@@ -93,9 +95,16 @@ export default function Dashboard() {
 
   const driveVals = rounds.map((r) => r.longestDriveMeter ? Number(r.longestDriveMeter) : null).filter(Boolean);
   const lostVals = rounds.map((r) => (r.lostBalls != null && r.lostBalls !== '') ? Number(r.lostBalls) : null).filter((v) => v !== null);
+  const girVals = rounds.map((r) => r.avgGir ? Number(r.avgGir) : null).filter(Boolean);
+  const puttsVals = rounds.map((r) => {
+    const hv = Object.values(r.holes || {}).filter((h) => h?.putts);
+    return hv.length >= 9 ? hv.reduce((a, h) => a + Number(h.putts || 0), 0) : null;
+  }).filter((v) => v !== null);
 
   const mDrive = mean(driveVals);
   const mLost = mean(lostVals);
+  const mGir = mean(girVals);
+  const mPutts = mean(puttsVals);
 
   const chartData = [...rounds]
     .filter((r) => r.totalScore && r.date)
@@ -118,17 +127,29 @@ export default function Dashboard() {
         )}
       </Card>
 
-      {/* Stats row */}
-      <div className="flex gap-2">
-        <StatCard label="Avg Score" value={avgScore} />
+      {/* Stats grid — 4×2 */}
+      <div className="grid grid-cols-4 gap-2">
+        <StatCard label="Rounds" value={rounds.length} />
+        <StatCard label="Avg. Score" value={avgScore} />
         <StatCard label="Best Score" value={bestScore} />
+        <StatCard label={`Exp.\n(months)`} value={expMonths} />
         <StatCard
-          label={`Avg Drive${mDrive != null ? '\n(m)' : ''}`}
+          label="Avg. Driver (m)"
           value={mDrive != null ? Math.round(mDrive) : null}
           trendVal={trend(driveVals, true)}
         />
         <StatCard
-          label="Avg Lost"
+          label="Avg. GIR %"
+          value={mGir != null ? `${Math.round(mGir)}%` : null}
+          trendVal={trend(girVals, true)}
+        />
+        <StatCard
+          label="Avg. Putts"
+          value={mPutts != null ? mPutts.toFixed(1) : null}
+          trendVal={trend(puttsVals, false)}
+        />
+        <StatCard
+          label="Avg. Lost"
           value={mLost != null ? mLost.toFixed(1) : null}
           trendVal={trend(lostVals, false)}
         />

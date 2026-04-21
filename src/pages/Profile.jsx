@@ -147,7 +147,7 @@ export default function Profile() {
       {/* Copyright */}
       <p className="text-center text-[11px] text-golf-400 leading-relaxed pt-1 pb-4">
         Copyright ⓒ 2026, shaun.yoo.ao All rights reserved.{'\n'}
-        <br />Version 1.0.3
+        <br />Version 1.0.4
       </p>
     </div>
   );

@@ -99,7 +99,8 @@ CRITICAL RULES:
 4. "highlighted_markers" should reference specific swing form markers from the data when available.
 5. "club_practice_plan" must be specific to the clubs showing directional issues.
 6. All Korean text must be natural, conversational, and actionable.
-7. 제공된 국가의 일반적인 골프 코스 난이도, 홀별 파 구성, 코스 레이아웃 특성을 참고하여 분석에 활용하라.`;
+7. 제공된 국가의 일반적인 골프 코스 난이도, 홀별 파 구성, 코스 레이아웃 특성을 참고하여 분석에 활용하라.
+8. "analyzed_by" must be filled with your AI model name, version, and type (e.g. "Gemini 2.5 Pro", "GPT-4o", "Claude Opus 4").`;
 
 export const SYSTEM_INSTRUCTION_EN = `Analyze the provided golf data. If previous round data exists in this chat session's history, synthesize the new data with the past records to provide comprehensive, cumulative feedback tracking the user's progress or recurring issues. Output MUST be a single JSON object. JSON keys MUST be in English. JSON values MUST be written in English.
 
@@ -110,7 +111,8 @@ CRITICAL RULES:
 4. "highlighted_markers" should reference specific swing form markers from the data when available.
 5. "club_practice_plan" must be specific to the clubs showing directional issues.
 6. All text must be natural, conversational, and actionable.
-7. Reference the typical course difficulty, hole par distribution, and layout characteristics of golf courses in the provided country when relevant to your analysis.`;
+7. Reference the typical course difficulty, hole par distribution, and layout characteristics of golf courses in the provided country when relevant to your analysis.
+8. "analyzed_by" must be filled with your AI model name, version, and type (e.g. "Gemini 2.5 Pro", "GPT-4o", "Claude Opus 4").`;
 
 export const EXPECTED_OUTPUT_FORMAT_KO = {
   overall_assessment: '<전반적인 라운드 평가 (문자열)>',
@@ -120,6 +122,7 @@ export const EXPECTED_OUTPUT_FORMAT_KO = {
   club_practice_plan: '<클럽별 연습 계획 (문자열 또는 "")>',
   next_round_checkpoints: ['<다음 라운드 체크포인트 1>'],
   highlighted_markers: [],
+  analyzed_by: '<AI 모델명, 버전, 종류 — 예: Gemini 2.5 Pro>',
 };
 
 export const EXPECTED_OUTPUT_FORMAT_EN = {
@@ -130,4 +133,5 @@ export const EXPECTED_OUTPUT_FORMAT_EN = {
   club_practice_plan: '<Club-specific practice plan (string or "")>',
   next_round_checkpoints: ['<Next round checkpoint 1>'],
   highlighted_markers: [],
+  analyzed_by: '<AI model name, version, type — e.g. Gemini 2.5 Pro>',
 };

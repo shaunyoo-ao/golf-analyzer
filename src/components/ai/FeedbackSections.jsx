@@ -34,6 +34,7 @@ export default function FeedbackSections({ parsed }) {
     club_practice_plan,
     next_round_checkpoints,
     highlighted_markers,
+    analyzed_by,
   } = parsed;
 
   return (
@@ -78,6 +79,12 @@ export default function FeedbackSections({ parsed }) {
         <Section title="Swing Markers">
           <BulletList items={highlighted_markers} />
         </Section>
+      )}
+
+      {analyzed_by && (
+        <p className="text-[10px] text-golf-400 text-right pt-1">
+          Analysis by {analyzed_by}
+        </p>
       )}
     </div>
   );

@@ -33,7 +33,6 @@ export default function FeedbackSections({ parsed }) {
     course_management,
     club_practice_plan,
     next_round_checkpoints,
-    highlighted_markers,
     analyzed_by,
   } = parsed;
 
@@ -72,12 +71,6 @@ export default function FeedbackSections({ parsed }) {
       {next_round_checkpoints?.length > 0 && (
         <Section title="Next Round Checkpoints">
           <BulletList items={next_round_checkpoints} />
-        </Section>
-      )}
-
-      {highlighted_markers?.length > 0 && (
-        <Section title="Swing Markers">
-          <BulletList items={highlighted_markers} />
         </Section>
       )}
 

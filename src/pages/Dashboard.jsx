@@ -86,7 +86,7 @@ const PERIOD_MONTHS = { '6m': 6, '12m': 12, '24m': 24 };
 
 export default function Dashboard() {
   const { profile, profileLoading, rounds, roundsLoading, hasLoaded } = useData();
-  const [period, setPeriod] = useState('12m');
+  const [period, setPeriod] = useState('6m');
 
   if (!hasLoaded && (profileLoading || roundsLoading)) return <LoadingSpinner />;
 

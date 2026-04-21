@@ -112,13 +112,21 @@ export default function Dashboard() {
   const expMonths = golfExperienceMonths(profile?.golfStartDate);
 
   const scores = rounds.map((r) => Number(r.totalScore)).filter(Boolean);
-  const avgScore = scores.length ? Math.round(mean(scores)) : null;
   const bestScore = scores.length ? Math.min(...scores) : null;
 
-  const driveVals = rounds.map((r) => r.longestDriveMeter ? Number(r.longestDriveMeter) : null).filter(Boolean);
-  const lostVals = rounds.map((r) => (r.lostBalls != null && r.lostBalls !== '') ? Number(r.lostBalls) : null).filter((v) => v !== null);
-  const girVals = rounds.map((r) => r.avgGir ? Number(r.avgGir) : null).filter(Boolean);
-  const puttsVals = rounds.map((r) => {
+  // Avg. stats computed from last 6 months only
+  const sixMoCutoff = new Date();
+  sixMoCutoff.setMonth(sixMoCutoff.getMonth() - 6);
+  const sixMoStr = sixMoCutoff.toISOString().slice(0, 10);
+  const recentRounds = rounds.filter((r) => r.date >= sixMoStr);
+
+  const recentScores = recentRounds.map((r) => Number(r.totalScore)).filter(Boolean);
+  const avgScore = recentScores.length ? Math.round(mean(recentScores)) : null;
+
+  const driveVals = recentRounds.map((r) => r.longestDriveMeter ? Number(r.longestDriveMeter) : null).filter(Boolean);
+  const lostVals = recentRounds.map((r) => (r.lostBalls != null && r.lostBalls !== '') ? Number(r.lostBalls) : null).filter((v) => v !== null);
+  const girVals = recentRounds.map((r) => r.avgGir ? Number(r.avgGir) : null).filter(Boolean);
+  const puttsVals = recentRounds.map((r) => {
     const hv = Object.values(r.holes || {}).filter((h) => h?.putts);
     return hv.length >= 9 ? hv.reduce((a, h) => a + Number(h.putts || 0), 0) / hv.length : null;
   }).filter((v) => v !== null);
@@ -155,10 +163,10 @@ export default function Dashboard() {
 
       {/* Stats grid — 4×2 */}
       <div className="grid grid-cols-4 gap-2">
-        <StatCard label="Rounds" value={rounds.length} />
-        <StatCard label="Avg. Score" value={avgScore} />
-        <StatCard label="Best Score" value={bestScore} />
         <StatCard label={`Exp.\n(months)`} value={expMonths} />
+        <StatCard label="Rounds" value={rounds.length} />
+        <StatCard label="Best Score" value={bestScore} />
+        <StatCard label="Avg. Score" value={avgScore} />
         <StatCard
           label="Avg. Driver (m)"
           value={mDrive != null ? Math.round(mDrive) : null}
@@ -183,6 +191,7 @@ export default function Dashboard() {
 
       {/* Score Trend chart */}
       <div>
+        <p className="text-[10px] text-golf-500 text-right mb-1">* Avg. values based on last 6 months</p>
         <p className="text-xs font-bold text-golf-400 uppercase tracking-widest mb-2">
           Cumulative Trends
         </p>

@@ -32,32 +32,48 @@ function StatCard({ label, value, trendVal }) {
   );
 }
 
-function ScoreTrendChart({ data, avgScore }) {
-  if (data.length < 2) return null;
+function ScoreTrendChart({ data, startDate, endDate }) {
   const PAD = { t: 10, r: 8, b: 22, l: 26 };
   const W = 320, H = 120;
   const cW = W - PAD.l - PAD.r;
   const cH = H - PAD.t - PAD.b;
 
+  const startMs = new Date(startDate).getTime();
+  const endMs = new Date(endDate).getTime();
+  const spanMs = endMs - startMs;
+
   const sc = data.map((d) => d.score);
   const lo = Math.floor(Math.min(...sc) / 5) * 5 - 5;
   const hi = Math.ceil(Math.max(...sc) / 5) * 5 + 5;
 
-  const xS = (i) => PAD.l + (i / (data.length - 1)) * cW;
+  // X position based on actual date within the full period window
+  const xS = (dateStr) => PAD.l + ((new Date(dateStr).getTime() - startMs) / spanMs) * cW;
   const yS = (v) => PAD.t + cH - ((v - lo) / (hi - lo)) * cH;
 
-  const pts = data.map((d, i) => `${xS(i)},${yS(d.score)}`).join(' ');
+  const avgScore = Math.round(data.reduce((a, d) => a + d.score, 0) / data.length);
   const avgY = yS(avgScore);
+
+  const pts = data.map((d) => `${xS(d.date)},${yS(d.score)}`).join(' ');
 
   const yTicks = [];
   for (let v = Math.ceil(lo / 10) * 10; v <= hi; v += 10) yTicks.push(v);
 
+  // Month tick marks spread evenly across the full period
+  const totalMonths = Math.round(spanMs / (30.44 * 24 * 3600 * 1000));
+  const step = totalMonths <= 6 ? 1 : totalMonths <= 12 ? 2 : 4;
   const xLabels = [];
-  const seen = new Set();
-  data.forEach((d, i) => {
-    const m = d.date?.slice(0, 7)?.replace('-', '.');
-    if (m && !seen.has(m)) { seen.add(m); xLabels.push({ x: xS(i), label: m }); }
-  });
+  const cur = new Date(startDate);
+  cur.setDate(1);
+  while (cur.getTime() <= endMs) {
+    const x = xS(cur.toISOString().slice(0, 10));
+    if (x >= PAD.l && x <= W - PAD.r) {
+      xLabels.push({
+        x,
+        label: `${cur.getFullYear()}.${String(cur.getMonth() + 1).padStart(2, '0')}`,
+      });
+    }
+    cur.setMonth(cur.getMonth() + step);
+  }
 
   return (
     <svg viewBox={`0 0 ${W} ${H}`} className="w-full">
@@ -69,10 +85,12 @@ function ScoreTrendChart({ data, avgScore }) {
       ))}
       <line x1={PAD.l} y1={avgY} x2={W - PAD.r} y2={avgY}
         stroke="#6db36d" strokeWidth={1.5} strokeDasharray="4,3" />
-      <polyline points={pts} fill="none" stroke="#a8e6a8" strokeWidth={2}
-        strokeLinecap="round" strokeLinejoin="round" />
+      {data.length >= 2 && (
+        <polyline points={pts} fill="none" stroke="#a8e6a8" strokeWidth={2}
+          strokeLinecap="round" strokeLinejoin="round" />
+      )}
       {data.map((d, i) => (
-        <circle key={i} cx={xS(i)} cy={yS(d.score)} r={3.5}
+        <circle key={i} cx={xS(d.date)} cy={yS(d.score)} r={3.5}
           fill="#0d1f0d" stroke="#a8e6a8" strokeWidth={1.5} />
       ))}
       {xLabels.map(({ x, label }) => (
@@ -110,6 +128,7 @@ export default function Dashboard() {
   const mGir = mean(girVals);
   const mPutts = mean(puttsVals);
 
+  const todayStr = new Date().toISOString().slice(0, 10);
   const cutoff = new Date();
   cutoff.setMonth(cutoff.getMonth() - PERIOD_MONTHS[period]);
   const cutoffStr = cutoff.toISOString().slice(0, 10);
@@ -117,12 +136,7 @@ export default function Dashboard() {
   const chartData = [...rounds]
     .filter((r) => r.totalScore && r.date && r.date >= cutoffStr)
     .sort((a, b) => a.date.localeCompare(b.date))
-    .slice(-20)
     .map((r) => ({ date: r.date, score: Number(r.totalScore) }));
-
-  const chartAvgScore = chartData.length
-    ? Math.round(mean(chartData.map((d) => d.score)))
-    : null;
 
   return (
     <div className="flex flex-col gap-4">
@@ -193,8 +207,8 @@ export default function Dashboard() {
           <p className="text-[10px] font-bold text-golf-400 uppercase tracking-widest text-center mb-2">
             Score Trend
           </p>
-          {chartData.length >= 2
-            ? <ScoreTrendChart key={period} data={chartData} avgScore={chartAvgScore} />
+          {chartData.length >= 1
+            ? <ScoreTrendChart key={period} data={chartData} startDate={cutoffStr} endDate={todayStr} />
             : <p className="text-xs text-golf-500 text-center py-4">Not enough data for this period</p>
           }
         </Card>

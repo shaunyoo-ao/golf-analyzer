@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useData } from '../context/DataContext';
 import { golfExperienceMonths } from '../utils/dateHelpers';
 import Card from '../components/ui/Card';
@@ -81,8 +82,11 @@ function ScoreTrendChart({ data, avgScore }) {
   );
 }
 
+const PERIOD_MONTHS = { '6m': 6, '12m': 12, '24m': 24 };
+
 export default function Dashboard() {
   const { profile, profileLoading, rounds, roundsLoading, hasLoaded } = useData();
+  const [period, setPeriod] = useState('12m');
 
   if (!hasLoaded && (profileLoading || roundsLoading)) return <LoadingSpinner />;
 
@@ -106,8 +110,12 @@ export default function Dashboard() {
   const mGir = mean(girVals);
   const mPutts = mean(puttsVals);
 
+  const cutoff = new Date();
+  cutoff.setMonth(cutoff.getMonth() - PERIOD_MONTHS[period]);
+  const cutoffStr = cutoff.toISOString().slice(0, 10);
+
   const chartData = [...rounds]
-    .filter((r) => r.totalScore && r.date)
+    .filter((r) => r.totalScore && r.date && r.date >= cutoffStr)
     .slice(0, 20)
     .reverse()
     .map((r) => ({ date: r.date, score: Number(r.totalScore) }));
@@ -156,19 +164,37 @@ export default function Dashboard() {
       </div>
 
       {/* Score Trend chart */}
-      {chartData.length >= 2 && (
-        <div>
-          <p className="text-xs font-bold text-golf-400 uppercase tracking-widest mb-2">
-            Cumulative Trends
-          </p>
-          <Card className="bg-golf-800 border-golf-700 py-3 px-2">
-            <p className="text-[10px] font-bold text-golf-400 uppercase tracking-widest text-center mb-2">
-              Score Trend
-            </p>
-            <ScoreTrendChart data={chartData} avgScore={avgScore} />
-          </Card>
+      <div>
+        <p className="text-xs font-bold text-golf-400 uppercase tracking-widest mb-2">
+          Cumulative Trends
+        </p>
+        {/* Period toggle */}
+        <div className="flex gap-1 mb-2">
+          {['6m', '12m', '24m'].map((p) => (
+            <button
+              key={p}
+              type="button"
+              onClick={() => setPeriod(p)}
+              className={`flex-1 text-xs py-1.5 rounded-lg font-semibold transition-colors ${
+                period === p
+                  ? 'bg-golf-600 text-white'
+                  : 'bg-golf-800 text-golf-400 border border-golf-700'
+              }`}
+            >
+              {p === '6m' ? '6 Months' : p === '12m' ? '12 Months' : '24 Months'}
+            </button>
+          ))}
         </div>
-      )}
+        <Card className="bg-golf-800 border-golf-700 py-3 px-2">
+          <p className="text-[10px] font-bold text-golf-400 uppercase tracking-widest text-center mb-2">
+            Score Trend
+          </p>
+          {chartData.length >= 2
+            ? <ScoreTrendChart data={chartData} avgScore={avgScore} />
+            : <p className="text-xs text-golf-500 text-center py-4">Not enough data for this period</p>
+          }
+        </Card>
+      </div>
 
       {rounds.length === 0 && (
         <Card className="text-center py-8">

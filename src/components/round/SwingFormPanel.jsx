@@ -1,38 +1,21 @@
 import { useState } from 'react';
-import SwingStageImage from './SwingStageImage';
-import { SWING_STAGES, SWING_STAGE_LABELS, SWING_MARKERS } from '../../utils/constants';
-
-const EMPTY_STAGE = () =>
-  Object.fromEntries(SWING_MARKERS.map((m) => [m.key, '']));
+import { SWING_STAGES, SWING_STAGE_LABELS } from '../../utils/constants';
 
 export function emptySwingForm() {
-  return Object.fromEntries(SWING_STAGES.map((s) => [s, EMPTY_STAGE()]));
+  return Object.fromEntries(SWING_STAGES.map((s) => [s, '']));
 }
 
 export default function SwingFormPanel({ swingForm = {}, onChange }) {
   const [activeStage, setActiveStage] = useState('address');
 
-  const handleStageChange = (stage, notes) => {
-    onChange({ ...swingForm, [stage]: notes });
-  };
-
-  const totalNotes = SWING_STAGES.reduce((sum, stage) => {
-    const stageData = swingForm[stage] || {};
-    return sum + SWING_MARKERS.filter((m) => stageData[m.key]?.trim()).length;
-  }, 0);
-
   return (
-    <div className="flex flex-col gap-4">
-      <p className="text-xs text-golf-500">
-        Tap the colored dots on the swing image to add body-part feedback.
-        Dots turn amber when a note is added.
-      </p>
+    <div className="flex flex-col gap-3">
+      <p className="text-xs text-golf-500">Add optional text feedback for each swing stage.</p>
 
-      {/* Stage tab switcher */}
+      {/* Stage tabs */}
       <div className="flex rounded-xl overflow-hidden border border-golf-200 bg-golf-50">
         {SWING_STAGES.map((stage) => {
-          const stageNotes = swingForm[stage] || {};
-          const count = SWING_MARKERS.filter((m) => stageNotes[m.key]?.trim()).length;
+          const hasNote = typeof swingForm[stage] === 'string' && swingForm[stage].trim();
           return (
             <button
               key={stage}
@@ -40,34 +23,26 @@ export default function SwingFormPanel({ swingForm = {}, onChange }) {
               onClick={() => setActiveStage(stage)}
               className={[
                 'flex-1 py-2.5 text-xs font-semibold transition-colors relative min-h-[44px]',
-                activeStage === stage
-                  ? 'bg-golf-700 text-white'
-                  : 'text-golf-600 hover:bg-golf-100',
+                activeStage === stage ? 'bg-golf-700 text-white' : 'text-golf-600 hover:bg-golf-100',
               ].join(' ')}
             >
               {SWING_STAGE_LABELS[stage]}
-              {count > 0 && (
-                <span className="ml-1 bg-amber-400 text-white text-[9px] rounded-full px-1 py-0.5">
-                  {count}
-                </span>
+              {hasNote && (
+                <span className="ml-1 inline-block w-1.5 h-1.5 rounded-full bg-amber-400 align-middle" />
               )}
             </button>
           );
         })}
       </div>
 
-      {/* Active stage image */}
-      <SwingStageImage
-        stage={activeStage}
-        notes={swingForm[activeStage] || EMPTY_STAGE()}
-        onChange={(notes) => handleStageChange(activeStage, notes)}
+      {/* Feedback textarea */}
+      <textarea
+        rows={4}
+        value={typeof swingForm[activeStage] === 'string' ? swingForm[activeStage] : ''}
+        onChange={(e) => onChange({ ...swingForm, [activeStage]: e.target.value })}
+        placeholder={`${SWING_STAGE_LABELS[activeStage]} feedback...`}
+        className="w-full rounded-xl border border-golf-200 bg-white px-4 py-3 text-base text-golf-900 resize-none focus:outline-none focus:ring-1 focus:ring-golf-500"
       />
-
-      {totalNotes > 0 && (
-        <p className="text-xs text-golf-500 text-center">
-          {totalNotes} marker note{totalNotes > 1 ? 's' : ''} recorded across all stages
-        </p>
-      )}
     </div>
   );
 }

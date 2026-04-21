@@ -91,6 +91,8 @@ export default function Profile() {
         <ClubDistanceForm
           distances={form.clubDistances || {}}
           onChange={(d) => setForm((f) => ({ ...f, clubDistances: d }))}
+          brands={form.clubBrands || {}}
+          onBrandsChange={(b) => setForm((f) => ({ ...f, clubBrands: b }))}
         />
       </CollapsibleSection>
 

@@ -33,6 +33,7 @@ export function buildPrompt(profile, round, options = {}) {
     handicap_index: profile?.handicapIndex ?? null,
     club_distances_unit: 'm',
     club_distances: profile?.clubDistances || {},
+    club_brands: profile?.clubBrands || {},
   };
 
   const currentRound = {
@@ -48,7 +49,7 @@ export function buildPrompt(profile, round, options = {}) {
     avg_gir_pct: round?.avgGir || null,
     holes: round?.holes || [],
     club_directions: round?.clubDirections || {},
-    swing_form: round?.swingForm || {},
+    swing_feedback: round?.swingForm || {},
   };
 
   const prompt = {

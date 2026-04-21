@@ -315,8 +315,8 @@ export default function RoundInput() {
         />
       </CollapsibleSection>
 
-      {/* ── Section 4: Swing Form ── */}
-      <CollapsibleSection title="Swing Form" subtitle="Optional · Tap markers on image">
+      {/* ── Section 4: Swing Feedback ── */}
+      <CollapsibleSection title="Swing Feedback" subtitle="Optional · Notes per swing stage">
         <SwingFormPanel
           swingForm={form.swingForm}
           onChange={(v) => set('swingForm', v)}

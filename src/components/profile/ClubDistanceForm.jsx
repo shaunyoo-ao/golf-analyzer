@@ -69,16 +69,37 @@ function WedgeInput({ label, data = {}, onChange }) {
   );
 }
 
-export default function ClubDistanceForm({ distances = {}, onChange }) {
+function BrandInput({ value, onChange }) {
+  return (
+    <input
+      type="text"
+      value={value || ''}
+      onChange={(e) => onChange(e.target.value)}
+      placeholder="Brand / Model (e.g. TaylorMade Qi10)"
+      className="w-full rounded-lg border border-golf-200 bg-white px-3 py-2 text-base text-golf-900 min-h-[40px] focus:outline-none focus:ring-1 focus:ring-golf-500 mb-2"
+    />
+  );
+}
+
+export default function ClubDistanceForm({ distances = {}, onChange, brands = {}, onBrandsChange }) {
   const set = (key, val) => onChange({ ...distances, [key]: val });
+  const setBrand = (key, val) => onBrandsChange({ ...brands, [key]: val });
 
   return (
     <div className="flex flex-col gap-4">
       <p className="text-xs text-golf-500">Enter carry distances in meters (m).</p>
 
+      {/* Driver */}
+      <div>
+        <p className="text-xs font-bold text-golf-600 uppercase tracking-wide mb-2">Driver</p>
+        <BrandInput value={brands.driver} onChange={(v) => setBrand('driver', v)} />
+        <ClubInput label="Driver" value={distances['Driver']} onChange={(v) => set('Driver', v)} />
+      </div>
+
       {/* Woods */}
       <div>
         <p className="text-xs font-bold text-golf-600 uppercase tracking-wide mb-2">Woods</p>
+        <BrandInput value={brands.woods} onChange={(v) => setBrand('woods', v)} />
         <div className="flex flex-col gap-2">
           {WOODS.map((club) => (
             <ClubInput
@@ -94,6 +115,7 @@ export default function ClubDistanceForm({ distances = {}, onChange }) {
       {/* Hybrids */}
       <div>
         <p className="text-xs font-bold text-golf-600 uppercase tracking-wide mb-2">Hybrids</p>
+        <BrandInput value={brands.hybrids} onChange={(v) => setBrand('hybrids', v)} />
         <div className="flex flex-col gap-2">
           {HYBRIDS.map((club) => (
             <ClubInput
@@ -109,6 +131,7 @@ export default function ClubDistanceForm({ distances = {}, onChange }) {
       {/* Irons */}
       <div>
         <p className="text-xs font-bold text-golf-600 uppercase tracking-wide mb-2">Irons</p>
+        <BrandInput value={brands.irons} onChange={(v) => setBrand('irons', v)} />
         <div className="flex flex-col gap-2">
           {IRONS.map((club) => (
             <ClubInput
@@ -124,6 +147,7 @@ export default function ClubDistanceForm({ distances = {}, onChange }) {
       {/* Wedges */}
       <div>
         <p className="text-xs font-bold text-golf-600 uppercase tracking-wide mb-2">Wedges</p>
+        <BrandInput value={brands.wedges} onChange={(v) => setBrand('wedges', v)} />
         <div className="flex flex-col gap-3">
           {WEDGES.map((w) => (
             <WedgeInput

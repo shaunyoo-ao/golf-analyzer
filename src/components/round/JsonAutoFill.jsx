@@ -16,6 +16,7 @@ const JSON_TEMPLATE = JSON.stringify({
   holes: Object.fromEntries(
     Array.from({ length: 18 }, (_, i) => [String(i + 1), { putts: "", score: "" }])
   ),
+  swing_feedback: { address: "", backswing: "", impact: "", finish: "" },
 }, null, 2);
 
 function normalizeDate(raw) {

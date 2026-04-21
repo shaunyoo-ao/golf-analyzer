@@ -46,19 +46,16 @@ function ScoreTrendChart({ data, startDate, endDate }) {
   const lo = Math.floor(Math.min(...sc) / 5) * 5 - 5;
   const hi = Math.ceil(Math.max(...sc) / 5) * 5 + 5;
 
-  // X position based on actual date within the full period window
   const xS = (dateStr) => PAD.l + ((new Date(dateStr).getTime() - startMs) / spanMs) * cW;
   const yS = (v) => PAD.t + cH - ((v - lo) / (hi - lo)) * cH;
 
   const avgScore = Math.round(data.reduce((a, d) => a + d.score, 0) / data.length);
   const avgY = yS(avgScore);
-
   const pts = data.map((d) => `${xS(d.date)},${yS(d.score)}`).join(' ');
 
   const yTicks = [];
   for (let v = Math.ceil(lo / 10) * 10; v <= hi; v += 10) yTicks.push(v);
 
-  // Month tick marks spread evenly across the full period
   const totalMonths = Math.round(spanMs / (30.44 * 24 * 3600 * 1000));
   const step = totalMonths <= 6 ? 1 : totalMonths <= 12 ? 2 : 4;
   const xLabels = [];
@@ -114,7 +111,7 @@ export default function Dashboard() {
   const scores = rounds.map((r) => Number(r.totalScore)).filter(Boolean);
   const bestScore = scores.length ? Math.min(...scores) : null;
 
-  // Avg. stats computed from last 6 months only
+  // Avg. stats: last 6 months only
   const sixMoCutoff = new Date();
   sixMoCutoff.setMonth(sixMoCutoff.getMonth() - 6);
   const sixMoStr = sixMoCutoff.toISOString().slice(0, 10);
@@ -136,6 +133,7 @@ export default function Dashboard() {
   const mGir = mean(girVals);
   const mPutts = mean(puttsVals);
 
+  // Chart: filter by selected period, date-positioned
   const todayStr = new Date().toISOString().slice(0, 10);
   const cutoff = new Date();
   cutoff.setMonth(cutoff.getMonth() - PERIOD_MONTHS[period]);
@@ -195,7 +193,6 @@ export default function Dashboard() {
         <p className="text-xs font-bold text-golf-400 uppercase tracking-widest mb-2">
           Cumulative Trends
         </p>
-        {/* Period toggle */}
         <div className="flex gap-1 mb-2">
           {['6m', '12m', '24m'].map((p) => (
             <button

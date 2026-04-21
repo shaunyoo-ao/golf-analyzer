@@ -116,9 +116,13 @@ export default function Dashboard() {
 
   const chartData = [...rounds]
     .filter((r) => r.totalScore && r.date && r.date >= cutoffStr)
-    .slice(0, 20)
-    .reverse()
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .slice(-20)
     .map((r) => ({ date: r.date, score: Number(r.totalScore) }));
+
+  const chartAvgScore = chartData.length
+    ? Math.round(mean(chartData.map((d) => d.score)))
+    : null;
 
   return (
     <div className="flex flex-col gap-4">
@@ -190,7 +194,7 @@ export default function Dashboard() {
             Score Trend
           </p>
           {chartData.length >= 2
-            ? <ScoreTrendChart data={chartData} avgScore={avgScore} />
+            ? <ScoreTrendChart key={period} data={chartData} avgScore={chartAvgScore} />
             : <p className="text-xs text-golf-500 text-center py-4">Not enough data for this period</p>
           }
         </Card>

@@ -148,7 +148,7 @@ export default function Dashboard() {
   return (
     <div className="flex flex-col gap-4">
       {/* Handicap card */}
-      <Card className="bg-golf-700 border-golf-600 text-center py-6">
+      <div className="bg-golf-700 rounded-2xl border border-golf-600 text-center py-6 shadow-sm">
         <p className="text-golf-300 text-sm font-medium uppercase tracking-wide">
           Handicap Index
         </p>
@@ -158,7 +158,7 @@ export default function Dashboard() {
         {handicapIndex == null && (
           <p className="text-golf-400 text-xs mt-2">Log 8+ rounds to unlock</p>
         )}
-      </Card>
+      </div>
 
       {/* Stats grid — 4×2 */}
       <div className="grid grid-cols-4 gap-2">

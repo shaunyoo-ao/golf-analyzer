@@ -1,9 +1,8 @@
 // ─── Club lists ─────────────────────────────────────────────────────────────
 export const WOODS = ['3 Wood', '5 Wood'];
 export const HYBRIDS = ['2 Hybrid', '3 Hybrid', '4 Hybrid'];
-export const IRONS = ['3 Iron', '4 Iron', '5 Iron', '6 Iron', '7 Iron', '8 Iron', '9 Iron'];
+export const IRONS = ['3 Iron', '4 Iron', '5 Iron', '6 Iron', '7 Iron', '8 Iron', '9 Iron', 'PW (Pitching Wedge)'];
 export const WEDGES = [
-  { key: 'pw', label: 'PW (Pitching Wedge)' },
   { key: 'gw', label: 'GW (Gap Wedge)' },
   { key: 'sw', label: 'SW (Sand Wedge)' },
   { key: 'lw', label: 'LW (Lob Wedge)' },

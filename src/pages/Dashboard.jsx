@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useData } from '../context/DataContext';
 import { golfExperienceMonths } from '../utils/dateHelpers';
+import { handicapIndex as computeHandicapIndex } from '../utils/handicap';
 import Card from '../components/ui/Card';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 
@@ -105,7 +106,7 @@ export default function Dashboard() {
 
   if (!hasLoaded && (profileLoading || roundsLoading)) return <LoadingSpinner />;
 
-  const handicapIndex = profile?.handicapIndex;
+  const handicapIndex = computeHandicapIndex(rounds) ?? profile?.handicapIndex;
   const expMonths = golfExperienceMonths(profile?.golfStartDate);
 
   const scores = rounds.map((r) => Number(r.totalScore)).filter(Boolean);

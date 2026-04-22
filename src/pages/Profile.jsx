@@ -116,7 +116,17 @@ export default function Profile() {
       </CollapsibleSection>
 
       {/* Trophies — immediate save on Add/Edit/Delete */}
-      <CollapsibleSection title="🏆 Trophies" subtitle="Course records · Best scores">
+      <CollapsibleSection
+        title="🏆 Trophies"
+        subtitle="Course records · Best scores"
+        badge={
+          (form.courseTrophies?.length ?? 0) > 0 && (
+            <span className="text-xs bg-golf-100 text-golf-700 rounded-full px-2 py-0.5 font-semibold">
+              {form.courseTrophies.length}
+            </span>
+          )
+        }
+      >
         <CourseTrophySection
           trophies={form.courseTrophies || []}
           uid={user?.uid}
@@ -147,7 +157,7 @@ export default function Profile() {
       {/* Copyright */}
       <p className="text-center text-[11px] text-golf-400 leading-relaxed pt-1 pb-4">
         Copyright ⓒ 2026, shaun.yoo.ao All rights reserved.{'\n'}
-        <br />Version 1.0.4
+        <br />Version 1.0.5
       </p>
     </div>
   );

@@ -23,16 +23,19 @@ export function scoreDifferential(adjustedScore, courseRating, slopeRating) {
  */
 export function handicapIndex(rounds) {
   const qualifying = rounds
-    .filter((r) => typeof r.scoreDifferential === 'number' && !isNaN(r.scoreDifferential))
+    .filter((r) => {
+      const sd = Number(r.scoreDifferential);
+      return r.scoreDifferential != null && !isNaN(sd) && isFinite(sd);
+    })
     .sort((a, b) => new Date(b.date) - new Date(a.date))
     .slice(0, 20);
 
   if (qualifying.length < 8) return null;
 
   const best8 = [...qualifying]
-    .sort((a, b) => a.scoreDifferential - b.scoreDifferential)
+    .sort((a, b) => Number(a.scoreDifferential) - Number(b.scoreDifferential))
     .slice(0, 8);
 
-  const avg = best8.reduce((sum, r) => sum + r.scoreDifferential, 0) / 8;
+  const avg = best8.reduce((sum, r) => sum + Number(r.scoreDifferential), 0) / 8;
   return Math.round(avg * 0.96 * 10) / 10;
 }

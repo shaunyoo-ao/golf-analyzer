@@ -46,7 +46,7 @@ export default function AIResponseBox({ onSave, existingResponse }) {
         onChange={(e) => { setRaw(e.target.value); setError(''); }}
         rows={6}
         placeholder="Paste the AI response here (must be valid JSON)..."
-        className="w-full rounded-xl border border-blue-200 bg-white px-4 py-3 text-sm text-gray-700 font-mono resize-none focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder:text-golf-300"
+        className="glass-input font-mono text-xs resize-none"
       />
 
       {error && <p className="text-sm text-red-500">{error}</p>}

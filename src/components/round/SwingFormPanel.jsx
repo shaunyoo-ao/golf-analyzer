@@ -10,10 +10,10 @@ export default function SwingFormPanel({ swingForm = {}, onChange }) {
 
   return (
     <div className="flex flex-col gap-3">
-      <p className="text-xs text-golf-500">Add optional text feedback for each swing stage.</p>
+      <p className="text-xs" style={{ color: 'var(--accent-green)' }}>Add optional text feedback for each swing stage.</p>
 
       {/* Stage tabs */}
-      <div className="flex rounded-xl overflow-hidden border border-golf-200 bg-golf-50">
+      <div className="flex rounded-xl overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.04)' }}>
         {SWING_STAGES.map((stage) => {
           const hasNote = typeof swingForm[stage] === 'string' && swingForm[stage].trim();
           return (
@@ -21,10 +21,10 @@ export default function SwingFormPanel({ swingForm = {}, onChange }) {
               key={stage}
               type="button"
               onClick={() => setActiveStage(stage)}
-              className={[
-                'flex-1 py-2.5 text-xs font-semibold transition-colors relative min-h-[44px]',
-                activeStage === stage ? 'bg-golf-700 text-white' : 'text-golf-600 hover:bg-golf-100',
-              ].join(' ')}
+              className="flex-1 py-2.5 text-xs font-semibold transition-colors relative min-h-[44px]"
+              style={activeStage === stage
+                ? { background: 'rgba(100,200,100,0.25)', color: 'var(--text-primary)' }
+                : { color: 'var(--text-secondary)' }}
             >
               {SWING_STAGE_LABELS[stage]}
               {hasNote && (
@@ -41,7 +41,7 @@ export default function SwingFormPanel({ swingForm = {}, onChange }) {
         value={typeof swingForm[activeStage] === 'string' ? swingForm[activeStage] : ''}
         onChange={(e) => onChange({ ...swingForm, [activeStage]: e.target.value })}
         placeholder={`${SWING_STAGE_LABELS[activeStage]} feedback...`}
-        className="w-full rounded-xl border border-golf-200 bg-white px-4 py-3 text-base text-golf-900 resize-none focus:outline-none focus:ring-1 focus:ring-golf-500"
+        className="glass-input resize-none"
       />
     </div>
   );

@@ -36,26 +36,26 @@ export default function AIPromptBox({ profile, round, allRounds = [] }) {
   return (
     <div className="flex flex-col gap-3">
       {/* Include past records toggle */}
-      <div className="bg-blue-50 rounded-xl px-3 py-3 border border-blue-100">
+      <div className="rounded-xl px-3 py-3" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)' }}>
         <Toggle
           id="includePast"
           label="Include Past Records in AI Prompt"
           checked={includePast}
           onChange={setIncludePast}
         />
-        <p className="text-xs text-blue-400 mt-1.5">
+        <p className="text-xs mt-1.5" style={{ color: 'var(--text-secondary)' }}>
           When enabled, all your saved rounds are appended to the prompt under{' '}
-          <code className="text-blue-600">user_data.past_records</code>.
+          <code style={{ color: 'var(--accent-green)' }}>user_data.past_records</code>.
         </p>
       </div>
 
       {/* Language indicator */}
-      <div className="flex items-center gap-2 text-xs text-blue-500">
+      <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--text-secondary)' }}>
         <span>Feedback language:</span>
-        <span className="font-semibold text-blue-700">
+        <span className="font-semibold" style={{ color: 'var(--accent-green)' }}>
           {language === 'ko' ? '한국어 (Korean)' : 'English'}
         </span>
-        <span className="text-blue-400">· Change in Profile</span>
+        <span style={{ color: 'var(--text-secondary)' }}>· Change in Profile</span>
       </div>
 
       {/* Prompt textarea */}
@@ -64,7 +64,7 @@ export default function AIPromptBox({ profile, round, allRounds = [] }) {
           readOnly
           value={promptStr}
           rows={10}
-          className="w-full rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-xs text-gray-700 font-mono resize-none focus:outline-none focus:ring-2 focus:ring-blue-400"
+          className="glass-input font-mono text-xs resize-none"
         />
       </div>
 
@@ -73,7 +73,7 @@ export default function AIPromptBox({ profile, round, allRounds = [] }) {
         {copied ? '✓ Copied!' : 'Copy Prompt to Clipboard'}
       </Button>
 
-      <p className="text-xs text-blue-400 text-center">
+      <p className="text-xs text-center" style={{ color: 'var(--text-secondary)' }}>
         Paste this into any AI chat (ChatGPT, Claude, Gemini, etc.)
       </p>
     </div>

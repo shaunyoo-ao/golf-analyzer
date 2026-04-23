@@ -44,8 +44,8 @@ export default function BottomNav() {
     <nav
       className="fixed bottom-0 left-0 right-0 z-40 safe-bottom"
       style={{
-        background: 'rgba(8, 18, 8, 0.88)',
-        borderTop: '1px solid rgba(255,255,255,0.10)',
+        background: 'rgba(8, 18, 8, 0.72)',
+        borderTop: '1px solid rgba(255,255,255,0.18)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
       }}

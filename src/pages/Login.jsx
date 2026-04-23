@@ -29,7 +29,7 @@ export default function Login() {
       <div style={{ position: 'absolute', top: '20%', right: '-10%', width: '50%', height: '50%', background: 'radial-gradient(circle, rgba(20,70,55,0.40) 0%, transparent 70%)', filter: 'blur(70px)', pointerEvents: 'none' }} />
 
       {/* Logo / brand */}
-      <div style={{ textAlign: 'center', marginBottom: 36, position: 'relative', zIndex: 1 }}>
+      <div style={{ textAlign: 'center', marginBottom: 36, position: 'relative', zIndex: 1, width: '100%' }}>
         <img
           src="/icons/icon-180.png"
           alt="Handi 0"

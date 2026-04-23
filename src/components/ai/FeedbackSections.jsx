@@ -3,8 +3,8 @@ import Card from '../ui/Card';
 function Section({ title, children }) {
   return (
     <Card>
-      <h3 className="font-bold text-golf-800 text-sm mb-2">{title}</h3>
-      <div className="text-sm text-gray-700 leading-relaxed">{children}</div>
+      <h3 className="font-bold text-sm mb-2" style={{ color: 'var(--text-primary)' }}>{title}</h3>
+      <div className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{children}</div>
     </Card>
   );
 }
@@ -75,7 +75,7 @@ export default function FeedbackSections({ parsed }) {
       )}
 
       {analyzed_by && (
-        <p className="text-[10px] text-golf-400 text-right pt-1">
+        <p className="text-[10px] text-right pt-1" style={{ color: 'var(--text-secondary)' }}>
           Analysis by {analyzed_by}
         </p>
       )}

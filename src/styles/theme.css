@@ -1,0 +1,91 @@
+/* ─── Handi 0 — Dark Glassmorphism Design System ────────────────────────────── */
+
+:root {
+  --bg-deep: #060f06;
+  --glass-bg: rgba(255, 255, 255, 0.07);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-input-bg: rgba(255, 255, 255, 0.06);
+  --text-primary: rgba(255, 255, 255, 0.92);
+  --text-secondary: rgba(255, 255, 255, 0.50);
+  --accent-green: rgba(100, 200, 100, 0.80);
+  --btn-bg: rgba(255, 255, 255, 0.13);
+  --btn-hover: rgba(255, 255, 255, 0.20);
+}
+
+/* ─── Glassmorphism card ────────────────────────────────────────────────────── */
+.glass-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 20px;
+}
+
+/* ─── Glass input / select ──────────────────────────────────────────────────── */
+.glass-input {
+  background: var(--glass-input-bg) !important;
+  border: 1px solid rgba(255, 255, 255, 0.10) !important;
+  border-radius: 12px !important;
+  color: var(--text-primary) !important;
+  padding: 12px 16px !important;
+  font-size: 16px !important;
+  width: 100%;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+  min-height: 44px;
+  display: block;
+}
+
+.glass-input:focus {
+  border-color: rgba(255, 255, 255, 0.32) !important;
+  background: rgba(255, 255, 255, 0.10) !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.glass-input::placeholder {
+  color: rgba(255, 255, 255, 0.28) !important;
+}
+
+/* select option needs solid bg so it's readable in system picker */
+.glass-input option {
+  background: #0d1f0d;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+/* ─── Glass label ───────────────────────────────────────────────────────────── */
+.glass-label {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+  display: block;
+}
+
+/* ─── Glass hint / secondary text ──────────────────────────────────────────── */
+.glass-hint {
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+/* ─── Glass primary / CTA button ────────────────────────────────────────────── */
+.btn-glass {
+  background: var(--btn-bg);
+  border: 1px solid rgba(255, 255, 255, 0.20);
+  color: var(--text-primary);
+  font-weight: 600;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: background 0.2s, transform 0.1s;
+}
+
+.btn-glass:active:not(:disabled) {
+  background: var(--btn-hover);
+}
+
+.btn-glass:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}

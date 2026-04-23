@@ -91,20 +91,15 @@ export default function PersonalInfoForm({ profile, onChange }) {
         onChange={(e) => set('handedness', e.target.value)}
       />
 
-      {/* Golf Experience — manual start date */}
-      <div className="flex flex-col gap-1">
+      <div className="grid grid-cols-2 gap-3">
         <Input
           label="Golf Start Date"
           id="golfStartDate"
           type="date"
           value={profile.golfStartDate || ''}
           onChange={(e) => set('golfStartDate', e.target.value)}
-          hint={`Golf Experience: ${expMonths} month${expMonths !== 1 ? 's' : ''}`}
+          hint={`${expMonths}mo experience`}
         />
-      </div>
-
-      {/* AI Feedback Language */}
-      <div className="bg-golf-50 rounded-xl p-3 border border-golf-100">
         <Select
           label="AI Feedback Language"
           id="aiFeedbackLanguage"
@@ -112,9 +107,6 @@ export default function PersonalInfoForm({ profile, onChange }) {
           value={profile.aiFeedbackLanguage || 'ko'}
           onChange={(e) => set('aiFeedbackLanguage', e.target.value)}
         />
-        <p className="text-xs text-golf-400 mt-1.5">
-          Controls the language used in AI-generated feedback responses.
-        </p>
       </div>
     </div>
   );

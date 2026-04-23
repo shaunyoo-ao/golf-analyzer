@@ -23,7 +23,7 @@ export default function Login() {
   if (loading) return <LoadingSpinner fullscreen />;
 
   return (
-    <div style={{ minHeight: '100vh', background: 'radial-gradient(ellipse at 30% 15%, #1c3d1c 0%, #0d200d 45%, #060e06 100%)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 24px', position: 'relative', overflow: 'hidden' }}>
+    <div style={{ minHeight: '100vh', backgroundImage: "url('/bg.jpg')", backgroundSize: 'cover', backgroundPosition: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 24px', position: 'relative', overflow: 'hidden' }}>
       {/* Aurora blobs */}
       <div style={{ position: 'absolute', top: '-10%', left: '-5%', width: '55%', height: '55%', background: 'radial-gradient(circle, rgba(40,100,40,0.55) 0%, transparent 70%)', filter: 'blur(60px)', pointerEvents: 'none' }} />
       <div style={{ position: 'absolute', top: '20%', right: '-10%', width: '50%', height: '50%', background: 'radial-gradient(circle, rgba(20,70,55,0.40) 0%, transparent 70%)', filter: 'blur(70px)', pointerEvents: 'none' }} />
@@ -33,7 +33,7 @@ export default function Login() {
         <img
           src="/icons/icon-180.png"
           alt="Handi 0"
-          style={{ width: 88, height: 88, borderRadius: 22, boxShadow: '0 0 0 1px rgba(255,255,255,0.12), 0 20px 60px rgba(0,0,0,0.5)', marginBottom: 20 }}
+          style={{ width: 88, height: 88, borderRadius: 22, boxShadow: '0 0 0 1px rgba(255,255,255,0.12), 0 20px 60px rgba(0,0,0,0.5)', marginBottom: 20, display: 'block', margin: '0 auto 20px' }}
         />
         <h1 style={{ fontSize: 28, fontWeight: 900, color: 'rgba(255,255,255,0.92)', margin: 0, letterSpacing: '-0.02em' }}>Handi 0</h1>
         <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.40)', marginTop: 6 }}>AI-powered round tracking</p>

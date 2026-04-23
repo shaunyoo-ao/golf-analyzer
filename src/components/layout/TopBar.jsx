@@ -49,7 +49,7 @@ export default function TopBar() {
             </svg>
           </button>
         ) : (
-          <span className="text-xl mr-2">⛳</span>
+          <img src="/icons/icon-180.png" alt="" className="w-7 h-7 rounded-md mr-2" />
         )}
         <h1 className="font-bold text-lg flex-1" style={{ color: 'var(--text-primary)' }}>{title}</h1>
         {showRefresh && (

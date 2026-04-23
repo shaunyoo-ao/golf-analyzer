@@ -1,19 +1,24 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { fetchWeather } from '../../utils/weatherApi';
 import { formatDate } from '../../utils/dateHelpers';
+import Button from '../ui/Button';
 
 export default function UpcomingRoundModal({ upcomingRound, onDelete, onClose }) {
   const [hours, setHours] = useState(null);
   const [weatherError, setWeatherError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
-  useEffect(() => {
+  const refresh = () => {
     if (!upcomingRound?.lat || !upcomingRound?.lng) return;
+    setLoading(true);
+    setWeatherError(null);
     fetchWeather(upcomingRound.lat, upcomingRound.lng, upcomingRound.date)
-      .then(setHours)
-      .catch(() => setWeatherError('Weather data unavailable'));
-  }, [upcomingRound]);
+      .then((h) => { setHours(h); setLoading(false); })
+      .catch(() => { setWeatherError('Weather data unavailable'); setLoading(false); });
+  };
 
-  const dayHours = hours?.filter((h) => h.time >= '06:00' && h.time <= '20:00') ?? [];
+  const dayHours = hours?.filter((h) => h.time >= '06:00' && h.time <= '18:00') ?? [];
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col">
@@ -28,7 +33,22 @@ export default function UpcomingRoundModal({ upcomingRound, onDelete, onClose })
               {upcomingRound.country} · {formatDate(upcomingRound.date)}
             </p>
           </div>
-          <button type="button" onClick={onClose} className="text-xl p-1 !min-h-0" style={{ color: 'var(--text-secondary)' }}>✕</button>
+          <div className="flex items-center gap-1">
+            {upcomingRound.lat && (
+              <button
+                type="button"
+                onClick={refresh}
+                disabled={loading}
+                className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center"
+                style={{ color: loading ? 'rgba(255,255,255,0.25)' : 'rgba(100,200,100,0.80)' }}
+              >
+                <svg className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+              </button>
+            )}
+            <button type="button" onClick={onClose} className="text-xl p-1 !min-h-0 ml-1" style={{ color: 'var(--text-secondary)' }}>✕</button>
+          </div>
         </div>
 
         {/* Weather content */}
@@ -39,7 +59,13 @@ export default function UpcomingRoundModal({ upcomingRound, onDelete, onClose })
             </p>
           )}
 
-          {upcomingRound.lat && !hours && !weatherError && (
+          {upcomingRound.lat && !hours && !weatherError && !loading && (
+            <p className="text-sm text-center py-3" style={{ color: 'var(--text-secondary)' }}>
+              Tap ↻ to load weather forecast
+            </p>
+          )}
+
+          {loading && (
             <p className="text-sm text-center py-3" style={{ color: 'var(--text-secondary)' }}>Loading weather…</p>
           )}
 
@@ -52,7 +78,6 @@ export default function UpcomingRoundModal({ upcomingRound, onDelete, onClose })
               <p className="text-xs font-semibold uppercase tracking-wide mb-2" style={{ color: 'var(--text-secondary)' }}>
                 Hourly Forecast · {upcomingRound.geocodedName || upcomingRound.courseName}
               </p>
-              {/* Table header */}
               <div className="grid grid-cols-5 text-[10px] font-semibold uppercase px-2 pb-1" style={{ color: 'var(--text-secondary)' }}>
                 <span>Time</span><span className="text-center">Sky</span><span className="text-center">Temp</span><span className="text-center">Rain</span><span className="text-center">Wind</span>
               </div>
@@ -72,14 +97,14 @@ export default function UpcomingRoundModal({ upcomingRound, onDelete, onClose })
           )}
 
           {/* Delete */}
-          <button
-            type="button"
-            onClick={onDelete}
-            className="w-full rounded-xl py-3 min-h-[44px] text-sm font-medium mt-2"
-            style={{ background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.30)', color: 'rgba(239,100,100,0.90)' }}
-          >
-            Delete Upcoming Round
-          </button>
+          {confirmDelete ? (
+            <div className="flex gap-2 mt-2">
+              <Button fullWidth variant="ghost" onClick={() => setConfirmDelete(false)}>Cancel</Button>
+              <Button fullWidth onClick={onDelete} className="bg-red-500 hover:bg-red-600 text-white">Yes, Delete</Button>
+            </div>
+          ) : (
+            <Button fullWidth variant="ghost" onClick={() => setConfirmDelete(true)}>Delete Upcoming Round</Button>
+          )}
         </div>
       </div>
     </div>

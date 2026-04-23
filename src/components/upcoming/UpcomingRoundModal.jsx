@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { fetchWeather } from '../../utils/weatherApi';
 import { formatDate } from '../../utils/dateHelpers';
 import Button from '../ui/Button';
@@ -9,11 +9,22 @@ export default function UpcomingRoundModal({ upcomingRound, onDelete, onClose })
   const [loading, setLoading] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
 
-  const refresh = () => {
+  // Auto-load on open — instant if cached, fetch if not
+  useEffect(() => {
     if (!upcomingRound?.lat || !upcomingRound?.lng) return;
     setLoading(true);
     setWeatherError(null);
     fetchWeather(upcomingRound.lat, upcomingRound.lng, upcomingRound.date)
+      .then((h) => { setHours(h); setLoading(false); })
+      .catch(() => { setWeatherError('Weather data unavailable'); setLoading(false); });
+  }, [upcomingRound]);
+
+  // Refresh button — force bypasses cache
+  const refresh = () => {
+    if (!upcomingRound?.lat || !upcomingRound?.lng) return;
+    setLoading(true);
+    setWeatherError(null);
+    fetchWeather(upcomingRound.lat, upcomingRound.lng, upcomingRound.date, true)
       .then((h) => { setHours(h); setLoading(false); })
       .catch(() => { setWeatherError('Weather data unavailable'); setLoading(false); });
   };
@@ -59,21 +70,15 @@ export default function UpcomingRoundModal({ upcomingRound, onDelete, onClose })
             </p>
           )}
 
-          {upcomingRound.lat && !hours && !weatherError && !loading && (
-            <p className="text-sm text-center py-3" style={{ color: 'var(--text-secondary)' }}>
-              Tap ↻ to load weather forecast
-            </p>
-          )}
-
           {loading && (
             <p className="text-sm text-center py-3" style={{ color: 'var(--text-secondary)' }}>Loading weather…</p>
           )}
 
-          {weatherError && (
+          {weatherError && !loading && (
             <p className="text-sm text-center py-3" style={{ color: 'var(--text-secondary)' }}>{weatherError}</p>
           )}
 
-          {dayHours.length > 0 && (
+          {dayHours.length > 0 && !loading && (
             <div className="flex flex-col gap-0.5">
               <p className="text-xs font-semibold uppercase tracking-wide mb-2" style={{ color: 'var(--text-secondary)' }}>
                 Hourly Forecast · {upcomingRound.geocodedName || upcomingRound.courseName}

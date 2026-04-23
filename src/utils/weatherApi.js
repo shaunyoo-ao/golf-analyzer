@@ -21,6 +21,9 @@ const WMO_DESC = {
 export const wmoIcon = (c) => WMO_ICONS[c] ?? '🌡';
 export const wmoDesc = (c) => WMO_DESC[c] ?? 'Unknown';
 
+// Session-level weather cache — persists across modal opens until page reload
+const _weatherCache = new Map();
+
 // Extract the most distinctive part of a course name for search
 function extractSearchKeyword(courseName) {
   // "X at Y" → extract Y (e.g. "The Club at Steyn City" → "Steyn City")
@@ -34,13 +37,15 @@ function extractSearchKeyword(courseName) {
   return stripped.length >= 3 ? stripped : courseName;
 }
 
-// Tier 1: Overpass API — search OSM leisure=golf_course by name
+// Tier 1: Overpass API — search OSM leisure=golf_course by name (8s timeout)
 async function tryOverpass(keyword) {
   const safe = keyword.replace(/["[\]\\]/g, '').trim();
   if (!safe) return null;
-  const query = `[out:json][timeout:10];(way["leisure"="golf_course"]["name"~"${safe}",i];relation["leisure"="golf_course"]["name"~"${safe}",i];);out center 1;`;
+  const query = `[out:json][timeout:8];(way["leisure"="golf_course"]["name"~"${safe}",i];relation["leisure"="golf_course"]["name"~"${safe}",i];);out center 1;`;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 8000);
   try {
-    const r = await fetch(`https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`);
+    const r = await fetch(`https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`, { signal: controller.signal });
     if (!r.ok) return null;
     const d = await r.json();
     const el = d.elements?.[0];
@@ -50,6 +55,7 @@ async function tryOverpass(keyword) {
     if (!lat || !lon) return null;
     return { lat, lng: lon, geocodedName: el.tags?.name ?? keyword };
   } catch { return null; }
+  finally { clearTimeout(timer); }
 }
 
 // Tier 2: Nominatim — general venue search
@@ -75,39 +81,39 @@ async function tryOpenMeteo(q) {
   } catch { return null; }
 }
 
+// Wrap a promise so null/undefined resolves become rejections (for Promise.any)
+const nonNull = (p) => p.then((v) => { if (!v) throw null; return v; });
+
 export async function geocodeCourse(courseName, country) {
   const keyword = extractSearchKeyword(courseName);
 
-  // Tier 1a: Overpass with full name (exact substring match in OSM)
-  const ov1 = await tryOverpass(courseName);
-  if (ov1) return ov1;
-
-  // Tier 1b: Overpass with stripped keyword (e.g. "Fancourt", "Steyn City")
+  // Run all tiers in parallel — first non-null result wins
+  const candidates = [
+    nonNull(tryOverpass(courseName)),
+    nonNull(tryNominatim(`${keyword} golf ${country}`)),
+    nonNull(tryNominatim(`${keyword} ${country}`)),
+    nonNull(tryOpenMeteo(`${keyword} ${country}`)),
+  ];
   if (keyword !== courseName) {
-    const ov2 = await tryOverpass(keyword);
-    if (ov2) return ov2;
+    candidates.splice(1, 0, nonNull(tryOverpass(keyword)));
   }
 
-  // Tier 2: Nominatim with keyword + country
-  const nm1 = await tryNominatim(`${keyword} golf ${country}`);
-  if (nm1) return nm1;
-
-  const nm2 = await tryNominatim(`${keyword} ${country}`);
-  if (nm2) return nm2;
-
-  // Tier 3: Open-Meteo city-level fallback
-  const om = await tryOpenMeteo(`${keyword} ${country}`);
-  if (om) return om;
-
-  throw new Error('Course location not found');
+  try {
+    return await Promise.any(candidates);
+  } catch {
+    throw new Error('Course location not found');
+  }
 }
 
-export async function fetchWeather(lat, lng, date) {
+export async function fetchWeather(lat, lng, date, force = false) {
+  const key = `${lat},${lng},${date}`;
+  if (!force && _weatherCache.has(key)) return _weatherCache.get(key);
+
   const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&hourly=temperature_2m,precipitation_probability,weathercode,windspeed_10m&timezone=auto&start_date=${date}&end_date=${date}`;
   const r = await fetch(url);
   const d = await r.json();
   if (!d.hourly) throw new Error('Weather data unavailable');
-  return d.hourly.time.map((t, i) => ({
+  const result = d.hourly.time.map((t, i) => ({
     time: t.slice(11, 16),
     icon: wmoIcon(d.hourly.weathercode[i]),
     desc: wmoDesc(d.hourly.weathercode[i]),
@@ -115,4 +121,6 @@ export async function fetchWeather(lat, lng, date) {
     precip: d.hourly.precipitation_probability[i],
     wind: Math.round(d.hourly.windspeed_10m[i]),
   }));
+  _weatherCache.set(key, result);
+  return result;
 }

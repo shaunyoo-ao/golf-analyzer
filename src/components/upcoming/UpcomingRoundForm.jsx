@@ -11,6 +11,7 @@ const SAVE_STEPS = [{ label: 'Finding course location…', pct: 50 }, { label: '
 
 export default function UpcomingRoundForm({ onSave, onClose, favoriteCourses = [] }) {
   const [form, setForm] = useState({ date: todayISO(), courseName: '', country: '' });
+  const [selectedFav, setSelectedFav] = useState('');
   const [errors, setErrors] = useState({});
   const [saveStep, setSaveStep] = useState(0);
   const [saveError, setSaveError] = useState(null);
@@ -78,8 +79,8 @@ export default function UpcomingRoundForm({ onSave, onClose, favoriteCourses = [
                 label="Load Favorite Course"
                 id="up-fav"
                 options={[{ value: '', label: 'Select to preload…' }, ...favoriteCourses.map((f, i) => ({ value: String(i), label: `${f.courseName} (${f.country})` }))]}
-                value=""
-                onChange={(e) => { if (e.target.value !== '') loadFavorite(e.target.value); }}
+                value={selectedFav}
+                onChange={(e) => { setSelectedFav(e.target.value); if (e.target.value !== '') loadFavorite(e.target.value); }}
               />
             )}
 

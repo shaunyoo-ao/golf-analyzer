@@ -22,14 +22,24 @@ export const wmoIcon = (c) => WMO_ICONS[c] ?? '🌡';
 export const wmoDesc = (c) => WMO_DESC[c] ?? 'Unknown';
 
 export async function geocodeCourse(courseName, country) {
-  const tryGeocode = async (q) => {
-    const r = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=1&language=en&format=json`);
+  const tryNominatim = async (q) => {
+    const r = await fetch(
+      `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=1&addressdetails=0`,
+      { headers: { 'User-Agent': 'Handi0GolfApp/1.0.6' } }
+    );
     const d = await r.json();
-    return d.results?.[0] ?? null;
+    return d[0] ?? null;
   };
-  const result = (await tryGeocode(`${courseName} ${country}`)) ?? (await tryGeocode(courseName));
+  const result =
+    (await tryNominatim(`${courseName} golf course ${country}`)) ??
+    (await tryNominatim(`${courseName} ${country}`)) ??
+    (await tryNominatim(courseName));
   if (!result) throw new Error('Course location not found');
-  return { lat: result.latitude, lng: result.longitude, geocodedName: result.name };
+  return {
+    lat: parseFloat(result.lat),
+    lng: parseFloat(result.lon),
+    geocodedName: result.display_name.split(',')[0],
+  };
 }
 
 export async function fetchWeather(lat, lng, date) {

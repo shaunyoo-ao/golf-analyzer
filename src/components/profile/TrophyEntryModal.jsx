@@ -93,13 +93,13 @@ export default function TrophyEntryModal({ trophy, uid, onSave, onDelete, onClos
   return (
     <div className="fixed inset-0 z-50 flex flex-col">
       <div className="absolute inset-0 bg-black/60" onClick={onClose} />
-      <div className="relative mt-auto w-full max-h-[90vh] bg-white rounded-t-2xl flex flex-col">
+      <div className="relative mt-auto w-full max-h-[90vh] rounded-t-2xl flex flex-col" style={{ background: 'rgba(10,22,10,0.96)', borderTop: '1px solid rgba(255,255,255,0.12)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}>
         {/* Header */}
         <div className="flex items-center justify-between px-4 pt-4 pb-2">
-          <h2 className="text-base font-bold text-golf-900">
+          <h2 className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>
             {isEdit ? 'Edit Trophy' : 'Add Trophy'}
           </h2>
-          <button type="button" onClick={onClose} className="text-golf-400 text-xl !min-h-0 p-1">✕</button>
+          <button type="button" onClick={onClose} className="text-xl !min-h-0 p-1" style={{ color: 'var(--text-secondary)' }}>✕</button>
         </div>
 
         {/* Form */}
@@ -107,24 +107,25 @@ export default function TrophyEntryModal({ trophy, uid, onSave, onDelete, onClos
           {/* Image */}
           <div className="flex items-center gap-3">
             <div
-              className="w-20 h-20 rounded-xl overflow-hidden bg-golf-100 border border-golf-200 shrink-0 cursor-pointer"
+              className="w-20 h-20 rounded-xl overflow-hidden shrink-0 cursor-pointer"
+              style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.18)' }}
               onClick={() => fileRef.current?.click()}
             >
               {previewUrl ? (
                 <img src={previewUrl} alt="preview" className="w-full h-full object-cover" />
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-golf-400 text-2xl">📷</div>
+                <div className="w-full h-full flex items-center justify-center text-2xl" style={{ color: 'rgba(255,255,255,0.40)' }}>📷</div>
               )}
             </div>
             <div>
               <button
                 type="button"
                 onClick={() => fileRef.current?.click()}
-                className="text-xs text-golf-600 font-medium underline !min-h-0"
+                className="text-xs font-medium underline !min-h-0" style={{ color: 'var(--accent-green)' }}
               >
                 {previewUrl ? 'Change photo' : 'Add photo'}
               </button>
-              <p className="text-[10px] text-golf-400 mt-0.5">Auto-cropped to 1:1</p>
+              <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-secondary)' }}>Auto-cropped to 1:1</p>
             </div>
             <input
               ref={fileRef}

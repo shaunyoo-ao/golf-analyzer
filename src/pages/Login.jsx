@@ -23,25 +23,31 @@ export default function Login() {
   if (loading) return <LoadingSpinner fullscreen />;
 
   return (
-    <div className="min-h-screen bg-golf-900 flex flex-col items-center justify-center px-6 max-w-[412px] mx-auto">
+    <div style={{ minHeight: '100vh', background: 'radial-gradient(ellipse at 30% 15%, #1c3d1c 0%, #0d200d 45%, #060e06 100%)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 24px', position: 'relative', overflow: 'hidden' }}>
+      {/* Aurora blobs */}
+      <div style={{ position: 'absolute', top: '-10%', left: '-5%', width: '55%', height: '55%', background: 'radial-gradient(circle, rgba(40,100,40,0.55) 0%, transparent 70%)', filter: 'blur(60px)', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', top: '20%', right: '-10%', width: '50%', height: '50%', background: 'radial-gradient(circle, rgba(20,70,55,0.40) 0%, transparent 70%)', filter: 'blur(70px)', pointerEvents: 'none' }} />
+
       {/* Logo / brand */}
-      <div className="flex flex-col items-center mb-12">
-        <span className="text-6xl mb-4">⛳</span>
-        <h1 className="text-4xl font-black text-white tracking-tight">Handi 0</h1>
-        <p className="text-golf-300 text-base mt-2 text-center">
-          Your AI-powered golf improvement companion
-        </p>
+      <div style={{ textAlign: 'center', marginBottom: 36, position: 'relative', zIndex: 1 }}>
+        <img
+          src="/icons/icon-180.png"
+          alt="Handi 0"
+          style={{ width: 88, height: 88, borderRadius: 22, boxShadow: '0 0 0 1px rgba(255,255,255,0.12), 0 20px 60px rgba(0,0,0,0.5)', marginBottom: 20 }}
+        />
+        <h1 style={{ fontSize: 28, fontWeight: 900, color: 'rgba(255,255,255,0.92)', margin: 0, letterSpacing: '-0.02em' }}>Handi 0</h1>
+        <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.40)', marginTop: 6 }}>AI-powered round tracking</p>
       </div>
 
       {/* Sign-in card */}
-      <div className="w-full bg-white rounded-2xl p-6 shadow-xl">
-        <p className="text-center text-golf-700 font-medium mb-5">
+      <div style={{ width: '100%', maxWidth: 380, background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.11)', borderRadius: 24, padding: '28px 24px', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', position: 'relative', zIndex: 1 }}>
+        <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.50)', fontSize: 14, marginBottom: 20 }}>
           Sign in to track your rounds and get AI feedback
         </p>
 
         <button
           onClick={handleSignIn}
-          className="w-full flex items-center justify-center gap-3 bg-white border border-gray-200 rounded-xl py-4 px-5 min-h-[52px] shadow-sm hover:shadow-md active:scale-95 transition-all duration-150 cursor-pointer"
+          style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 14, padding: '14px 20px', minHeight: 52, cursor: 'pointer' }}
         >
           {/* Google logo SVG */}
           <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24">
@@ -62,13 +68,13 @@ export default function Login() {
               d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
             />
           </svg>
-          <span className="text-gray-700 font-semibold text-base">Sign in with Google</span>
+          <span style={{ color: 'rgba(255,255,255,0.88)', fontWeight: 600, fontSize: 16 }}>Sign in with Google</span>
         </button>
       </div>
 
       {/* Footer */}
       <footer className="absolute bottom-0 left-0 right-0 pb-8 px-4 text-center max-w-[412px] mx-auto">
-        <p className="text-golf-500 text-[11px] leading-relaxed">
+        <p className="text-[11px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.25)' }}>
           Copyright ⓒ 2026, shaun.yoo.ao All rights reserved.
           <br />
           Version 1.0.5

@@ -2,14 +2,14 @@
 
 :root {
   --bg-deep: #060f06;
-  --glass-bg: rgba(255, 255, 255, 0.07);
-  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-bg: rgba(255, 255, 255, 0.10);
+  --glass-border: rgba(255, 255, 255, 0.18);
   --glass-input-bg: rgba(255, 255, 255, 0.06);
   --text-primary: rgba(255, 255, 255, 0.92);
   --text-secondary: rgba(255, 255, 255, 0.50);
   --accent-green: rgba(100, 200, 100, 0.80);
-  --btn-bg: rgba(255, 255, 255, 0.13);
-  --btn-hover: rgba(255, 255, 255, 0.20);
+  --btn-bg: rgba(255, 255, 255, 0.18);
+  --btn-hover: rgba(255, 255, 255, 0.26);
 }
 
 /* ─── Glassmorphism card ────────────────────────────────────────────────────── */

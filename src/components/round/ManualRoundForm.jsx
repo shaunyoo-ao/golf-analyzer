@@ -74,20 +74,21 @@ export default function ManualRoundForm({ onSave, onClose }) {
 
       {/* Bottom sheet */}
       <div className="fixed bottom-0 left-0 right-0 z-50 max-w-[412px] mx-auto">
-        <div className="bg-white rounded-t-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
+        <div className="rounded-t-2xl max-h-[90vh] overflow-y-auto" style={{ background: 'rgba(10,22,10,0.96)', borderTop: '1px solid rgba(255,255,255,0.12)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}>
           {/* Handle */}
-          <div className="sticky top-0 bg-white z-10 pt-3 pb-2 px-4 border-b border-golf-100">
+          <div className="sticky top-0 z-10 pt-3 pb-2 px-4" style={{ background: 'rgba(10,22,10,0.98)', borderBottom: '1px solid rgba(255,255,255,0.10)' }}>
             <div className="flex justify-center mb-3">
-              <div className="w-10 h-1 bg-gray-200 rounded-full" />
+              <div className="w-10 h-1 rounded-full" style={{ background: 'rgba(255,255,255,0.25)' }} />
             </div>
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="font-bold text-golf-900 text-lg">Previous Round</h2>
-                <p className="text-xs text-golf-500">Add a past round to your history</p>
+                <h2 className="font-bold text-lg" style={{ color: 'var(--text-primary)' }}>Previous Round</h2>
+                <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>Add a past round to your history</p>
               </div>
               <button
                 onClick={onClose}
-                className="p-2 rounded-lg text-gray-400 min-h-[44px] min-w-[44px] flex items-center justify-center"
+                className="p-2 rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center"
+                style={{ color: 'var(--text-secondary)' }}
               >
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />

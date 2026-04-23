@@ -8,9 +8,7 @@ import ClubDistanceForm from '../components/profile/ClubDistanceForm';
 import FavoriteCourseForm from '../components/profile/FavoriteCourseForm';
 import CourseTrophySection from '../components/profile/CourseTrophySection';
 import CollapsibleSection from '../components/ui/CollapsibleSection';
-import Button from '../components/ui/Button';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
-import Card from '../components/ui/Card';
 import SaveProgressBar from '../components/ui/SaveProgressBar';
 
 export default function Profile() {
@@ -50,40 +48,61 @@ export default function Profile() {
     await signOutUser();
   };
 
+  const trophyCount = form.courseTrophies?.length ?? 0;
+
   return (
     <div className="flex flex-col gap-3">
       {/* Install app banner */}
       {canInstall && (
-        <Button fullWidth variant="secondary" onClick={installApp}>
+        <button
+          type="button"
+          onClick={installApp}
+          className="w-full btn-glass rounded-xl py-3 text-sm font-semibold min-h-[44px]"
+        >
           📲 Install to App Launcher
-        </Button>
+        </button>
       )}
 
-      {/* User identity card */}
-      <Card className="flex items-center gap-4">
-        {user?.photoURL ? (
-          <img
-            src={user.photoURL}
-            alt="Profile"
-            className="w-14 h-14 rounded-full border-2 border-golf-200"
-          />
-        ) : (
-          <div className="w-14 h-14 rounded-full bg-golf-200 flex items-center justify-center">
-            <span className="text-2xl text-golf-600">👤</span>
-          </div>
-        )}
-        <div className="flex-1 min-w-0">
-          <p className="font-bold text-golf-900 truncate">{user?.displayName || form.name || 'Golfer'}</p>
-          <p className="text-xs text-golf-500 truncate">{user?.email}</p>
+      {/* User identity card — floating avatar */}
+      <div className="relative mt-12 mb-1">
+        <div className="absolute left-1/2 -translate-x-1/2 -top-12 z-10">
+          {user?.photoURL ? (
+            <img
+              src={user.photoURL}
+              alt="Profile"
+              className="w-[88px] h-[88px] rounded-full"
+              style={{
+                border: '3px solid rgba(255,255,255,0.85)',
+                boxShadow: '0 0 24px rgba(255,255,255,0.22), 0 4px 20px rgba(0,0,0,0.50)',
+              }}
+            />
+          ) : (
+            <div
+              className="w-[88px] h-[88px] rounded-full flex items-center justify-center"
+              style={{
+                border: '3px solid rgba(255,255,255,0.85)',
+                background: 'rgba(62,118,69,0.60)',
+                boxShadow: '0 0 24px rgba(255,255,255,0.22), 0 4px 20px rgba(0,0,0,0.50)',
+              }}
+            >
+              <span className="text-3xl">👤</span>
+            </div>
+          )}
         </div>
-      </Card>
+        <div
+          className="rounded-2xl text-center pt-12 pb-5 px-4"
+          style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}
+        >
+          <p className="font-bold text-lg leading-tight" style={{ color: 'var(--text-primary)' }}>
+            {user?.displayName || form.name || 'Golfer'}
+          </p>
+          <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>{user?.email}</p>
+        </div>
+      </div>
 
       {/* Personal Info */}
       <CollapsibleSection title="Personal Info" subtitle="Age, height, weight, language">
-        <PersonalInfoForm
-          profile={form}
-          onChange={setForm}
-        />
+        <PersonalInfoForm profile={form} onChange={setForm} />
       </CollapsibleSection>
 
       {/* Club Distances */}
@@ -96,14 +115,22 @@ export default function Profile() {
         />
       </CollapsibleSection>
 
-      {/* Save (Personal Info + Club Distances only) */}
-      {saveError && <p className="text-sm text-red-500 text-center">{saveError}</p>}
+      {/* Save */}
+      {saveError && <p className="text-sm text-red-400 text-center">{saveError}</p>}
       {saveStep > 0
         ? <SaveProgressBar steps={SAVE_STEPS} step={saveStep} />
-        : <Button fullWidth size="lg" onClick={handleSave}>Save Profile</Button>
+        : (
+          <button
+            type="button"
+            onClick={handleSave}
+            className="w-full btn-glass rounded-2xl py-4 text-lg font-semibold min-h-[56px]"
+          >
+            Save Profile
+          </button>
+        )
       }
 
-      {/* Favorite Courses — immediate save on Add/Remove */}
+      {/* Favorite Courses */}
       <CollapsibleSection title="Favorite Courses" subtitle="Preload into round entry">
         <FavoriteCourseForm
           favorites={form.favoriteCourses || []}
@@ -115,14 +142,17 @@ export default function Profile() {
         />
       </CollapsibleSection>
 
-      {/* Trophies — immediate save on Add/Edit/Delete */}
+      {/* Trophies */}
       <CollapsibleSection
         title="🏆 Trophies"
         subtitle="Course records · Best scores"
         badge={
-          (form.courseTrophies?.length ?? 0) > 0 && (
-            <span className="text-xs bg-golf-100 text-golf-700 rounded-full px-2 py-0.5 font-semibold">
-              {form.courseTrophies.length}
+          trophyCount > 0 && (
+            <span
+              className="text-xs rounded-full px-2 py-0.5 font-semibold"
+              style={{ background: 'rgba(255,255,255,0.15)', color: 'var(--text-primary)' }}
+            >
+              {trophyCount}
             </span>
           )
         }
@@ -141,22 +171,37 @@ export default function Profile() {
       {/* Sign out */}
       {confirmLogout ? (
         <div className="flex gap-2">
-          <Button fullWidth variant="ghost" onClick={() => setConfirmLogout(false)}>
+          <button
+            type="button"
+            onClick={() => setConfirmLogout(false)}
+            className="flex-1 rounded-xl py-3 min-h-[44px] font-medium text-sm"
+            style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)', color: 'var(--text-secondary)' }}
+          >
             Cancel
-          </Button>
-          <Button fullWidth onClick={handleSignOut} className="bg-red-500 hover:bg-red-600 text-white">
+          </button>
+          <button
+            type="button"
+            onClick={handleSignOut}
+            className="flex-1 rounded-xl py-3 min-h-[44px] font-medium text-sm text-white"
+            style={{ background: 'rgba(239,68,68,0.65)', border: '1px solid rgba(239,68,68,0.40)' }}
+          >
             Yes, Log Out
-          </Button>
+          </button>
         </div>
       ) : (
-        <Button fullWidth variant="ghost" onClick={() => setConfirmLogout(true)}>
+        <button
+          type="button"
+          onClick={() => setConfirmLogout(true)}
+          className="w-full rounded-xl py-3 min-h-[44px] text-sm font-medium"
+          style={{ color: 'var(--text-secondary)' }}
+        >
           Log Out
-        </Button>
+        </button>
       )}
 
       {/* Copyright */}
-      <p className="text-center text-[11px] text-golf-400 leading-relaxed pt-1 pb-4">
-        Copyright ⓒ 2026, shaun.yoo.ao All rights reserved.{'\n'}
+      <p className="text-center text-[11px] leading-relaxed pt-1 pb-4" style={{ color: 'rgba(255,255,255,0.25)' }}>
+        Copyright ⓒ 2026, shaun.yoo.ao All rights reserved.
         <br />Version 1.0.5
       </p>
     </div>

@@ -1,7 +1,3 @@
-/**
- * variant: 'primary' | 'secondary' | 'ghost' | 'danger'
- * size: 'sm' | 'md' | 'lg'
- */
 export default function Button({
   children,
   variant = 'primary',
@@ -22,14 +18,10 @@ export default function Button({
   };
 
   const variants = {
-    primary:
-      'bg-golf-600 text-white hover:bg-golf-700 active:bg-golf-800 disabled:bg-golf-300 disabled:text-golf-600',
-    secondary:
-      'bg-golf-100 text-golf-800 hover:bg-golf-200 active:bg-golf-300 border border-golf-300',
-    ghost:
-      'bg-transparent text-golf-700 hover:bg-golf-100 active:bg-golf-200',
-    danger:
-      'bg-red-500 text-white hover:bg-red-600 active:bg-red-700',
+    primary: 'btn-glass',
+    secondary: 'btn-glass',
+    ghost: 'text-white/50 hover:bg-white/10 active:bg-white/15',
+    danger: 'bg-red-500/70 border border-red-400/40 text-white',
   };
 
   return (
@@ -42,7 +34,7 @@ export default function Button({
         sizes[size],
         variants[variant],
         fullWidth ? 'w-full' : '',
-        disabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer',
+        disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
         className,
       ]
         .filter(Boolean)

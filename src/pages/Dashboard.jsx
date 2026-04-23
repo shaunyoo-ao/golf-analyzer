@@ -21,9 +21,13 @@ function trend(values, higherIsBetter) {
 
 function StatCard({ label, value, trendVal }) {
   return (
-    <div className="flex flex-col items-center bg-golf-800 rounded-2xl p-3 border border-golf-700 min-w-0 gap-0.5">
-      <span className="text-xl font-black text-white leading-tight">{value ?? '—'}</span>
-      <span className="text-[10px] text-golf-400 text-center leading-tight">{label}</span>
+    <div className="glass-card !p-3 !rounded-2xl flex flex-col items-center min-w-0 gap-0.5">
+      <span className="text-xl font-black leading-tight" style={{ color: 'var(--text-primary)' }}>
+        {value ?? '—'}
+      </span>
+      <span className="text-[10px] text-center leading-tight" style={{ color: 'var(--text-secondary)' }}>
+        {label}
+      </span>
       {trendVal != null && (
         <span className={`text-xs leading-none ${trendVal ? 'text-green-400' : 'text-red-400'}`}>
           {trendVal ? '↗' : '↘'}
@@ -77,22 +81,22 @@ function ScoreTrendChart({ data, startDate, endDate }) {
     <svg viewBox={`0 0 ${W} ${H}`} className="w-full">
       {yTicks.map((v) => (
         <g key={v}>
-          <line x1={PAD.l} y1={yS(v)} x2={W - PAD.r} y2={yS(v)} stroke="#1e3a1e" strokeWidth={0.5} />
-          <text x={PAD.l - 3} y={yS(v) + 3.5} fontSize={8} textAnchor="end" fill="#4a7a4a">{v}</text>
+          <line x1={PAD.l} y1={yS(v)} x2={W - PAD.r} y2={yS(v)} stroke="rgba(255,255,255,0.08)" strokeWidth={0.5} />
+          <text x={PAD.l - 3} y={yS(v) + 3.5} fontSize={8} textAnchor="end" fill="rgba(255,255,255,0.35)">{v}</text>
         </g>
       ))}
       <line x1={PAD.l} y1={avgY} x2={W - PAD.r} y2={avgY}
-        stroke="#6db36d" strokeWidth={1.5} strokeDasharray="4,3" />
+        stroke="rgba(100,200,100,0.55)" strokeWidth={1.5} strokeDasharray="4,3" />
       {data.length >= 2 && (
-        <polyline points={pts} fill="none" stroke="#a8e6a8" strokeWidth={2}
+        <polyline points={pts} fill="none" stroke="rgba(100,200,100,0.85)" strokeWidth={2}
           strokeLinecap="round" strokeLinejoin="round" />
       )}
       {data.map((d, i) => (
         <circle key={i} cx={xS(d.date)} cy={yS(d.score)} r={3.5}
-          fill="#0d1f0d" stroke="#a8e6a8" strokeWidth={1.5} />
+          fill="#0d1f0d" stroke="rgba(100,200,100,0.85)" strokeWidth={1.5} />
       ))}
       {xLabels.map(({ x, label }) => (
-        <text key={label} x={x} y={H - 4} fontSize={7} textAnchor="middle" fill="#4a7a4a">{label}</text>
+        <text key={label} x={x} y={H - 4} fontSize={7} textAnchor="middle" fill="rgba(255,255,255,0.35)">{label}</text>
       ))}
     </svg>
   );
@@ -148,15 +152,15 @@ export default function Dashboard() {
   return (
     <div className="flex flex-col gap-4">
       {/* Handicap card */}
-      <div className="bg-golf-700 rounded-2xl border border-golf-600 text-center py-6 shadow-sm">
-        <p className="text-golf-300 text-sm font-medium uppercase tracking-wide">
+      <div className="glass-card text-center py-6">
+        <p className="text-sm font-medium uppercase tracking-wide" style={{ color: 'var(--text-secondary)' }}>
           Handicap Index
         </p>
-        <p className="text-6xl font-black text-white mt-2">
+        <p className="text-6xl font-black mt-2" style={{ color: 'var(--text-primary)' }}>
           {handicapIndex != null ? handicapIndex : '—'}
         </p>
         {handicapIndex == null && (
-          <p className="text-golf-400 text-xs mt-2">Log 8+ rounds to unlock</p>
+          <p className="text-xs mt-2" style={{ color: 'var(--text-secondary)' }}>Log 8+ rounds to unlock</p>
         )}
       </div>
 
@@ -190,8 +194,10 @@ export default function Dashboard() {
 
       {/* Score Trend chart */}
       <div>
-        <p className="text-[10px] text-golf-500 text-right mb-1">* Avg. values based on last 6 months</p>
-        <p className="text-xs font-bold text-golf-400 uppercase tracking-widest mb-2">
+        <p className="text-[10px] text-right mb-1" style={{ color: 'var(--text-secondary)' }}>
+          * Avg. values based on last 6 months
+        </p>
+        <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: 'var(--text-secondary)' }}>
           Cumulative Trends
         </p>
         <div className="flex gap-1 mb-2">
@@ -201,22 +207,21 @@ export default function Dashboard() {
               type="button"
               onClick={() => setPeriod(p)}
               className={`flex-1 text-xs py-1.5 rounded-lg font-semibold transition-colors ${
-                period === p
-                  ? 'bg-golf-600 text-white'
-                  : 'bg-golf-800 text-golf-400 border border-golf-700'
+                period === p ? 'btn-glass' : ''
               }`}
+              style={period !== p ? { color: 'var(--text-secondary)', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)' } : {}}
             >
               {p === '6m' ? '6 Months' : p === '12m' ? '12 Months' : '24 Months'}
             </button>
           ))}
         </div>
-        <Card className="bg-golf-800 border-golf-700 py-3 px-2">
-          <p className="text-[10px] font-bold text-golf-400 uppercase tracking-widest text-center mb-2">
+        <Card className="py-3 px-2">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-center mb-2" style={{ color: 'var(--text-secondary)' }}>
             Score Trend
           </p>
           {chartData.length >= 1
             ? <ScoreTrendChart key={period} data={chartData} startDate={cutoffStr} endDate={todayStr} />
-            : <p className="text-xs text-golf-500 text-center py-4">Not enough data for this period</p>
+            : <p className="text-xs text-center py-4" style={{ color: 'var(--text-secondary)' }}>Not enough data for this period</p>
           }
         </Card>
       </div>
@@ -224,8 +229,8 @@ export default function Dashboard() {
       {rounds.length === 0 && (
         <Card className="text-center py-8">
           <p className="text-4xl mb-2">🏌️</p>
-          <p className="text-golf-700 font-medium">No rounds yet</p>
-          <p className="text-golf-400 text-sm mt-1">Log your first round to get started</p>
+          <p className="font-medium" style={{ color: 'var(--text-primary)' }}>No rounds yet</p>
+          <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>Log your first round to get started</p>
         </Card>
       )}
     </div>

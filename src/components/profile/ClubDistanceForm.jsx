@@ -1,10 +1,9 @@
-import Input from '../ui/Input';
 import { WOODS, HYBRIDS, IRONS, WEDGES } from '../../utils/constants';
 
 function ClubInput({ label, value, onChange }) {
   return (
     <div className="flex items-center gap-2">
-      <span className="text-xs text-golf-700 w-28 shrink-0">{label}</span>
+      <span className="text-xs w-28 shrink-0" style={{ color: 'var(--text-secondary)' }}>{label}</span>
       <input
         type="number"
         inputMode="numeric"
@@ -13,7 +12,8 @@ function ClubInput({ label, value, onChange }) {
         value={value || ''}
         onChange={(e) => onChange(e.target.value ? Number(e.target.value) : '')}
         placeholder="m"
-        className="w-full rounded-lg border border-golf-200 bg-white px-3 py-2 text-base text-golf-900 min-h-[40px] focus:outline-none focus:ring-1 focus:ring-golf-500"
+        className="glass-input !py-2 !px-3 flex-1 !w-auto"
+        style={{ minHeight: 40 }}
       />
     </div>
   );
@@ -22,48 +22,25 @@ function ClubInput({ label, value, onChange }) {
 function WedgeInput({ label, data = {}, onChange }) {
   const set = (key, val) => onChange({ ...data, [key]: val });
   return (
-    <div className="bg-golf-50 rounded-xl p-3 border border-golf-100">
-      <p className="text-xs font-semibold text-golf-700 mb-2">{label}</p>
+    <div className="rounded-xl p-3" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)' }}>
+      <p className="text-xs font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>{label}</p>
       <div className="grid grid-cols-3 gap-2">
-        <div>
-          <label className="text-[10px] text-golf-500 block mb-1">Loft (°)</label>
-          <input
-            type="number"
-            inputMode="numeric"
-            min="30"
-            max="70"
-            value={data.loft || ''}
-            onChange={(e) => set('loft', e.target.value ? Number(e.target.value) : '')}
-            placeholder="°"
-            className="w-full rounded-lg border border-golf-200 bg-white px-2 py-2 text-base text-golf-900 min-h-[40px] focus:outline-none focus:ring-1 focus:ring-golf-500"
-          />
-        </div>
-        <div>
-          <label className="text-[10px] text-golf-500 block mb-1">Full (m)</label>
-          <input
-            type="number"
-            inputMode="numeric"
-            min="0"
-            max="200"
-            value={data.full || ''}
-            onChange={(e) => set('full', e.target.value ? Number(e.target.value) : '')}
-            placeholder="m"
-            className="w-full rounded-lg border border-golf-200 bg-white px-2 py-2 text-base text-golf-900 min-h-[40px] focus:outline-none focus:ring-1 focus:ring-golf-500"
-          />
-        </div>
-        <div>
-          <label className="text-[10px] text-golf-500 block mb-1">Half (m)</label>
-          <input
-            type="number"
-            inputMode="numeric"
-            min="0"
-            max="200"
-            value={data.half || ''}
-            onChange={(e) => set('half', e.target.value ? Number(e.target.value) : '')}
-            placeholder="m"
-            className="w-full rounded-lg border border-golf-200 bg-white px-2 py-2 text-base text-golf-900 min-h-[40px] focus:outline-none focus:ring-1 focus:ring-golf-500"
-          />
-        </div>
+        {[['loft', '°', 'Loft (°)', 30, 70], ['full', 'm', 'Full (m)', 0, 200], ['half', 'm', 'Half (m)', 0, 200]].map(([key, , lbl, min, max]) => (
+          <div key={key}>
+            <label className="text-[10px] block mb-1" style={{ color: 'var(--text-secondary)' }}>{lbl}</label>
+            <input
+              type="number"
+              inputMode="numeric"
+              min={min}
+              max={max}
+              value={data[key] || ''}
+              onChange={(e) => set(key, e.target.value ? Number(e.target.value) : '')}
+              placeholder={key === 'loft' ? '°' : 'm'}
+              className="glass-input !py-2 !px-2 !w-full"
+              style={{ minHeight: 40 }}
+            />
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -76,8 +53,16 @@ function BrandInput({ value, onChange }) {
       value={value || ''}
       onChange={(e) => onChange(e.target.value)}
       placeholder="Brand / Model (e.g. TaylorMade Qi10)"
-      className="w-full rounded-lg border border-golf-200 bg-white px-3 py-2 text-base text-golf-900 min-h-[40px] focus:outline-none focus:ring-1 focus:ring-golf-500 mb-2"
+      className="glass-input !mb-2"
     />
+  );
+}
+
+function SectionHeader({ label }) {
+  return (
+    <p className="text-xs font-bold uppercase tracking-wide mb-2" style={{ color: 'var(--text-secondary)' }}>
+      {label}
+    </p>
   );
 }
 
@@ -87,75 +72,55 @@ export default function ClubDistanceForm({ distances = {}, onChange, brands = {}
 
   return (
     <div className="flex flex-col gap-4">
-      <p className="text-xs text-golf-500">Enter carry distances in meters (m).</p>
+      <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>Enter carry distances in meters (m).</p>
 
       {/* Driver */}
       <div>
-        <p className="text-xs font-bold text-golf-600 uppercase tracking-wide mb-2">Driver</p>
+        <SectionHeader label="Driver" />
         <BrandInput value={brands.driver} onChange={(v) => setBrand('driver', v)} />
         <ClubInput label="Driver" value={distances['Driver']} onChange={(v) => set('Driver', v)} />
       </div>
 
       {/* Woods */}
       <div>
-        <p className="text-xs font-bold text-golf-600 uppercase tracking-wide mb-2">Woods</p>
+        <SectionHeader label="Woods" />
         <BrandInput value={brands.woods} onChange={(v) => setBrand('woods', v)} />
         <div className="flex flex-col gap-2">
           {WOODS.map((club) => (
-            <ClubInput
-              key={club}
-              label={club}
-              value={distances[club]}
-              onChange={(v) => set(club, v)}
-            />
+            <ClubInput key={club} label={club} value={distances[club]} onChange={(v) => set(club, v)} />
           ))}
         </div>
       </div>
 
       {/* Hybrids */}
       <div>
-        <p className="text-xs font-bold text-golf-600 uppercase tracking-wide mb-2">Hybrids</p>
+        <SectionHeader label="Hybrids" />
         <BrandInput value={brands.hybrids} onChange={(v) => setBrand('hybrids', v)} />
         <div className="flex flex-col gap-2">
           {HYBRIDS.map((club) => (
-            <ClubInput
-              key={club}
-              label={club}
-              value={distances[club]}
-              onChange={(v) => set(club, v)}
-            />
+            <ClubInput key={club} label={club} value={distances[club]} onChange={(v) => set(club, v)} />
           ))}
         </div>
       </div>
 
-      {/* Irons */}
+      {/* Irons (includes PW) */}
       <div>
-        <p className="text-xs font-bold text-golf-600 uppercase tracking-wide mb-2">Irons</p>
+        <SectionHeader label="Irons" />
         <BrandInput value={brands.irons} onChange={(v) => setBrand('irons', v)} />
         <div className="flex flex-col gap-2">
           {IRONS.map((club) => (
-            <ClubInput
-              key={club}
-              label={club}
-              value={distances[club]}
-              onChange={(v) => set(club, v)}
-            />
+            <ClubInput key={club} label={club} value={distances[club]} onChange={(v) => set(club, v)} />
           ))}
         </div>
       </div>
 
       {/* Wedges */}
       <div>
-        <p className="text-xs font-bold text-golf-600 uppercase tracking-wide mb-2">Wedges</p>
+        <SectionHeader label="Wedges" />
         <BrandInput value={brands.wedges} onChange={(v) => setBrand('wedges', v)} />
         <div className="flex flex-col gap-3">
           {WEDGES.map((w) => (
-            <WedgeInput
-              key={w.key}
-              label={w.label}
-              data={distances[w.key]}
-              onChange={(d) => set(w.key, d)}
-            />
+            <WedgeInput key={w.key} label={w.label} data={distances[w.key]} onChange={(d) => set(w.key, d)} />
           ))}
         </div>
       </div>

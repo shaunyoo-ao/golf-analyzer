@@ -27,12 +27,21 @@ export default function TopBar() {
   const showRefresh = REFRESH_PATHS.has(location.pathname);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-40 bg-golf-800 safe-top">
+    <header
+      className="fixed top-0 left-0 right-0 z-40 safe-top"
+      style={{
+        background: 'rgba(8, 18, 8, 0.82)',
+        borderBottom: '1px solid rgba(255,255,255,0.08)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+      }}
+    >
       <div className="flex items-center h-14 px-4 max-w-[412px] mx-auto">
         {canGoBack ? (
           <button
             onClick={() => navigate(-1)}
-            className="mr-3 p-1 rounded-lg text-golf-300 hover:text-white min-h-[44px] min-w-[44px] flex items-center justify-center"
+            className="mr-3 p-1 rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center"
+            style={{ color: 'var(--text-secondary)' }}
             aria-label="Go back"
           >
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -40,14 +49,15 @@ export default function TopBar() {
             </svg>
           </button>
         ) : (
-          <span className="text-golf-400 text-xl mr-2">⛳</span>
+          <span className="text-xl mr-2">⛳</span>
         )}
-        <h1 className="text-white font-bold text-lg flex-1">{title}</h1>
+        <h1 className="font-bold text-lg flex-1" style={{ color: 'var(--text-primary)' }}>{title}</h1>
         {showRefresh && (
           <button
             onClick={refresh}
             disabled={refreshing}
-            className="p-1 text-golf-300 hover:text-white min-h-[44px] min-w-[44px] flex items-center justify-center disabled:opacity-50"
+            className="p-1 min-h-[44px] min-w-[44px] flex items-center justify-center disabled:opacity-50"
+            style={{ color: 'var(--text-secondary)' }}
             aria-label="Refresh"
           >
             <svg

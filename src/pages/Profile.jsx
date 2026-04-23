@@ -202,7 +202,7 @@ export default function Profile() {
       {/* Copyright */}
       <p className="text-center text-[11px] leading-relaxed pt-1 pb-4" style={{ color: 'rgba(255,255,255,0.25)' }}>
         Copyright ⓒ 2026, shaun.yoo.ao All rights reserved.
-        <br />Version 1.0.5
+        <br />Version 1.0.6
       </p>
     </div>
   );

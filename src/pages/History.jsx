@@ -7,12 +7,16 @@ import Button from '../components/ui/Button';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import ManualRoundForm from '../components/round/ManualRoundForm';
 import FeedbackModal from '../components/ai/FeedbackModal';
+import UpcomingRoundForm from '../components/upcoming/UpcomingRoundForm';
+import { useUpcomingRound } from '../hooks/useUpcomingRound';
 
 export default function History() {
-  const { rounds, roundsLoading, hasLoaded, saveRound } = useData();
+  const { rounds, roundsLoading, hasLoaded, saveRound, profile } = useData();
   const navigate = useNavigate();
   const [showManual, setShowManual] = useState(false);
+  const [showUpcoming, setShowUpcoming] = useState(false);
   const [feedbackRoundId, setFeedbackRoundId] = useState(null);
+  const { saveUpcomingRound } = useUpcomingRound();
 
   if (!hasLoaded && roundsLoading) return <LoadingSpinner />;
 
@@ -28,9 +32,14 @@ export default function History() {
         <p className="text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--text-secondary)' }}>
           All Rounds ({rounds.length})
         </p>
-        <Button size="sm" variant="secondary" onClick={() => setShowManual(true)}>
-          + Previous Round
-        </Button>
+        <div className="flex gap-2">
+          <Button size="sm" variant="secondary" onClick={() => setShowUpcoming(true)}>
+            + Upcoming
+          </Button>
+          <Button size="sm" variant="secondary" onClick={() => setShowManual(true)}>
+            + Previous
+          </Button>
+        </div>
       </div>
 
       {/* Manual round form modal */}
@@ -38,6 +47,16 @@ export default function History() {
         <ManualRoundForm
           onSave={handleManualSave}
           onClose={() => setShowManual(false)}
+          favoriteCourses={profile?.favoriteCourses || []}
+        />
+      )}
+
+      {/* Upcoming round form modal */}
+      {showUpcoming && (
+        <UpcomingRoundForm
+          onSave={async (data) => { await saveUpcomingRound(data); setShowUpcoming(false); }}
+          onClose={() => setShowUpcoming(false)}
+          favoriteCourses={profile?.favoriteCourses || []}
         />
       )}
 

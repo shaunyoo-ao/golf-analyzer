@@ -93,3 +93,18 @@ export async function saveAIResponse(uid, roundId, data) {
     generatedAt: serverTimestamp(),
   });
 }
+
+// ─── Upcoming Round ──────────────────────────────────────────────────────────
+
+export async function getUpcomingRound(uid) {
+  const snap = await getDoc(doc(db, 'users', uid, 'upcomingRound', 'data'));
+  return snap.exists() ? snap.data() : null;
+}
+
+export async function saveUpcomingRound(uid, data) {
+  await setDoc(doc(db, 'users', uid, 'upcomingRound', 'data'), stripUndefined(data));
+}
+
+export async function deleteUpcomingRound(uid) {
+  await deleteDoc(doc(db, 'users', uid, 'upcomingRound', 'data'));
+}

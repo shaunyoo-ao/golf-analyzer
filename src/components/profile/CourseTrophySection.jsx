@@ -32,8 +32,8 @@ export default function CourseTrophySection({ trophies = [], uid, onChange }) {
         </p>
       )}
 
-      {/* 5-column circular grid */}
-      <div className="grid grid-cols-5 gap-2">
+      {/* 4-column circular grid */}
+      <div className="grid grid-cols-4 gap-2">
         {sorted.map((t) => (
           <TrophyCard key={t.id} trophy={t} onClick={() => setModal(t)} />
         ))}

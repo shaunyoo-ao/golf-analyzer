@@ -30,21 +30,19 @@ export default function TrophyCard({ trophy, onClick }) {
         style={{ border: '2px solid rgba(255,255,255,0.18)' }}
       >
         {trophy.imageUrl ? (
-          <img
-            src={trophy.imageUrl}
-            alt={trophy.courseName}
-            className="w-full h-full object-cover"
-          />
+          <img src={trophy.imageUrl} alt={trophy.courseName} className="w-full h-full object-cover" />
         ) : (
           <BallMarker initial={(trophy.courseName?.[0] || '?').toUpperCase()} />
         )}
       </div>
-      <p
-        className="text-[10px] text-center truncate w-full leading-tight px-0.5"
-        style={{ color: 'rgba(255,255,255,0.72)' }}
-      >
+      <p className="text-[10px] text-center truncate w-full leading-tight px-0.5" style={{ color: 'rgba(255,255,255,0.72)' }}>
         {trophy.courseName}
       </p>
+      {trophy.bestScore != null && (
+        <p className="text-[10px] font-bold leading-tight" style={{ color: 'var(--accent-green)' }}>
+          {trophy.bestScore}
+        </p>
+      )}
     </button>
   );
 }

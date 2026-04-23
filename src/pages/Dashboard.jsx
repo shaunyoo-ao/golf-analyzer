@@ -4,6 +4,9 @@ import { golfExperienceMonths } from '../utils/dateHelpers';
 import { handicapIndex as computeHandicapIndex } from '../utils/handicap';
 import Card from '../components/ui/Card';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
+import { useUpcomingRound } from '../hooks/useUpcomingRound';
+import UpcomingRoundSlot from '../components/upcoming/UpcomingRoundSlot';
+import UpcomingRoundModal from '../components/upcoming/UpcomingRoundModal';
 
 function mean(arr) {
   const v = arr.filter((x) => x != null && !isNaN(x));
@@ -107,8 +110,13 @@ const PERIOD_MONTHS = { '6m': 6, '12m': 12, '24m': 24 };
 export default function Dashboard() {
   const { profile, profileLoading, rounds, roundsLoading, hasLoaded } = useData();
   const [period, setPeriod] = useState('6m');
+  const { upcomingRound, deleteUpcomingRound } = useUpcomingRound();
+  const [showUpcomingModal, setShowUpcomingModal] = useState(false);
 
   if (!hasLoaded && (profileLoading || roundsLoading)) return <LoadingSpinner />;
+
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const activeUpcoming = upcomingRound?.date >= todayStr ? upcomingRound : null;
 
   const handicapIndex = computeHandicapIndex(rounds) ?? profile?.handicapIndex;
   const expMonths = golfExperienceMonths(profile?.golfStartDate);
@@ -139,7 +147,6 @@ export default function Dashboard() {
   const mPutts = mean(puttsVals);
 
   // Chart: filter by selected period, date-positioned
-  const todayStr = new Date().toISOString().slice(0, 10);
   const cutoff = new Date();
   cutoff.setMonth(cutoff.getMonth() - PERIOD_MONTHS[period]);
   const cutoffStr = cutoff.toISOString().slice(0, 10);
@@ -151,6 +158,20 @@ export default function Dashboard() {
 
   return (
     <div className="flex flex-col gap-4">
+      {/* Upcoming Round slot */}
+      {activeUpcoming && (
+        <UpcomingRoundSlot upcomingRound={activeUpcoming} onClick={() => setShowUpcomingModal(true)} />
+      )}
+
+      {/* Upcoming Round modal */}
+      {showUpcomingModal && activeUpcoming && (
+        <UpcomingRoundModal
+          upcomingRound={activeUpcoming}
+          onDelete={async () => { await deleteUpcomingRound(); setShowUpcomingModal(false); }}
+          onClose={() => setShowUpcomingModal(false)}
+        />
+      )}
+
       {/* Handicap card */}
       <div className="glass-card text-center py-6">
         <p className="text-sm font-medium uppercase tracking-wide" style={{ color: 'var(--text-secondary)' }}>

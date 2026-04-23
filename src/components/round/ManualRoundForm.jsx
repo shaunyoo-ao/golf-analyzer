@@ -1,7 +1,3 @@
-/**
- * Manual "Previous Round" entry form.
- * Intentionally EXCLUDES Driver Direction, Iron Direction, and Swing Form Markers.
- */
 import { useState } from 'react';
 import { COUNTRIES } from '../../utils/constants';
 import { todayISO } from '../../utils/dateHelpers';
@@ -34,7 +30,7 @@ function emptyForm() {
   };
 }
 
-export default function ManualRoundForm({ onSave, onClose }) {
+export default function ManualRoundForm({ onSave, onClose, favoriteCourses = [] }) {
   const [form, setForm] = useState(emptyForm());
   const [errors, setErrors] = useState({});
   const [saveStep, setSaveStep] = useState(0);
@@ -45,6 +41,11 @@ export default function ManualRoundForm({ onSave, onClose }) {
   ];
 
   const set = (key, val) => setForm((f) => ({ ...f, [key]: val }));
+
+  const loadFavorite = (idx) => {
+    const fav = favoriteCourses[Number(idx)];
+    if (fav) setForm((f) => ({ ...f, courseName: fav.courseName || f.courseName, country: fav.country || f.country }));
+  };
 
   const validate = () => {
     const e = {};
@@ -103,45 +104,28 @@ export default function ManualRoundForm({ onSave, onClose }) {
               <JsonAutoFill onApply={(patch) => setForm((f) => ({ ...f, ...patch }))} />
             </CollapsibleSection>
 
-            {/* Required fields */}
-            <Input
-              label="Course Name"
-              id="m-courseName"
-              value={form.courseName}
-              onChange={(e) => set('courseName', e.target.value)}
-              placeholder="e.g. Pebble Beach"
-              error={errors.courseName}
-            />
+            {/* Date */}
+            <Input label="Date" id="m-date" type="date" value={form.date} onChange={(e) => set('date', e.target.value)} error={errors.date} />
 
-            <Select
-              label="Country"
-              id="m-country"
-              options={COUNTRY_OPTIONS}
-              value={form.country}
-              onChange={(e) => set('country', e.target.value)}
-              error={errors.country}
-            />
+            {/* Load Favorite Course */}
+            {favoriteCourses.length > 0 && (
+              <Select
+                label="Load Favorite Course"
+                id="m-fav"
+                options={[{ value: '', label: 'Select to preload…' }, ...favoriteCourses.map((f, i) => ({ value: String(i), label: `${f.courseName} (${f.country})` }))]}
+                value=""
+                onChange={(e) => { if (e.target.value !== '') loadFavorite(e.target.value); }}
+              />
+            )}
 
-            <div className="grid grid-cols-2 gap-3">
-              <Input
-                label="Date"
-                id="m-date"
-                type="date"
-                value={form.date}
-                onChange={(e) => set('date', e.target.value)}
-                error={errors.date}
-              />
-              <Input
-                label="Total Score"
-                id="m-totalScore"
-                type="number"
-                inputMode="numeric"
-                value={form.totalScore}
-                onChange={(e) => set('totalScore', e.target.value)}
-                placeholder="—"
-                error={errors.totalScore}
-              />
-            </div>
+            {/* Country */}
+            <Select label="Country" id="m-country" options={COUNTRY_OPTIONS} value={form.country} onChange={(e) => set('country', e.target.value)} error={errors.country} />
+
+            {/* Course Name */}
+            <Input label="Course Name" id="m-courseName" value={form.courseName} onChange={(e) => set('courseName', e.target.value)} placeholder="e.g. Pebble Beach" error={errors.courseName} />
+
+            {/* Total Score */}
+            <Input label="Total Score" id="m-totalScore" type="number" inputMode="numeric" value={form.totalScore} onChange={(e) => set('totalScore', e.target.value)} placeholder="—" error={errors.totalScore} />
 
             {/* Optional handicap fields */}
             <div className="grid grid-cols-2 gap-3">

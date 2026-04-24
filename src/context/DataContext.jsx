@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { useProfile } from '../hooks/useProfile';
 import { useRounds } from '../hooks/useRounds';
+import { useUpcomingRound } from '../hooks/useUpcomingRound';
 
 const DataContext = createContext(null);
 
@@ -13,8 +14,12 @@ export function DataProvider({ children }) {
     rounds, loading: rL, error: rE,
     saveRound: rawSave, removeRound, refetch: refetchRounds,
   } = useRounds();
+  const {
+    upcomingRound, loading: urL,
+    saveUpcomingRound, deleteUpcomingRound, refetch: refetchUpcoming,
+  } = useUpcomingRound();
 
-  // hasLoaded becomes true after both hooks finish their first fetch and never resets.
+  // hasLoaded becomes true after profile + rounds finish their first fetch.
   const pRef = useRef(false);
   const rRef = useRef(false);
   const [hasLoaded, setHasLoaded] = useState(false);
@@ -29,11 +34,11 @@ export function DataProvider({ children }) {
     if (refreshing) return;
     setRefreshing(true);
     try {
-      await Promise.all([refetchProfile(), refetchRounds()]);
+      await Promise.all([refetchProfile(), refetchRounds(), refetchUpcoming()]);
     } finally {
       setRefreshing(false);
     }
-  }, [refreshing, refetchProfile, refetchRounds]);
+  }, [refreshing, refetchProfile, refetchRounds, refetchUpcoming]);
 
   // After saving a round, re-fetch profile to sync handicapIndex.
   const saveRound = useCallback(
@@ -50,6 +55,7 @@ export function DataProvider({ children }) {
       value={{
         profile, profileLoading: pL, profileError: pE, updateProfile,
         rounds, roundsLoading: rL, roundsError: rE, saveRound, removeRound,
+        upcomingRound, upcomingRoundLoading: urL, saveUpcomingRound, deleteUpcomingRound,
         hasLoaded, refreshing, refresh,
       }}
     >

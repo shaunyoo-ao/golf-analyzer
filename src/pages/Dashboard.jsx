@@ -4,7 +4,6 @@ import { golfExperienceMonths } from '../utils/dateHelpers';
 import { handicapIndex as computeHandicapIndex } from '../utils/handicap';
 import Card from '../components/ui/Card';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
-import { useUpcomingRound } from '../hooks/useUpcomingRound';
 import UpcomingRoundSlot from '../components/upcoming/UpcomingRoundSlot';
 import UpcomingRoundModal from '../components/upcoming/UpcomingRoundModal';
 
@@ -108,9 +107,8 @@ function ScoreTrendChart({ data, startDate, endDate }) {
 const PERIOD_MONTHS = { '6m': 6, '12m': 12, '24m': 24 };
 
 export default function Dashboard() {
-  const { profile, profileLoading, rounds, roundsLoading, hasLoaded } = useData();
+  const { profile, profileLoading, rounds, roundsLoading, hasLoaded, upcomingRound, deleteUpcomingRound } = useData();
   const [period, setPeriod] = useState('6m');
-  const { upcomingRound, deleteUpcomingRound } = useUpcomingRound();
   const [showUpcomingModal, setShowUpcomingModal] = useState(false);
 
   if (!hasLoaded && (profileLoading || roundsLoading)) return <LoadingSpinner />;

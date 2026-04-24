@@ -23,6 +23,7 @@ export const wmoDesc = (c) => WMO_DESC[c] ?? 'Unknown';
 
 // Session-level weather cache — persists across modal opens until page reload
 const _weatherCache = new Map();
+const _cacheTimestamps = new Map(); // key → epoch ms when data was fetched
 
 // Extract the most distinctive part of a course name for search
 function extractSearchKeyword(courseName) {
@@ -105,15 +106,18 @@ export async function geocodeCourse(courseName, country) {
   }
 }
 
+// Returns { hours, fetchedAt } where fetchedAt is epoch ms of the last fetch.
 export async function fetchWeather(lat, lng, date, force = false) {
   const key = `${lat},${lng},${date}`;
-  if (!force && _weatherCache.has(key)) return _weatherCache.get(key);
+  if (!force && _weatherCache.has(key)) {
+    return { hours: _weatherCache.get(key), fetchedAt: _cacheTimestamps.get(key) };
+  }
 
   const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&hourly=temperature_2m,precipitation_probability,weathercode,windspeed_10m&timezone=auto&start_date=${date}&end_date=${date}`;
   const r = await fetch(url);
   const d = await r.json();
   if (!d.hourly) throw new Error('Weather data unavailable');
-  const result = d.hourly.time.map((t, i) => ({
+  const hours = d.hourly.time.map((t, i) => ({
     time: t.slice(11, 16),
     icon: wmoIcon(d.hourly.weathercode[i]),
     desc: wmoDesc(d.hourly.weathercode[i]),
@@ -121,6 +125,8 @@ export async function fetchWeather(lat, lng, date, force = false) {
     precip: d.hourly.precipitation_probability[i],
     wind: Math.round(d.hourly.windspeed_10m[i]),
   }));
-  _weatherCache.set(key, result);
-  return result;
+  const fetchedAt = Date.now();
+  _weatherCache.set(key, hours);
+  _cacheTimestamps.set(key, fetchedAt);
+  return { hours, fetchedAt };
 }

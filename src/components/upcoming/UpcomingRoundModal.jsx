@@ -3,8 +3,18 @@ import { fetchWeather } from '../../utils/weatherApi';
 import { formatDate } from '../../utils/dateHelpers';
 import Button from '../ui/Button';
 
+function fmtFetchedAt(ms) {
+  const d = new Date(ms);
+  const mo = String(d.getMonth() + 1).padStart(2, '0');
+  const dy = String(d.getDate()).padStart(2, '0');
+  const hh = String(d.getHours()).padStart(2, '0');
+  const mm = String(d.getMinutes()).padStart(2, '0');
+  return `${mo}/${dy} ${hh}:${mm}`;
+}
+
 export default function UpcomingRoundModal({ upcomingRound, onDelete, onClose }) {
   const [hours, setHours] = useState(null);
+  const [fetchedAt, setFetchedAt] = useState(null);
   const [weatherError, setWeatherError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -15,7 +25,7 @@ export default function UpcomingRoundModal({ upcomingRound, onDelete, onClose })
     setLoading(true);
     setWeatherError(null);
     fetchWeather(upcomingRound.lat, upcomingRound.lng, upcomingRound.date)
-      .then((h) => { setHours(h); setLoading(false); })
+      .then(({ hours: h, fetchedAt: fa }) => { setHours(h); setFetchedAt(fa); setLoading(false); })
       .catch(() => { setWeatherError('Weather data unavailable'); setLoading(false); });
   }, [upcomingRound]);
 
@@ -25,7 +35,7 @@ export default function UpcomingRoundModal({ upcomingRound, onDelete, onClose })
     setLoading(true);
     setWeatherError(null);
     fetchWeather(upcomingRound.lat, upcomingRound.lng, upcomingRound.date, true)
-      .then((h) => { setHours(h); setLoading(false); })
+      .then(({ hours: h, fetchedAt: fa }) => { setHours(h); setFetchedAt(fa); setLoading(false); })
       .catch(() => { setWeatherError('Weather data unavailable'); setLoading(false); });
   };
 
@@ -80,9 +90,16 @@ export default function UpcomingRoundModal({ upcomingRound, onDelete, onClose })
 
           {dayHours.length > 0 && !loading && (
             <div className="flex flex-col gap-0.5">
-              <p className="text-xs font-semibold uppercase tracking-wide mb-2" style={{ color: 'var(--text-secondary)' }}>
-                Hourly Forecast · {upcomingRound.geocodedName || upcomingRound.courseName}
-              </p>
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--text-secondary)' }}>
+                  Hourly Forecast · {upcomingRound.geocodedName || upcomingRound.courseName}
+                </p>
+                {fetchedAt && (
+                  <p className="text-[10px]" style={{ color: 'rgba(255,255,255,0.30)' }}>
+                    Updated {fmtFetchedAt(fetchedAt)}
+                  </p>
+                )}
+              </div>
               <div className="grid grid-cols-5 text-[10px] font-semibold uppercase px-2 pb-1" style={{ color: 'var(--text-secondary)' }}>
                 <span>Time</span><span className="text-center">Sky</span><span className="text-center">Temp</span><span className="text-center">Rain</span><span className="text-center">Wind</span>
               </div>

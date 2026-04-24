@@ -10,7 +10,7 @@ import CourseTrophySection from '../components/profile/CourseTrophySection';
 import CollapsibleSection from '../components/ui/CollapsibleSection';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import SaveProgressBar from '../components/ui/SaveProgressBar';
-import { buildBg } from '../components/layout/AppShell';
+import { setBgUrl } from '../components/layout/AppShell';
 
 export default function Profile() {
   const { user } = useAuth();
@@ -32,7 +32,7 @@ export default function Profile() {
     const reader = new FileReader();
     reader.onload = (ev) => {
       localStorage.setItem('handi0_bg', ev.target.result);
-      document.body.style.background = buildBg(ev.target.result);
+      setBgUrl(ev.target.result);
       setBgPreview(ev.target.result);
     };
     reader.readAsDataURL(file);
@@ -40,7 +40,7 @@ export default function Profile() {
 
   const resetBg = () => {
     localStorage.removeItem('handi0_bg');
-    document.body.style.background = buildBg('/bg.jpg');
+    setBgUrl('/bg.jpg');
     setBgPreview(null);
   };
 

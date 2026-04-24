@@ -6,32 +6,45 @@ import { DataProvider } from '../../context/DataContext';
 
 const OVERLAY = 'rgba(4,10,4,0.30)';
 
-function buildBg(url) {
-  return `linear-gradient(${OVERLAY}, ${OVERLAY}), url(${url}) center/cover fixed`;
+// Update the background image shown by AppShell's fixed bg-div.
+// Uses a CSS custom property on <html> so Profile.jsx can call this too.
+export function setBgUrl(rawUrl) {
+  const safe = rawUrl || '/bg.jpg';
+  const cssVal = safe.startsWith('data:') ? `url("${safe}")` : `url(${safe})`;
+  document.documentElement.style.setProperty('--app-bg-image', cssVal);
 }
 
 export default function AppShell() {
   useEffect(() => {
-    const bg = localStorage.getItem('handi0_bg') || '/bg.jpg';
-    document.body.style.background = buildBg(bg);
-    return () => { document.body.style.background = ''; };
+    setBgUrl(localStorage.getItem('handi0_bg') || '/bg.jpg');
+    return () => document.documentElement.style.removeProperty('--app-bg-image');
   }, []);
 
   return (
-    <DataProvider>
-      {/* No overlay div — body carries image+overlay as one layer.
-          backdrop-filter on cards now directly blurs the body background. */}
-      <div className="min-h-screen max-w-[412px] mx-auto">
-        <TopBar />
-        <main className="relative pt-14 pb-20 min-h-screen">
-          <div className="px-4 py-4">
-            <Outlet />
-          </div>
-        </main>
-        <BottomNav />
-      </div>
-    </DataProvider>
+    <>
+      {/* Fixed background layer — position:fixed (not background-attachment:fixed)
+          so Chrome's backdrop-filter compositor can correctly sample it. */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: 'fixed',
+          inset: 0,
+          zIndex: -1,
+          background: `linear-gradient(${OVERLAY}, ${OVERLAY}), var(--app-bg-image, url(/bg.jpg)) center/cover no-repeat`,
+          pointerEvents: 'none',
+        }}
+      />
+      <DataProvider>
+        <div className="min-h-screen max-w-[412px] mx-auto">
+          <TopBar />
+          <main className="relative pt-14 pb-20 min-h-screen">
+            <div className="px-4 py-4">
+              <Outlet />
+            </div>
+          </main>
+          <BottomNav />
+        </div>
+      </DataProvider>
+    </>
   );
 }
-
-export { buildBg };

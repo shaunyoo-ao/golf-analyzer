@@ -4,7 +4,7 @@
   --bg-deep: #060f06;
 
   /* Glass card — low opacity so blurred background image shows through */
-  --glass-bg:     rgba(255, 255, 255, 0.03);
+  --glass-bg:     rgba(255, 255, 255, 0.10);
   --glass-border: rgba(255, 255, 255, 0.18);
 
   /* Layered shadow: outer depth + inset top-edge light refraction */

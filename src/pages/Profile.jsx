@@ -19,6 +19,29 @@ export default function Profile() {
   const [saveStep, setSaveStep] = useState(0);
   const [saveError, setSaveError] = useState(null);
   const [confirmLogout, setConfirmLogout] = useState(false);
+  const [bgPreview, setBgPreview] = useState(() => localStorage.getItem('handi0_bg'));
+
+  const handleBgUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+      alert('Image too large (max 2MB). Recommend under 500KB for best performance.');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      localStorage.setItem('handi0_bg', ev.target.result);
+      setBgPreview(ev.target.result);
+      window.location.reload();
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const resetBg = () => {
+    localStorage.removeItem('handi0_bg');
+    setBgPreview(null);
+    window.location.reload();
+  };
 
   const SAVE_STEPS = [
     { label: 'Saving profile...', pct: 50 },
@@ -166,6 +189,32 @@ export default function Profile() {
             await updateProfile(updated);
           }}
         />
+      </CollapsibleSection>
+
+      {/* Background Image */}
+      <CollapsibleSection title="Background Image" subtitle="Customize app wallpaper">
+        <div className="flex flex-col gap-3">
+          {bgPreview && (
+            <div className="relative w-full h-24 rounded-xl overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.12)' }}>
+              <img src={bgPreview} className="w-full h-full object-cover" alt="Current background" />
+              <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.30)' }} />
+              <span className="absolute bottom-2 left-2 text-xs" style={{ color: 'rgba(255,255,255,0.70)' }}>Current</span>
+            </div>
+          )}
+          <label className="w-full btn-glass rounded-xl py-3 text-sm font-semibold min-h-[44px] flex items-center justify-center cursor-pointer">
+            📷 Choose Image
+            <input type="file" accept="image/*" className="hidden" onChange={handleBgUpload} />
+          </label>
+          {bgPreview && (
+            <button type="button" onClick={resetBg} className="w-full rounded-xl py-2.5 text-sm min-h-[44px]" style={{ color: 'var(--text-secondary)' }}>
+              Reset to Default
+            </button>
+          )}
+          <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+            Recommended: JPEG under <strong style={{ color: 'var(--text-primary)' }}>500KB</strong> (e.g. 1280×720px).
+            {' '}Firebase Spark plan does not include cloud storage — image is saved on this device only and will not sync to other devices.
+          </p>
+        </div>
       </CollapsibleSection>
 
       {/* Sign out */}

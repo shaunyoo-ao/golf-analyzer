@@ -33,3 +33,9 @@ export function formatDate(dateStr) {
 export function todayISO() {
   return new Date().toISOString().slice(0, 10);
 }
+
+const DAYS_SHORT = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+/** Returns 3-letter day abbreviation for a YYYY-MM-DD string */
+export function dayOfWeek(dateStr) {
+  return DAYS_SHORT[new Date(dateStr + 'T12:00:00').getDay()];
+}

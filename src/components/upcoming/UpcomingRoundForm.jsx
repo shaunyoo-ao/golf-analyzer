@@ -57,7 +57,7 @@ export default function UpcomingRoundForm({ onSave, onClose, favoriteCourses = [
     <>
       <div className="fixed inset-0 bg-black/50 z-50" onClick={onClose} />
       <div className="fixed bottom-0 left-0 right-0 z-50 max-w-[412px] mx-auto">
-        <div className="rounded-t-2xl max-h-[85vh] overflow-y-auto" style={{ background: 'rgba(10,22,10,0.96)', borderTop: '1px solid rgba(255,255,255,0.12)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}>
+        <div className="rounded-t-2xl max-h-[85vh] overflow-y-auto" style={{ background: 'rgba(10,22,10,0.96)', borderTop: '1px solid rgba(255,255,255,0.12)', backdropFilter: 'blur(20px) saturate(160%)', WebkitBackdropFilter: 'blur(20px) saturate(160%)', boxShadow: '0 -8px 40px rgba(0,0,0,0.50), inset 0 1px 0 rgba(255,255,255,0.12)' }}>
           <div className="sticky top-0 z-10 pt-3 pb-2 px-4" style={{ background: 'rgba(10,22,10,0.98)', borderBottom: '1px solid rgba(255,255,255,0.10)' }}>
             <div className="flex justify-center mb-3"><div className="w-10 h-1 rounded-full" style={{ background: 'rgba(255,255,255,0.25)' }} /></div>
             <div className="flex items-center justify-between">

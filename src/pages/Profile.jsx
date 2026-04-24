@@ -114,7 +114,7 @@ export default function Profile() {
         </div>
         <div
           className="rounded-2xl text-center pt-12 pb-5 px-4"
-          style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}
+          style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', backdropFilter: 'blur(16px) saturate(160%)', WebkitBackdropFilter: 'blur(16px) saturate(160%)', boxShadow: 'var(--glass-shadow)' }}
         >
           <p className="font-bold text-lg leading-tight" style={{ color: 'var(--text-primary)' }}>
             {user?.displayName || form.name || 'Golfer'}

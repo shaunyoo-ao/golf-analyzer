@@ -34,7 +34,7 @@ export default function UpcomingRoundModal({ upcomingRound, onDelete, onClose })
   return (
     <div className="fixed inset-0 z-50 flex flex-col">
       <div className="absolute inset-0 bg-black/60" onClick={onClose} />
-      <div className="relative mt-auto w-full max-h-[90vh] rounded-t-2xl flex flex-col" style={{ background: 'rgba(10,22,10,0.96)', borderTop: '1px solid rgba(255,255,255,0.12)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}>
+      <div className="relative mt-auto w-full max-h-[90vh] rounded-t-2xl flex flex-col" style={{ background: 'rgba(10,22,10,0.96)', borderTop: '1px solid rgba(255,255,255,0.12)', backdropFilter: 'blur(20px) saturate(160%)', WebkitBackdropFilter: 'blur(20px) saturate(160%)', boxShadow: '0 -8px 40px rgba(0,0,0,0.50), inset 0 1px 0 rgba(255,255,255,0.12)' }}>
         {/* Header */}
         <div className="flex items-center justify-between px-4 pt-4 pb-3" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
           <div>

@@ -2,23 +2,45 @@
 
 :root {
   --bg-deep: #060f06;
-  --glass-bg: rgba(255, 255, 255, 0.10);
-  --glass-border: rgba(255, 255, 255, 0.18);
+
+  /* Glass card — reduced opacity so blurred background shows through clearly */
+  --glass-bg:     rgba(255, 255, 255, 0.06);
+  --glass-border: rgba(255, 255, 255, 0.15);
+
+  /* Layered shadow: outer depth + inset top-edge light refraction */
+  --glass-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.35),
+    0 1px 4px  rgba(0, 0, 0, 0.20),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+
   --glass-input-bg: rgba(255, 255, 255, 0.06);
-  --text-primary: rgba(255, 255, 255, 0.92);
+  --text-primary:   rgba(255, 255, 255, 0.92);
   --text-secondary: rgba(255, 255, 255, 0.50);
-  --accent-green: rgba(100, 200, 100, 0.80);
-  --btn-bg: rgba(255, 255, 255, 0.18);
-  --btn-hover: rgba(255, 255, 255, 0.26);
+  --accent-green:   rgba(100, 200, 100, 0.80);
+  --btn-bg:         rgba(255, 255, 255, 0.16);
+  --btn-hover:      rgba(255, 255, 255, 0.24);
 }
 
 /* ─── Glassmorphism card ────────────────────────────────────────────────────── */
+/*
+ * Design notes:
+ *   background 6% white  — transparent enough to reveal blurred backdrop
+ *   saturate(160%)       — boosts color vibrancy of the background behind glass
+ *   blur(16px)           — enough frosting without over-softening detail
+ *   inset shadow         — simulates light hitting the top glass edge
+ *   outer shadow         — lifts the card off the background plane
+ *
+ * Performance: backdrop-filter triggers GPU compositing automatically.
+ * Add `will-change: transform` only on cards that animate (e.g. modals sliding
+ * in); avoid setting it globally — each compositing layer costs ~1 MB VRAM.
+ */
 .glass-card {
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
   border-radius: 20px;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  box-shadow: var(--glass-shadow);
   padding: 20px;
 }
 
@@ -72,17 +94,19 @@
 /* ─── Glass primary / CTA button ────────────────────────────────────────────── */
 .btn-glass {
   background: var(--btn-bg);
-  border: 1px solid rgba(255, 255, 255, 0.20);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   color: var(--text-primary);
   font-weight: 600;
   cursor: pointer;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px) saturate(140%);
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.20), inset 0 1px 0 rgba(255, 255, 255, 0.10);
   transition: background 0.2s, transform 0.1s;
 }
 
 .btn-glass:active:not(:disabled) {
   background: var(--btn-hover);
+  transform: scale(0.98);
 }
 
 .btn-glass:disabled {

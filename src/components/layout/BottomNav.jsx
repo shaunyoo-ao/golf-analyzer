@@ -44,10 +44,10 @@ export default function BottomNav() {
     <nav
       className="fixed bottom-0 left-0 right-0 z-40 safe-bottom"
       style={{
-        background: 'rgba(8, 18, 8, 0.72)',
-        borderTop: '1px solid rgba(255,255,255,0.18)',
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
+        background: 'var(--nav-bg)',
+        borderTop: '1px solid var(--nav-border)',
+        backdropFilter: 'blur(20px) saturate(180%)',
+        WebkitBackdropFilter: 'blur(20px) saturate(180%)',
       }}
     >
       <div className="flex max-w-[412px] mx-auto">
@@ -56,21 +56,11 @@ export default function BottomNav() {
             key={tab.to}
             to={tab.to}
             end={tab.to === '/'}
-            className={({ isActive }) =>
-              [
-                'flex-1 flex flex-col items-center justify-center gap-1 min-h-[60px] py-2 text-xs font-medium transition-colors',
-                isActive ? 'text-white' : 'text-white/40',
-              ].join(' ')
-            }
+            className="flex-1 flex flex-col items-center justify-center gap-1 min-h-[60px] py-2 text-xs font-medium transition-colors"
+            style={({ isActive }) => ({ color: isActive ? 'var(--nav-active)' : 'var(--nav-inactive)' })}
           >
-            {({ isActive }) => (
-              <>
-                <span className={isActive ? 'text-white' : 'text-white/40'}>
-                  {tab.icon}
-                </span>
-                <span>{tab.label}</span>
-              </>
-            )}
+            {tab.icon}
+            <span>{tab.label}</span>
           </NavLink>
         ))}
       </div>

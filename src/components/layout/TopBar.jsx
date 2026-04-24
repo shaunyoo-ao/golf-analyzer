@@ -30,10 +30,10 @@ export default function TopBar() {
     <header
       className="fixed top-0 left-0 right-0 z-40 safe-top"
       style={{
-        background: 'rgba(8, 18, 8, 0.82)',
-        borderBottom: '1px solid rgba(255,255,255,0.08)',
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
+        background: 'var(--nav-bg)',
+        borderBottom: '1px solid var(--nav-border)',
+        backdropFilter: 'blur(20px) saturate(180%)',
+        WebkitBackdropFilter: 'blur(20px) saturate(180%)',
       }}
     >
       <div className="flex items-center h-14 px-4 max-w-[412px] mx-auto">
@@ -41,7 +41,7 @@ export default function TopBar() {
           <button
             onClick={() => navigate(-1)}
             className="mr-3 p-1 rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center"
-            style={{ color: 'var(--text-secondary)' }}
+            style={{ color: 'var(--nav-inactive)' }}
             aria-label="Go back"
           >
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -51,13 +51,13 @@ export default function TopBar() {
         ) : (
           <img src="/icons/icon-180.png" alt="" className="w-7 h-7 rounded-md mr-2" />
         )}
-        <h1 className="font-bold text-lg flex-1" style={{ color: 'var(--text-primary)' }}>{title}</h1>
+        <h1 className="font-bold text-lg flex-1" style={{ color: 'var(--nav-active)' }}>{title}</h1>
         {showRefresh && (
           <button
             onClick={refresh}
             disabled={refreshing}
             className="p-1 min-h-[44px] min-w-[44px] flex items-center justify-center disabled:opacity-50"
-            style={{ color: 'var(--text-secondary)' }}
+            style={{ color: 'var(--nav-inactive)' }}
             aria-label="Refresh"
           >
             <svg

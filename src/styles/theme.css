@@ -3,7 +3,7 @@
 :root {
   --bg-deep: #060f06;
 
-  /* Glass card — low opacity so blurred background image shows through */
+  /* Glass card */
   --glass-bg:     rgba(255, 255, 255, 0.10);
   --glass-border: rgba(255, 255, 255, 0.18);
 
@@ -19,16 +19,32 @@
   --accent-green:   rgba(100, 200, 100, 0.80);
   --btn-bg:         rgba(255, 255, 255, 0.16);
   --btn-hover:      rgba(255, 255, 255, 0.24);
+
+  /* Navigation bars — default: black glass (dark mode / no preference) */
+  --nav-bg:       rgba(0, 0, 0, 0.82);
+  --nav-border:   rgba(255, 255, 255, 0.12);
+  --nav-active:   rgba(255, 255, 255, 0.95);
+  --nav-inactive: rgba(255, 255, 255, 0.38);
+}
+
+/* Navigation bars: white glass when system is in light mode */
+@media (prefers-color-scheme: light) {
+  :root {
+    --nav-bg:       rgba(255, 255, 255, 0.78);
+    --nav-border:   rgba(0, 0, 0, 0.10);
+    --nav-active:   rgba(0, 0, 0, 0.88);
+    --nav-inactive: rgba(0, 0, 0, 0.32);
+  }
 }
 
 /* ─── Glassmorphism card ────────────────────────────────────────────────────── */
 /*
  * Design notes:
- *   background 6% white  — transparent enough to reveal blurred backdrop
- *   saturate(160%)       — boosts color vibrancy of the background behind glass
- *   blur(16px)           — enough frosting without over-softening detail
- *   inset shadow         — simulates light hitting the top glass edge
- *   outer shadow         — lifts the card off the background plane
+ *   background 10% white  — transparent enough to reveal blurred backdrop
+ *   saturate(160%)        — boosts color vibrancy of the background behind glass
+ *   blur(16px)            — enough frosting without over-softening detail
+ *   inset shadow          — simulates light hitting the top glass edge
+ *   outer shadow          — lifts the card off the background plane
  *
  * Performance: backdrop-filter triggers GPU compositing automatically.
  * Add `will-change: transform` only on cards that animate (e.g. modals sliding

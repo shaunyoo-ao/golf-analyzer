@@ -38,8 +38,8 @@ export default function UpcomingRoundSlot({ upcomingRound, onClick }) {
           🏌️‍♂️ {upcomingRound.courseName}
         </p>
         <p className="text-xs mt-0.5" style={{ color: 'var(--text-secondary)' }}>
-          {formatDate(upcomingRound.date)}
-          {hasWeather && <span> {weatherIcon} High {highTemp} Low {lowTemp} {maxPrecip}%</span>}
+          Upcoming {formatDate(upcomingRound.date)}
+          {hasWeather && <span> High {highTemp} Low {lowTemp} {weatherIcon} {maxPrecip}%</span>}
         </p>
       </div>
       <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} style={{ color: 'var(--text-secondary)' }}>

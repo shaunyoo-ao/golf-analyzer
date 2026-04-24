@@ -153,6 +153,32 @@ export default function Profile() {
         )
       }
 
+      {/* Background Image */}
+      <CollapsibleSection title="Background Image" subtitle="Customize app wallpaper">
+        <div className="flex flex-col gap-3">
+          {bgPreview && (
+            <div className="relative w-full h-24 rounded-xl overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.12)' }}>
+              <img src={bgPreview} className="w-full h-full object-cover" alt="Current background" />
+              <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.30)' }} />
+              <span className="absolute bottom-2 left-2 text-xs" style={{ color: 'rgba(255,255,255,0.70)' }}>Current</span>
+            </div>
+          )}
+          <label className="w-full btn-glass rounded-xl py-3 text-sm font-semibold min-h-[44px] flex items-center justify-center cursor-pointer">
+            📷 Choose Image
+            <input type="file" accept="image/*" className="hidden" onChange={handleBgUpload} />
+          </label>
+          {bgPreview && (
+            <button type="button" onClick={resetBg} className="w-full rounded-xl py-2.5 text-sm min-h-[44px]" style={{ color: 'var(--text-secondary)' }}>
+              Reset to Default
+            </button>
+          )}
+          <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+            Recommended: JPEG under <strong style={{ color: 'var(--text-primary)' }}>500KB</strong> (e.g. 1280×720px).
+            {' '}Image is saved on this device only and will not sync to other devices.
+          </p>
+        </div>
+      </CollapsibleSection>
+
       {/* Favorite Courses */}
       <CollapsibleSection title="Favorite Courses" subtitle="Preload into round entry">
         <FavoriteCourseForm
@@ -191,32 +217,6 @@ export default function Profile() {
         />
       </CollapsibleSection>
 
-      {/* Background Image */}
-      <CollapsibleSection title="Background Image" subtitle="Customize app wallpaper">
-        <div className="flex flex-col gap-3">
-          {bgPreview && (
-            <div className="relative w-full h-24 rounded-xl overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.12)' }}>
-              <img src={bgPreview} className="w-full h-full object-cover" alt="Current background" />
-              <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.30)' }} />
-              <span className="absolute bottom-2 left-2 text-xs" style={{ color: 'rgba(255,255,255,0.70)' }}>Current</span>
-            </div>
-          )}
-          <label className="w-full btn-glass rounded-xl py-3 text-sm font-semibold min-h-[44px] flex items-center justify-center cursor-pointer">
-            📷 Choose Image
-            <input type="file" accept="image/*" className="hidden" onChange={handleBgUpload} />
-          </label>
-          {bgPreview && (
-            <button type="button" onClick={resetBg} className="w-full rounded-xl py-2.5 text-sm min-h-[44px]" style={{ color: 'var(--text-secondary)' }}>
-              Reset to Default
-            </button>
-          )}
-          <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-            Recommended: JPEG under <strong style={{ color: 'var(--text-primary)' }}>500KB</strong> (e.g. 1280×720px).
-            {' '}Firebase Spark plan does not include cloud storage — image is saved on this device only and will not sync to other devices.
-          </p>
-        </div>
-      </CollapsibleSection>
-
       {/* Sign out */}
       {confirmLogout ? (
         <div className="flex gap-2">
@@ -251,7 +251,7 @@ export default function Profile() {
       {/* Copyright */}
       <p className="text-center text-[11px] leading-relaxed pt-1 pb-4" style={{ color: 'rgba(255,255,255,0.25)' }}>
         Copyright ⓒ 2026, shaun.yoo.ao All rights reserved.
-        <br />Version 1.0.6
+        <br />Version 1.0.7
       </p>
     </div>
   );

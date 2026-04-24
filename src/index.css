@@ -36,7 +36,7 @@ html {
 body {
   margin: 0;
   padding: 0;
-  background: radial-gradient(ellipse at 30% 20%, #1a3a1a 0%, #0d1f0d 40%, #050e05 100%);
+  background: #050e05 center / cover fixed;
   min-height: 100vh;
   color: #1a2e1a;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR',

@@ -31,16 +31,16 @@ export default function Profile() {
     const reader = new FileReader();
     reader.onload = (ev) => {
       localStorage.setItem('handi0_bg', ev.target.result);
+      document.body.style.backgroundImage = `url(${ev.target.result})`;
       setBgPreview(ev.target.result);
-      window.location.reload();
     };
     reader.readAsDataURL(file);
   };
 
   const resetBg = () => {
     localStorage.removeItem('handi0_bg');
+    document.body.style.backgroundImage = "url('/bg.jpg')";
     setBgPreview(null);
-    window.location.reload();
   };
 
   const SAVE_STEPS = [

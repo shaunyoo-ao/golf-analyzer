@@ -10,7 +10,7 @@ export default function AppShell() {
         {/* Aurora background */}
         <div className="fixed inset-0 max-w-[412px] mx-auto pointer-events-none z-0 overflow-hidden">
           <div className="absolute inset-0" style={{ backgroundImage: `url(${localStorage.getItem('handi0_bg') || '/bg.jpg'})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
-          <div className="absolute inset-0" style={{ background: 'rgba(4,10,4,0.42)' }} />
+          <div className="absolute inset-0" style={{ background: 'rgba(4,10,4,0.28)' }} />
         </div>
 
         <TopBar />

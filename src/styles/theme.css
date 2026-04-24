@@ -3,9 +3,9 @@
 :root {
   --bg-deep: #060f06;
 
-  /* Glass card — reduced opacity so blurred background shows through clearly */
-  --glass-bg:     rgba(255, 255, 255, 0.06);
-  --glass-border: rgba(255, 255, 255, 0.15);
+  /* Glass card — low opacity so blurred background image shows through */
+  --glass-bg:     rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.18);
 
   /* Layered shadow: outer depth + inset top-edge light refraction */
   --glass-shadow:

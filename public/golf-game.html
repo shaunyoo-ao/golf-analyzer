@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>재미로하는 홀판 라운딩~!</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow-x:hidden}
+:root{
+  --bg:#050e05;--card:rgba(10,22,10,0.88);--text:rgba(255,255,255,0.92);
+  --sub:rgba(255,255,255,0.48);--green:rgba(100,200,100,0.90);
+  --green-dim:rgba(100,200,100,0.15);--green-border:rgba(100,200,100,0.40);
+  --red:#ef5350;--gold:#ffd54f;--radius:14px;
+}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:15px;line-height:1.5}
+.screen{min-height:100vh;display:flex;flex-direction:column}
+.hidden{display:none!important}
+.content{padding:12px 14px 84px;flex:1;display:flex;flex-direction:column;gap:10px;max-width:420px;margin:0 auto;width:100%}
+
+/* HEADER */
+.header{background:linear-gradient(135deg,rgba(4,14,4,0.96),rgba(8,28,8,0.96));border-bottom:1px solid rgba(100,200,100,0.20);padding:12px 14px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:10}
+.back-btn{background:rgba(100,200,100,0.12);border:1px solid rgba(100,200,100,0.30);color:rgba(100,200,100,0.85);border-radius:8px;padding:6px 12px;font-size:14px;cursor:pointer;flex-shrink:0;min-height:36px}
+.back-btn:active{opacity:.7}
+.header-title{font-size:16px;font-weight:700;color:var(--text);flex:1;text-align:center}
+.hole-badge{background:rgba(100,200,100,0.20);border:1px solid rgba(100,200,100,0.40);border-radius:8px;padding:4px 10px;font-size:13px;font-weight:600;color:rgba(100,200,100,0.90);flex-shrink:0}
+
+/* CARDS */
+.card{background:var(--card);border:1px solid rgba(255,255,255,0.09);border-radius:var(--radius);padding:14px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.card-title{font-size:12px;font-weight:600;color:var(--sub);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+
+/* BUTTONS */
+.btn{border:none;border-radius:10px;padding:10px 16px;font-size:15px;font-weight:600;cursor:pointer;transition:opacity .15s;min-height:44px;width:100%;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn:active{opacity:.7}
+.btn-sm{min-height:36px;padding:6px 14px;font-size:14px}
+.btn-primary{background:rgba(100,200,100,0.25);color:rgba(100,200,100,0.95);border:1px solid rgba(100,200,100,0.40)}
+.btn-success{background:rgba(76,175,80,0.30);color:#4caf50;border:1px solid rgba(76,175,80,0.50)}
+.btn-danger{background:rgba(239,83,80,0.25);color:#ef5350;border:1px solid rgba(239,83,80,0.40)}
+.btn-gold{background:linear-gradient(135deg,rgba(255,213,79,0.30),rgba(255,160,0,0.30));color:#ffd54f;border:1px solid rgba(255,213,79,0.40)}
+.btn-outline{background:transparent;color:rgba(100,200,100,0.85);border:2px solid rgba(100,200,100,0.40)}
+.btn-gray{background:rgba(255,255,255,0.10);color:rgba(255,255,255,0.55);border:1px solid rgba(255,255,255,0.12)}
+.btn-group{display:flex;gap:6px}
+.btn-group .btn{flex:1}
+
+/* FORMS */
+.form-group{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.form-group label{font-size:13px;color:var(--sub);white-space:nowrap;width:80px;flex-shrink:0}
+.form-group input,.form-group select{flex:1;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);border-radius:9px;padding:9px 12px;font-size:16px;color:var(--text);min-height:44px;width:100%}
+.form-group input:focus,.form-group select:focus{outline:none;border-color:rgba(100,200,100,0.50)}
+.form-group select option{background:#0d1f0d}
+
+/* N-BUTTONS */
+.n-btns{display:flex;gap:6px}
+.n-btn{flex:1;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);border-radius:9px;padding:9px;font-size:15px;font-weight:600;color:var(--sub);cursor:pointer;min-height:44px;text-align:center}
+.n-btn.active{background:rgba(100,200,100,0.20);border-color:rgba(100,200,100,0.60);color:rgba(100,200,100,0.95)}
+
+/* COURSE CARDS */
+.course-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.course-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:10px;cursor:pointer;text-align:center}
+.course-card.selected{background:rgba(100,200,100,0.15);border-color:rgba(100,200,100,0.60)}
+.course-card.course-custom.selected{background:rgba(255,111,0,0.12);border-color:rgba(255,111,0,0.50)}
+.course-name{font-size:14px;font-weight:600;color:var(--text)}
+.course-par{font-size:12px;color:var(--sub);margin-top:2px}
+
+/* SIDE OPTS */
+.side-opts{display:flex;flex-wrap:wrap;gap:6px}
+.side-opts label{background:rgba(255,255,255,0.05);border:1px solid transparent;border-radius:8px;padding:7px 12px;font-size:13px;color:var(--sub);cursor:pointer}
+.side-opts label.sel{border-color:rgba(100,200,100,0.60);background:rgba(100,200,100,0.15);color:rgba(100,200,100,0.90)}
+
+/* PAR PREVIEW */
+.par-preview{background:rgba(4,14,4,0.80);border:1px solid rgba(100,200,100,0.20);border-radius:var(--radius);padding:12px}
+.par-preview h4{font-size:12px;font-weight:600;color:rgba(100,200,100,0.85);margin-bottom:8px}
+.par-cells{display:flex;flex-wrap:wrap;gap:4px}
+.pp-cell{display:flex;flex-direction:column;align-items:center;gap:2px}
+.pp-hole{background:rgba(100,200,100,0.18);color:rgba(100,200,100,0.85);border-radius:5px;width:100%;text-align:center;font-size:10px;padding:2px 0}
+.pp-par{background:rgba(255,255,255,0.05);color:#4caf50;border-radius:5px;width:100%;text-align:center;font-size:12px;font-weight:700;padding:3px 0}
+.pp-par.editable{border:1px solid rgba(255,255,255,0.12);cursor:pointer}
+.pp-par.editable:active{background:rgba(100,200,100,0.20)}
+
+/* HOLE MAP */
+.hole-map{display:flex;gap:4px;overflow-x:auto;padding:4px 0;scrollbar-width:none}
+.hole-map::-webkit-scrollbar{display:none}
+.hole-cell{min-width:30px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:7px;font-size:12px;font-weight:600;border:1.5px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.05);color:var(--sub);cursor:pointer;flex-shrink:0}
+.hole-cell.current{background:rgba(100,200,100,0.20);border-color:rgba(100,200,100,0.70);color:rgba(100,200,100,0.95)}
+.hole-cell.done{background:rgba(76,175,80,0.18);border-color:rgba(76,175,80,0.50);color:#4caf50}
+.hole-cell.tied{background:rgba(255,111,0,0.15);border-color:rgba(255,111,0,0.50);color:#ff9800}
+
+/* RUNNING TOTAL */
+.running-total{background:rgba(4,14,4,0.90);border:1px solid rgba(100,200,100,0.18);border-radius:var(--radius);padding:10px 14px}
+.rt-row{display:flex;align-items:center;justify-content:space-between;padding:3px 0}
+.rt-name{font-size:14px;font-weight:600;color:var(--text)}
+.rt-score{font-size:16px;font-weight:700}
+.rt-score.pos{color:#4caf50}
+.rt-score.neg{color:#ef5350}
+.rt-score.zero{color:var(--sub)}
+.rt-meta{font-size:11px;color:var(--sub);margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.06)}
+.pot-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(255,213,79,0.20);border:1px solid rgba(255,213,79,0.40);border-radius:8px;padding:4px 10px;font-size:12px;font-weight:600;color:#ffd54f;margin-top:8px}
+
+/* SCORE INPUTS */
+.score-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.score-name{font-size:14px;font-weight:600;color:var(--text);width:70px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sc-ctrl{display:flex;align-items:center;gap:6px;flex:1}
+.sc-ctrl button{width:38px;height:38px;border-radius:9px;background:rgba(100,200,100,0.15);border:1px solid rgba(100,200,100,0.30);color:rgba(100,200,100,0.85);font-size:20px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;line-height:1}
+.sc-ctrl button:active{opacity:.6}
+.sc-ctrl button:disabled{opacity:.3;cursor:default}
+.sc-val{flex:1;text-align:center;font-size:24px;font-weight:700;color:var(--text)}
+.par-btns{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
+.par-btn{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:5px 10px;font-size:13px;font-weight:600;color:var(--sub);cursor:pointer}
+.par-btn.active{background:rgba(100,200,100,0.20);border-color:rgba(100,200,100,0.60);color:rgba(100,200,100,0.95)}
+.hole-par-label{font-size:20px;font-weight:700;color:rgba(100,200,100,0.90);margin-left:10px}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.65);display:flex;align-items:flex-end;justify-content:center;z-index:100}
+.modal-box{background:rgba(10,22,10,0.97);border:1px solid rgba(255,255,255,0.12);border-radius:20px 20px 0 0;padding:20px 16px 32px;width:100%;max-width:420px;max-height:80vh;overflow-y:auto}
+.modal-title{font-size:17px;font-weight:700;color:var(--text);margin-bottom:12px;text-align:center}
+.modal-det{background:rgba(0,0,0,0.30);border-radius:10px;padding:12px;margin-bottom:4px}
+.modal-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0}
+.modal-row .val.pos{color:#4caf50}
+.modal-row .val.neg{color:#ef5350}
+
+/* FINAL SCREEN */
+.rank-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.07)}
+.rank-row:last-child{border-bottom:none}
+.rank-medal{font-size:20px;width:28px;text-align:center}
+.rank-name{flex:1;font-size:15px;font-weight:600;color:var(--text)}
+.rank-score{font-size:16px;font-weight:700}
+.transfer-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.10);border-radius:10px;padding:10px 12px;margin-bottom:6px;display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text)}
+.transfer-arrow{color:rgba(100,200,100,0.70);font-size:16px}
+.transfer-amt{margin-left:auto;font-weight:700;color:#ffd54f}
+.hole-tbl{width:100%;border-collapse:collapse;font-size:12px}
+.hole-tbl th{background:rgba(4,14,4,0.80);color:rgba(100,200,100,0.85);padding:6px 4px;text-align:center;font-weight:600;border:1px solid rgba(255,255,255,0.08)}
+.hole-tbl td{padding:5px 4px;text-align:center;border:1px solid rgba(255,255,255,0.06);color:var(--text)}
+.hole-tbl .win-cell{color:#4caf50;font-weight:700}
+.hole-tbl .tied-row td{background:rgba(255,111,0,0.10);color:#ff9800}
+</style>
+</head>
+<body>
+
+<!-- ===== SETUP SCREEN ===== -->
+<div class="screen" id="screen-setup">
+  <header class="header">
+    <button class="back-btn" onclick="window.parent.location.href='/play'">← 홈</button>
+    <span class="header-title">⛳ 재미로하는 홀판 라운딩~!</span>
+  </header>
+  <div class="content">
+    <div class="card">
+      <div class="card-title">참가 인원</div>
+      <div class="n-btns">
+        <button class="n-btn active" id="nBtn2" onclick="setN(2)">2명</button>
+        <button class="n-btn" id="nBtn3" onclick="setN(3)">3명</button>
+        <button class="n-btn" id="nBtn4" onclick="setN(4)">4명</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">플레이어 이름</div>
+      <div class="form-group"><label>1P</label><input id="p1" type="text" placeholder="이름 입력" autocomplete="off"></div>
+      <div class="form-group"><label>2P</label><input id="p2" type="text" placeholder="이름 입력" autocomplete="off"></div>
+      <div class="form-group hidden" id="pg3"><label>3P</label><input id="p3" type="text" placeholder="이름 입력" autocomplete="off"></div>
+      <div class="form-group hidden" id="pg4"><label>4P</label><input id="p4" type="text" placeholder="이름 입력" autocomplete="off"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">코스</div>
+      <div class="course-grid">
+        <div class="course-card selected" id="cc-std18" onclick="selectCourse('std18')">
+          <div class="course-name">표준 18홀</div><div class="course-par">Par 72</div>
+        </div>
+        <div class="course-card" id="cc-std9f" onclick="selectCourse('std9f')">
+          <div class="course-name">앞 9홀</div><div class="course-par">Par 36</div>
+        </div>
+        <div class="course-card" id="cc-std9b" onclick="selectCourse('std9b')">
+          <div class="course-name">뒤 9홀</div><div class="course-par">Par 36</div>
+        </div>
+        <div class="course-card course-custom" id="cc-custom" onclick="selectCourse('custom')">
+          <div class="course-name">직접 입력</div><div class="course-par">커스텀</div>
+        </div>
+      </div>
+      <div id="customNameRow" class="form-group hidden" style="margin-top:4px">
+        <label>코스명</label><input id="courseName" type="text" placeholder="코스명 입력" autocomplete="off">
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">점수 설정</div>
+      <div class="form-group"><label>1타당 점수</label><input type="number" id="betAmt" value="100" min="0" inputmode="numeric"></div>
+      <div class="form-group"><label>사이드벳 점수</label><input type="number" id="sideBetAmt" value="50" min="0" inputmode="numeric"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">사이드벳 옵션</div>
+      <div class="side-opts">
+        <label id="so-birdie" class="sel" onclick="toggleSide('birdie')">🐦 버디</label>
+        <label id="so-eagle" class="sel" onclick="toggleSide('eagle')">🦅 이글</label>
+        <label id="so-nearpin" onclick="toggleSide('nearpin')">📍 니어핀</label>
+        <label id="so-longdrive" onclick="toggleSide('longdrive')">🚀 롱드라이브</label>
+      </div>
+    </div>
+    <div class="par-preview" id="parPreview">
+      <h4>홀별 파 (커스텀 모드에서 탭하면 변경)</h4>
+      <div class="par-cells" id="parCells"></div>
+    </div>
+    <button class="btn btn-primary" onclick="startGame()">⛳ 게임 시작</button>
+  </div>
+</div>
+
+<!-- ===== GAME SCREEN ===== -->
+<div class="screen hidden" id="screen-game">
+  <header class="header">
+    <button class="back-btn" onclick="confirmBackToSetup()">← 설정</button>
+    <span class="header-title" id="gameCourseTitle">홀판 라운딩</span>
+    <span class="hole-badge" id="holeBadge">1/18</span>
+  </header>
+  <div class="content">
+    <div class="hole-map" id="holeMap"></div>
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div>
+          <span style="font-size:20px;font-weight:800;color:var(--text)" id="holeTitle">Hole 1</span>
+          <span class="hole-par-label" id="holeParLabel">Par 4</span>
+        </div>
+        <div id="potBadge" class="pot-badge hidden">🏆 이월 <span id="potAmt">0</span>점</div>
+      </div>
+      <div class="par-btns" id="parBtns"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">타수 입력</div>
+      <div id="scoreInputs"></div>
+    </div>
+    <div class="card hidden" id="manualSideCard">
+      <div class="card-title">사이드벳 수동 선택</div>
+      <div id="manualSideInputs"></div>
+    </div>
+    <div class="running-total" id="runningTotal"></div>
+    <div id="actionArea">
+      <button class="btn btn-success" id="btnConfirm" onclick="doConfirmHole()">✅ 확정</button>
+      <div class="btn-group hidden" id="btnEditGroup">
+        <button class="btn btn-outline btn-sm" onclick="editCurrentHole()">✏️ 수정</button>
+        <button class="btn btn-primary btn-sm" id="btnNext" onclick="nextHole()">다음 홀 →</button>
+      </div>
+      <button class="btn btn-gold hidden" id="btnFinish" onclick="showFinal()" style="margin-top:6px">🏆 최종 결과 보기</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== FINAL SCREEN ===== -->
+<div class="screen hidden" id="screen-final">
+  <header class="header">
+    <button class="back-btn" onclick="backToGame()">← 게임</button>
+    <span class="header-title">🏆 최종 결과</span>
+  </header>
+  <div class="content">
+    <div class="card">
+      <div class="card-title">순위</div>
+      <div id="rankingsList"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">정산</div>
+      <div id="transfersList"></div>
+    </div>
+    <button class="btn btn-primary" onclick="window.parent.location.href='/round/new'">📋 Log Round에 반영하기</button>
+    <button class="btn btn-gray" id="btnShare" onclick="shareResult()">📤 결과 공유</button>
+    <div class="card">
+      <div class="card-title">홀별 결과</div>
+      <div style="overflow-x:auto"><table class="hole-tbl" id="holeTable"></table></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL ===== -->
+<div class="modal-overlay hidden" id="modal" onclick="handleModalOverlayClick(event)">
+  <div class="modal-box">
+    <div class="modal-title" id="modalTitle"></div>
+    <div class="modal-det" id="modalDet"></div>
+    <div id="sideResultDet"></div>
+    <div class="btn-group" style="margin-top:12px">
+      <button class="btn btn-outline btn-sm" onclick="editCurrentHole()">✏️ 수정</button>
+      <button class="btn btn-primary btn-sm" id="btnModalNext" onclick="modalNext()">다음 홀 →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===== CONSTANTS ===== */
+const COURSES = {
+  std18:{name:'표준 18홀',holes:18,pars:[4,5,4,3,4,4,3,5,4,4,5,4,3,4,4,3,5,4]},
+  std9f:{name:'앞 9홀',holes:9,pars:[4,5,4,3,4,4,3,5,4]},
+  std9b:{name:'뒤 9홀',holes:9,pars:[4,5,4,3,4,4,3,5,4]},
+  custom:{name:'',holes:18,pars:[]},
+};
+
+/* ===== STATE ===== */
+const G={
+  players:[],n:2,totalHoles:18,bet:100,sideBet:50,
+  courseName:'',pars:[],holes:{},cur:1,totals:[],carryOver:0,
+  sideOpts:{birdie:true,eagle:true,nearpin:false,longdrive:false},
+};
+let _sN=2,_sCourse='std18',_sPars=[...COURSES.std18.pars],_sHoles=18;
+
+/* ===== SETUP ===== */
+function setN(n){
+  _sN=n;
+  [2,3,4].forEach(x=>document.getElementById('nBtn'+x).classList.toggle('active',x===n));
+  document.getElementById('pg3').classList.toggle('hidden',n<3);
+  document.getElementById('pg4').classList.toggle('hidden',n<4);
+}
+function selectCourse(id){
+  _sCourse=id;
+  ['std18','std9f','std9b','custom'].forEach(c=>document.getElementById('cc-'+c).classList.toggle('selected',c===id));
+  document.getElementById('customNameRow').classList.toggle('hidden',id!=='custom');
+  if(id!=='custom'){_sHoles=COURSES[id].holes;_sPars=[...COURSES[id].pars];}
+  else{_sPars=Array(_sHoles).fill(4);}
+  renderParPreview();
+}
+function toggleSide(key){
+  G.sideOpts[key]=!G.sideOpts[key];
+  document.getElementById('so-'+key).classList.toggle('sel',G.sideOpts[key]);
+}
+function clickPar(h){
+  if(_sCourse!=='custom')return;
+  _sPars[h]=_sPars[h]>=5?3:_sPars[h]+1;
+  renderParPreview();
+}
+function renderParPreview(){
+  const n=_sCourse==='custom'?_sHoles:COURSES[_sCourse].holes;
+  const pars=_sPars.slice(0,n);
+  const ed=_sCourse==='custom';
+  const w=`calc((100% - 4px*${n-1})/${n})`;
+  document.getElementById('parCells').innerHTML=pars.map((p,i)=>
+    `<div class="pp-cell" style="width:${w}">
+      <div class="pp-hole">${i+1}</div>
+      <div class="pp-par${ed?' editable':''}" onclick="clickPar(${i})">${p}</div>
+    </div>`
+  ).join('');
+}
+function startGame(){
+  const names=[];
+  for(let i=1;i<=_sN;i++){const v=document.getElementById('p'+i).value.trim();names.push(v||'P'+i);}
+  G.players=names;G.n=_sN;
+  if(_sCourse==='custom'){
+    G.courseName=document.getElementById('courseName').value.trim()||'커스텀 코스';
+    G.totalHoles=_sHoles;G.pars=[..._sPars.slice(0,_sHoles)];
+  }else{
+    const c=COURSES[_sCourse];G.courseName=c.name;G.totalHoles=c.holes;G.pars=[...c.pars];
+  }
+  G.bet=parseInt(document.getElementById('betAmt').value)||100;
+  G.sideBet=parseInt(document.getElementById('sideBetAmt').value)||50;
+  G.holes={};G.cur=1;G.totals=Array(G.n).fill(0);G.carryOver=0;
+  document.getElementById('gameCourseTitle').textContent=G.courseName;
+  showScreen('game');loadHole(1);
+}
+function showScreen(name){
+  ['setup','game','final'].forEach(s=>document.getElementById('screen-'+s).classList.toggle('hidden',s!==name));
+}
+function confirmBackToSetup(){if(confirm('설정으로 돌아가면 게임이 초기화됩니다. 계속할까요?'))showScreen('setup');}
+function backToGame(){showScreen('game');loadHole(G.cur);}
+
+/* ===== GAME SCREEN ===== */
+function loadHole(h){
+  G.cur=h;
+  const par=G.pars[h-1];
+  const hd=G.holes[h]||{};
+  document.getElementById('holeBadge').textContent=h+'/'+G.totalHoles;
+  document.getElementById('holeTitle').textContent='Hole '+h;
+  document.getElementById('holeParLabel').textContent='Par '+par;
+  const pb=document.getElementById('potBadge');
+  if(G.carryOver>0){pb.classList.remove('hidden');document.getElementById('potAmt').textContent=G.carryOver;}
+  else pb.classList.add('hidden');
+  // Par quick-set buttons
+  document.getElementById('parBtns').innerHTML=[3,4,5,6,7,8].map(v=>
+    `<button class="par-btn${v===par?' active':''}" onclick="setAllPar(${v})">${v}타</button>`
+  ).join('');
+  // Score inputs
+  const confirmed=!!hd.confirmed;
+  document.getElementById('scoreInputs').innerHTML=G.players.map((name,i)=>{
+    const val=(hd.scores&&hd.scores[i]!==undefined)?hd.scores[i]:par;
+    return `<div class="score-row">
+      <div class="score-name">${name}</div>
+      <div class="sc-ctrl">
+        <button id="sm${i}" onclick="adjScore(${i},-1)">−</button>
+        <div class="sc-val" id="sv${i}">${val}</div>
+        <button id="sp${i}" onclick="adjScore(${i},+1)">+</button>
+      </div>
+    </div>`;
+  }).join('');
+  if(confirmed){
+    for(let i=0;i<G.n;i++){
+      const bm=document.getElementById('sm'+i),bp=document.getElementById('sp'+i);
+      if(bm)bm.disabled=true;if(bp)bp.disabled=true;
+    }
+  }
+  renderManualSideBets(h,par,confirmed);
+  // Action buttons
+  const btnC=document.getElementById('btnConfirm');
+  const btnEG=document.getElementById('btnEditGroup');
+  const btnF=document.getElementById('btnFinish');
+  const btnN=document.getElementById('btnNext');
+  if(confirmed){btnC.classList.add('hidden');btnEG.classList.remove('hidden');}
+  else{btnC.classList.remove('hidden');btnEG.classList.add('hidden');}
+  const allDone=countConfirmed()===G.totalHoles;
+  btnF.classList.toggle('hidden',!allDone);
+  btnN.textContent=(h===G.totalHoles)?'최종 결과 →':'다음 홀 →';
+  renderHoleMap();renderRunning();
+}
+function countConfirmed(){return Object.values(G.holes).filter(x=>x&&x.confirmed).length;}
+function adjScore(idx,delta){
+  const el=document.getElementById('sv'+idx);
+  el.textContent=Math.max(1,parseInt(el.textContent)+delta);
+}
+function setAllPar(par){
+  for(let i=0;i<G.n;i++){const el=document.getElementById('sv'+i);if(el)el.textContent=par;}
+  document.querySelectorAll('.par-btn').forEach(b=>b.classList.toggle('active',parseInt(b.textContent)===par));
+}
+function getScores(){return G.players.map((_,i)=>parseInt(document.getElementById('sv'+i).textContent)||4);}
+function renderHoleMap(){
+  document.getElementById('holeMap').innerHTML=Array.from({length:G.totalHoles},(_,i)=>{
+    const h=i+1,hd=G.holes[h];
+    let cls='';
+    if(h===G.cur)cls='current';
+    else if(hd&&hd.confirmed){
+      const min=Math.min(...hd.scores);
+      cls=hd.scores.filter(s=>s===min).length>1?'tied':'done';
+    }
+    return `<div class="hole-cell ${cls}" onclick="loadHole(${h})">${h}</div>`;
+  }).join('');
+  setTimeout(()=>{const el=document.querySelector('.hole-cell.current');if(el)el.scrollIntoView({inline:'center',behavior:'smooth',block:'nearest'});},50);
+}
+function renderRunning(){
+  const rows=G.players.map((name,i)=>{
+    const v=G.totals[i],sign=v>0?'+':'',cls=v>0?'pos':v<0?'neg':'zero';
+    return `<div class="rt-row"><div class="rt-name">${name}</div><div class="rt-score ${cls}">${sign}${v}</div></div>`;
+  }).join('');
+  const meta=`<div class="rt-meta">${G.bet}점/타 · ${countConfirmed()}/${G.totalHoles}홀 완료${G.carryOver>0?' · 🏆이월 '+G.carryOver+'점':''}</div>`;
+  document.getElementById('runningTotal').innerHTML=rows+meta;
+}
+function renderManualSideBets(h,par,confirmed){
+  const needNP=G.sideOpts.nearpin&&par===3,needLD=G.sideOpts.longdrive;
+  const card=document.getElementById('manualSideCard');
+  if(!needNP&&!needLD){card.classList.add('hidden');return;}
+  card.classList.remove('hidden');
+  const hd=G.holes[h]||{};
+  const opts=G.players.map((n,i)=>`<option value="${i}" ${hd.nearpin==i||hd.longdrive==i?'':''}>${n}</option>`).join('');
+  let html='';
+  if(needNP)html+=`<div class="form-group"><label>📍 니어핀</label><select id="sel-nearpin" ${confirmed?'disabled':''}><option value="">-선택-</option>${G.players.map((n,i)=>`<option value="${i}" ${hd.nearpin===i?'selected':''}>${n}</option>`).join('')}</select></div>`;
+  if(needLD)html+=`<div class="form-group"><label>🚀 롱드라이브</label><select id="sel-longdrive" ${confirmed?'disabled':''}><option value="">-선택-</option>${G.players.map((n,i)=>`<option value="${i}" ${hd.longdrive===i?'selected':''}>${n}</option>`).join('')}</select></div>`;
+  document.getElementById('manualSideInputs').innerHTML=html;
+}
+function getManualWinner(type){
+  const el=document.getElementById('sel-'+type);
+  if(!el||el.value==='')return undefined;
+  return parseInt(el.value);
+}
+
+/* ===== CORE LOGIC ===== */
+function doConfirmHole(){
+  const scores=getScores(),h=G.cur,par=G.pars[h-1];
+  const hd=G.holes[h]||{};
+  hd.scores=scores;hd.par=par;hd.confirmed=true;
+  if(G.sideOpts.nearpin&&par===3)hd.nearpin=getManualWinner('nearpin');
+  if(G.sideOpts.longdrive)hd.longdrive=getManualWinner('longdrive');
+  G.holes[h]=hd;
+  recalcAll();
+  showResultModal(h);
+}
+function recalcAll(){
+  G.totals=Array(G.n).fill(0);
+  let co=0;
+  for(let h=1;h<=G.totalHoles;h++){
+    const hd=G.holes[h];
+    if(!hd||!hd.confirmed)continue;
+    const scores=hd.scores,min=Math.min(...scores);
+    const winners=scores.map((s,i)=>s===min?i:-1).filter(i=>i>=0);
+    const pot=G.bet+co;
+    if(winners.length===1){
+      const wi=winners[0];
+      for(let i=0;i<G.n;i++)G.totals[i]+=(i===wi)?pot*(G.n-1):-pot;
+      co=0;
+    }else{co+=G.bet;}
+    // Birdie / eagle side bets (any player who makes it)
+    for(let i=0;i<G.n;i++){
+      const diff=hd.par-scores[i];
+      let bonus=0;
+      if(G.sideOpts.eagle&&diff>=2)bonus+=G.sideBet*2;
+      else if(G.sideOpts.birdie&&diff===1)bonus+=G.sideBet;
+      if(bonus>0)for(let j=0;j<G.n;j++)if(j!==i){G.totals[i]+=bonus;G.totals[j]-=bonus;}
+    }
+    // Nearpin
+    if(hd.nearpin!==undefined&&hd.nearpin!==null){
+      const ni=hd.nearpin;
+      for(let j=0;j<G.n;j++)if(j!==ni){G.totals[ni]+=G.sideBet;G.totals[j]-=G.sideBet;}
+    }
+    // Longdrive
+    if(hd.longdrive!==undefined&&hd.longdrive!==null){
+      const li=hd.longdrive;
+      for(let j=0;j<G.n;j++)if(j!==li){G.totals[li]+=G.sideBet;G.totals[j]-=G.sideBet;}
+    }
+  }
+  G.carryOver=co;
+}
+function editCurrentHole(){
+  closeModal();
+  const hd=G.holes[G.cur];if(hd)hd.confirmed=false;
+  recalcAll();loadHole(G.cur);
+}
+function nextHole(){
+  if(G.cur<G.totalHoles)loadHole(G.cur+1);
+  else showFinal();
+}
+
+/* ===== MODAL ===== */
+function showResultModal(h){
+  const hd=G.holes[h];
+  const scores=hd.scores,min=Math.min(...scores);
+  const winners=scores.map((s,i)=>s===min?i:-1).filter(i=>i>=0);
+  // Compute pot that was at stake (carryOver before this hole)
+  let co=0;
+  for(let hh=1;hh<h;hh++){
+    const p=G.holes[hh];if(!p||!p.confirmed)continue;
+    const pm=Math.min(...p.scores);
+    if(p.scores.filter(s=>s===pm).length===1)co=0;else co+=G.bet;
+  }
+  const pot=G.bet+co;
+  const isWin=winners.length===1;
+  const wi=isWin?winners[0]:-1;
+  let title,detHtml;
+  if(isWin){
+    title='🏆 Hole '+h+' — '+G.players[wi]+' 승리!';
+    detHtml=G.players.map((name,i)=>{
+      const amt=(i===wi)?pot*(G.n-1):-pot;
+      const cls=amt>0?'pos':'neg',sign=amt>0?'+':'';
+      return `<div class="modal-row"><span>${name}</span><span class="val ${cls}">${sign}${amt}</span></div>`;
+    }).join('');
+  }else{
+    title='🤝 Hole '+h+' — 동타! 이월';
+    detHtml=`<div style="color:var(--sub);text-align:center;padding:8px">이월 +${G.bet} → 다음 홀 팟: ${G.carryOver}점</div>`;
+  }
+  // Side bet results
+  const sides=[];
+  for(let i=0;i<G.n;i++){
+    const diff=hd.par-scores[i];
+    if(G.sideOpts.eagle&&diff>=2)sides.push({label:'🦅 이글 '+G.players[i],amt:G.sideBet*2*(G.n-1)});
+    else if(G.sideOpts.birdie&&diff===1)sides.push({label:'🐦 버디 '+G.players[i],amt:G.sideBet*(G.n-1)});
+  }
+  if(hd.nearpin!==undefined&&hd.nearpin!==null)sides.push({label:'📍 니어핀 '+G.players[hd.nearpin],amt:G.sideBet*(G.n-1)});
+  if(hd.longdrive!==undefined&&hd.longdrive!==null)sides.push({label:'🚀 롱드라이브 '+G.players[hd.longdrive],amt:G.sideBet*(G.n-1)});
+  let sideHtml='';
+  if(sides.length>0){
+    sideHtml='<div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.08)">'+
+      sides.map(r=>`<div class="modal-row"><span>${r.label}</span><span class="val pos">+${r.amt}</span></div>`).join('')+
+      '</div>';
+  }
+  document.getElementById('modalTitle').textContent=title;
+  document.getElementById('modalDet').innerHTML=detHtml;
+  document.getElementById('sideResultDet').innerHTML=sideHtml;
+  const isLast=h===G.totalHoles;
+  document.getElementById('btnModalNext').textContent=isLast?'🏆 최종 결과':'다음 홀 →';
+  document.getElementById('modal').classList.remove('hidden');
+  renderHoleMap();renderRunning();
+}
+function closeModal(){document.getElementById('modal').classList.add('hidden');}
+function handleModalOverlayClick(e){if(e.target===document.getElementById('modal'))closeModal();}
+function modalNext(){closeModal();if(G.cur>=G.totalHoles)showFinal();else nextHole();}
+
+/* ===== FINAL SCREEN ===== */
+function showFinal(){
+  closeModal();
+  // Save to localStorage for Log Round pre-fill
+  const p1name=localStorage.getItem('handi0_player_name')||G.players[0];
+  const p1idx=Math.max(0,G.players.indexOf(p1name));
+  let p1strokes=0;
+  for(let h=1;h<=G.totalHoles;h++){const hd=G.holes[h];if(hd&&hd.confirmed&&hd.scores[p1idx]!==undefined)p1strokes+=hd.scores[p1idx];}
+  localStorage.setItem('handi0_pending_game',JSON.stringify({date:new Date().toISOString().slice(0,10),courseName:G.courseName,totalScore:p1strokes}));
+  showScreen('final');
+  // Rankings
+  const sorted=G.players.map((n,i)=>({name:n,total:G.totals[i]})).sort((a,b)=>b.total-a.total);
+  const medals=['🥇','🥈','🥉',''];
+  document.getElementById('rankingsList').innerHTML=sorted.map((p,r)=>{
+    const sign=p.total>0?'+':'',cls=p.total>0?'pos':p.total<0?'neg':'zero';
+    return `<div class="rank-row"><div class="rank-medal">${medals[r]||'·'}</div><div class="rank-name">${p.name}</div><div class="rank-score ${cls}">${sign}${p.total}</div></div>`;
+  }).join('');
+  renderTransfers();renderHoleTable();
+}
+function renderTransfers(){
+  const d=G.players.map((n,i)=>({name:n,bal:G.totals[i]})).filter(p=>p.bal<0).map(p=>({name:p.name,owe:-p.bal})).sort((a,b)=>b.owe-a.owe);
+  const c=G.players.map((n,i)=>({name:n,bal:G.totals[i]})).filter(p=>p.bal>0).sort((a,b)=>b.bal-a.bal);
+  const transfers=[];let di=0,ci=0;
+  while(di<d.length&&ci<c.length){
+    const amt=Math.min(d[di].owe,c[ci].bal);
+    if(amt>0)transfers.push({from:d[di].name,to:c[ci].name,amount:amt});
+    d[di].owe-=amt;c[ci].bal-=amt;
+    if(d[di].owe<=0)di++;if(c[ci].bal<=0)ci++;
+  }
+  if(!transfers.length){document.getElementById('transfersList').innerHTML='<div style="color:var(--sub);text-align:center;padding:8px">정산 없음 (모두 동점)</div>';return;}
+  document.getElementById('transfersList').innerHTML=transfers.map(t=>
+    `<div class="transfer-card"><span>${t.from}</span><span class="transfer-arrow">→</span><span>${t.to}</span><span class="transfer-amt">${t.amount}점</span></div>`
+  ).join('');
+}
+function renderHoleTable(){
+  const cols=['홀','파',...G.players,'결과'];
+  const thead='<tr>'+cols.map(c=>`<th>${c}</th>`).join('')+'</tr>';
+  let tbody='';
+  for(let h=1;h<=G.totalHoles;h++){
+    const hd=G.holes[h];
+    if(!hd||!hd.confirmed){tbody+=`<tr><td>${h}</td><td>${G.pars[h-1]}</td>${G.players.map(()=>'<td>-</td>').join('')}<td>-</td></tr>`;continue;}
+    const min=Math.min(...hd.scores),winners=hd.scores.map((s,i)=>s===min?i:-1).filter(i=>i>=0);
+    const isTie=winners.length>1;
+    const cells=hd.scores.map((s,i)=>`<td class="${!isTie&&winners.includes(i)?'win-cell':''}">${s}</td>`).join('');
+    const res=isTie?'<td>🤝이월</td>':`<td>🏆${G.players[winners[0]]}</td>`;
+    tbody+=`<tr class="${isTie?'tied-row':''}"  ><td>${h}</td><td>${hd.par}</td>${cells}${res}</tr>`;
+  }
+  document.getElementById('holeTable').innerHTML=`<thead>${thead}</thead><tbody>${tbody}</tbody>`;
+}
+function shareResult(){
+  const lines=['⛳ 홀판 라운딩 결과',G.courseName,''];
+  G.players.map((n,i)=>({name:n,total:G.totals[i]})).sort((a,b)=>b.total-a.total).forEach((p,i)=>{
+    lines.push(`${['🥇','🥈','🥉',''][i]||'·'} ${p.name}: ${p.total>=0?'+':''}${p.total}`);
+  });
+  const text=lines.join('\n');
+  if(navigator.share){navigator.share({title:'홀판 라운딩 결과',text}).catch(()=>{});}
+  else{navigator.clipboard&&navigator.clipboard.writeText(text).then(()=>{const btn=document.getElementById('btnShare');btn.textContent='✅ 복사됨!';setTimeout(()=>btn.textContent='📤 결과 공유',2000);});}
+}
+
+(function init(){
+  const pn=localStorage.getItem('handi0_player_name');
+  if(pn) document.getElementById('p1').value=pn;
+  renderParPreview();
+})();
+</script>
+</body>
+</html>

@@ -5,7 +5,7 @@ export default function Play() {
   return (
     <div className="flex flex-col gap-4">
       <p className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--text-secondary)' }}>
-        Play / Log
+        Round
       </p>
       <button
         type="button"
@@ -15,7 +15,7 @@ export default function Play() {
         <span className="text-3xl">📋</span>
         <div>
           <p className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>Log Round</p>
-          <p className="text-xs mt-0.5" style={{ color: 'var(--text-secondary)' }}>라운드 기록 및 핸디캡 계산</p>
+          <p className="text-xs mt-0.5" style={{ color: 'var(--text-secondary)' }}>Record after your round</p>
         </div>
         <svg className="w-4 h-4 shrink-0 ml-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} style={{ color: 'var(--text-secondary)' }}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
@@ -28,8 +28,8 @@ export default function Play() {
       >
         <span className="text-3xl">⛳</span>
         <div>
-          <p className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>Game Start</p>
-          <p className="text-xs mt-0.5" style={{ color: 'var(--text-secondary)' }}>재미로하는 홀판 라운딩 게임</p>
+          <p className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>Game Round Start</p>
+          <p className="text-xs mt-0.5" style={{ color: 'var(--text-secondary)' }}>Gaming round experience</p>
         </div>
         <svg className="w-4 h-4 shrink-0 ml-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} style={{ color: 'var(--text-secondary)' }}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />

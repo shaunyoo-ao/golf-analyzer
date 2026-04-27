@@ -132,6 +132,16 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .hole-tbl td{padding:5px 4px;text-align:center;border:1px solid rgba(255,255,255,0.06);color:var(--text)}
 .hole-tbl .win-cell{color:#4caf50;font-weight:700}
 .hole-tbl .tied-row td{background:rgba(255,111,0,0.10);color:#ff9800}
+/* RADIO GROUP */
+.radio-group{display:flex;flex-wrap:wrap;gap:6px}
+.radio-group label{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:7px 10px;font-size:13px;color:var(--sub);cursor:pointer}
+.radio-group label.sel{border-color:rgba(100,200,100,0.60);background:rgba(100,200,100,0.15);color:rgba(100,200,100,0.90)}
+.radio-group input[type=radio]{accent-color:rgba(100,200,100,0.90);width:14px;height:14px}
+/* RULES CARD */
+.rules-card .rule-item{font-size:12px;color:rgba(255,255,255,0.60);padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.05)}
+.rules-card .rule-item:last-child{border-bottom:none}
+/* MULTIPLIER BADGE */
+.mult-badge{display:inline-flex;align-items:center;background:rgba(255,160,0,0.25);border:1px solid rgba(255,160,0,0.50);border-radius:7px;padding:3px 8px;font-size:12px;font-weight:700;color:#ffb300;margin-top:6px}
 </style>
 </head>
 <body>
@@ -140,61 +150,67 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 <div class="screen" id="screen-setup">
   <header class="header">
     <button class="back-btn" onclick="window.parent.location.href='/play'">← 홈</button>
-    <span class="header-title">⛳ 재미로하는 홀판 라운딩~!</span>
+    <span class="header-title">⛳ Let's Play the Game</span>
   </header>
   <div class="content">
+    <!-- Players (4 fixed) -->
     <div class="card">
-      <div class="card-title">참가 인원</div>
-      <div class="n-btns">
-        <button class="n-btn active" id="nBtn2" onclick="setN(2)">2명</button>
-        <button class="n-btn" id="nBtn3" onclick="setN(3)">3명</button>
-        <button class="n-btn" id="nBtn4" onclick="setN(4)">4명</button>
+      <div class="card-title">플레이어 이름 (4인 고정)</div>
+      <div class="form-group"><label>1P</label><input id="p1" type="text" placeholder="Player 1" autocomplete="off"></div>
+      <div class="form-group"><label>2P</label><input id="p2" type="text" placeholder="Player 2" autocomplete="off"></div>
+      <div class="form-group"><label>3P</label><input id="p3" type="text" placeholder="Player 3" autocomplete="off"></div>
+      <div class="form-group"><label>4P</label><input id="p4" type="text" placeholder="Player 4" autocomplete="off"></div>
+      <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.07)">
+        <div class="card-title" style="margin-bottom:6px">Log Round 기록 대상</div>
+        <div id="logPlayerRadios" class="radio-group"></div>
       </div>
     </div>
-    <div class="card">
-      <div class="card-title">플레이어 이름</div>
-      <div class="form-group"><label>1P</label><input id="p1" type="text" placeholder="이름 입력" autocomplete="off"></div>
-      <div class="form-group"><label>2P</label><input id="p2" type="text" placeholder="이름 입력" autocomplete="off"></div>
-      <div class="form-group hidden" id="pg3"><label>3P</label><input id="p3" type="text" placeholder="이름 입력" autocomplete="off"></div>
-      <div class="form-group hidden" id="pg4"><label>4P</label><input id="p4" type="text" placeholder="이름 입력" autocomplete="off"></div>
-    </div>
+    <!-- Course -->
     <div class="card">
       <div class="card-title">코스</div>
       <div class="course-grid">
-        <div class="course-card selected" id="cc-std18" onclick="selectCourse('std18')">
-          <div class="course-name">표준 18홀</div><div class="course-par">Par 72</div>
+        <div class="course-card selected" id="cc-steyn" onclick="selectCourse('steyn')">
+          <div class="course-name">Steyn City</div><div class="course-par">Par 72</div>
         </div>
-        <div class="course-card" id="cc-std9f" onclick="selectCourse('std9f')">
-          <div class="course-name">앞 9홀</div><div class="course-par">Par 36</div>
-        </div>
-        <div class="course-card" id="cc-std9b" onclick="selectCourse('std9b')">
-          <div class="course-name">뒤 9홀</div><div class="course-par">Par 36</div>
+        <div class="course-card" id="cc-dainfern" onclick="selectCourse('dainfern')">
+          <div class="course-name">Dainfern GC</div><div class="course-par">Par 72</div>
         </div>
         <div class="course-card course-custom" id="cc-custom" onclick="selectCourse('custom')">
-          <div class="course-name">직접 입력</div><div class="course-par">커스텀</div>
+          <div class="course-name">직접 입력</div><div class="course-par">Custom</div>
         </div>
       </div>
       <div id="customNameRow" class="form-group hidden" style="margin-top:4px">
-        <label>코스명</label><input id="courseName" type="text" placeholder="코스명 입력" autocomplete="off">
+        <label>코스명</label><input id="courseName" type="text" placeholder="Course name" autocomplete="off">
       </div>
     </div>
+    <!-- Par preview (below course) -->
+    <div class="par-preview" id="parPreview">
+      <h4>홀별 파 (Custom 모드에서 탭하면 변경)</h4>
+      <div class="par-cells" id="parCells"></div>
+    </div>
+    <!-- Bet config -->
     <div class="card">
       <div class="card-title">점수 설정</div>
-      <div class="form-group"><label>1타당 점수</label><input type="number" id="betAmt" value="100" min="0" inputmode="numeric"></div>
-      <div class="form-group"><label>사이드벳 점수</label><input type="number" id="sideBetAmt" value="50" min="0" inputmode="numeric"></div>
+      <div class="form-group"><label>1타당 점수</label><input type="number" id="betAmt" value="10" min="0" inputmode="numeric"></div>
+      <div class="form-group"><label>사이드벳 점수</label><input type="number" id="sideBetAmt" value="20" min="0" inputmode="numeric"></div>
     </div>
+    <!-- Rules -->
+    <div class="rules-card card">
+      <div class="card-title">📋 적용 룰</div>
+      <div class="rule-item">🔄 <b>캐리오버</b>: 4명 전원 동타 → 정산 없음, 다음 홀 2배 (연속 시 4배, 8배…)</div>
+      <div class="rule-item">🐦 <b>버디 보너스</b>: 버디 이하 달성 시 유효 타수 −1 보정 (게임 점수만 적용)</div>
+      <div class="rule-item">⚡ <b>2배 룰</b>: 트리플보기+, 3명 동타, 버디 포함 → 다음 홀 베팅 2배</div>
+      <div class="rule-item">🧹 <b>지우개</b>: 파3에서 니어핀 외 플레이어가 파 기록 시 니어핀 보너스 무효</div>
+      <div class="rule-item">📍 니어핀 파3 홀만 · 🚀 롱드라이브 파5 홀만 적용</div>
+    </div>
+    <!-- Background image -->
     <div class="card">
-      <div class="card-title">사이드벳 옵션</div>
-      <div class="side-opts">
-        <label id="so-birdie" class="sel" onclick="toggleSide('birdie')">🐦 버디</label>
-        <label id="so-eagle" class="sel" onclick="toggleSide('eagle')">🦅 이글</label>
-        <label id="so-nearpin" onclick="toggleSide('nearpin')">📍 니어핀</label>
-        <label id="so-longdrive" onclick="toggleSide('longdrive')">🚀 롱드라이브</label>
-      </div>
-    </div>
-    <div class="par-preview" id="parPreview">
-      <h4>홀별 파 (커스텀 모드에서 탭하면 변경)</h4>
-      <div class="par-cells" id="parCells"></div>
+      <div class="card-title">배경 이미지</div>
+      <label class="btn btn-gray" style="cursor:pointer;margin-bottom:6px">
+        📷 이미지 선택
+        <input type="file" accept="image/*" id="bgUpload" style="display:none" onchange="setBgImage(event)">
+      </label>
+      <button class="btn btn-gray btn-sm" onclick="clearBgImage()" id="btnClearBg" style="display:none">🗑 배경 제거</button>
     </div>
     <button class="btn btn-primary" onclick="startGame()">⛳ 게임 시작</button>
   </div>
@@ -215,9 +231,8 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
           <span style="font-size:20px;font-weight:800;color:var(--text)" id="holeTitle">Hole 1</span>
           <span class="hole-par-label" id="holeParLabel">Par 4</span>
         </div>
-        <div id="potBadge" class="pot-badge hidden">🏆 이월 <span id="potAmt">0</span>점</div>
+        <div id="potBadge" class="pot-badge hidden">🏆 이월 ×<span id="potAmt">1</span></div>
       </div>
-      <div class="par-btns" id="parBtns"></div>
     </div>
     <div class="card">
       <div class="card-title">타수 입력</div>
@@ -279,38 +294,27 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 <script>
 /* ===== CONSTANTS ===== */
 const COURSES = {
-  std18:{name:'표준 18홀',holes:18,pars:[4,5,4,3,4,4,3,5,4,4,5,4,3,4,4,3,5,4]},
-  std9f:{name:'앞 9홀',holes:9,pars:[4,5,4,3,4,4,3,5,4]},
-  std9b:{name:'뒤 9홀',holes:9,pars:[4,5,4,3,4,4,3,5,4]},
+  steyn:{name:'The Club at Steyn City',holes:18,pars:[4,4,5,4,3,5,4,4,3,5,4,3,4,3,4,5,4,4]},
+  dainfern:{name:'Dainfern GC',holes:18,pars:[4,5,4,3,4,3,4,5,4,4,3,5,4,4,4,3,4,5]},
   custom:{name:'',holes:18,pars:[]},
 };
 
 /* ===== STATE ===== */
 const G={
-  players:[],n:2,totalHoles:18,bet:100,sideBet:50,
-  courseName:'',pars:[],holes:{},cur:1,totals:[],carryOver:0,
-  sideOpts:{birdie:true,eagle:true,nearpin:false,longdrive:false},
+  players:[],n:4,totalHoles:18,bet:10,sideBet:20,
+  courseName:'',pars:[],holes:{},cur:1,totals:[],
+  carryMult:1,nextMult:1,logPlayerIdx:0,
 };
-let _sN=2,_sCourse='std18',_sPars=[...COURSES.std18.pars],_sHoles=18;
+let _sCourse='steyn',_sPars=[...COURSES.steyn.pars];
 
 /* ===== SETUP ===== */
-function setN(n){
-  _sN=n;
-  [2,3,4].forEach(x=>document.getElementById('nBtn'+x).classList.toggle('active',x===n));
-  document.getElementById('pg3').classList.toggle('hidden',n<3);
-  document.getElementById('pg4').classList.toggle('hidden',n<4);
-}
 function selectCourse(id){
   _sCourse=id;
-  ['std18','std9f','std9b','custom'].forEach(c=>document.getElementById('cc-'+c).classList.toggle('selected',c===id));
+  ['steyn','dainfern','custom'].forEach(c=>document.getElementById('cc-'+c).classList.toggle('selected',c===id));
   document.getElementById('customNameRow').classList.toggle('hidden',id!=='custom');
-  if(id!=='custom'){_sHoles=COURSES[id].holes;_sPars=[...COURSES[id].pars];}
-  else{_sPars=Array(_sHoles).fill(4);}
+  if(id!=='custom')_sPars=[...COURSES[id].pars];
+  else _sPars=Array(18).fill(4);
   renderParPreview();
-}
-function toggleSide(key){
-  G.sideOpts[key]=!G.sideOpts[key];
-  document.getElementById('so-'+key).classList.toggle('sel',G.sideOpts[key]);
 }
 function clickPar(h){
   if(_sCourse!=='custom')return;
@@ -318,10 +322,8 @@ function clickPar(h){
   renderParPreview();
 }
 function renderParPreview(){
-  const n=_sCourse==='custom'?_sHoles:COURSES[_sCourse].holes;
-  const pars=_sPars.slice(0,n);
-  const ed=_sCourse==='custom';
-  const w=`calc((100% - 4px*${n-1})/${n})`;
+  const n=18,pars=_sPars.slice(0,n),ed=_sCourse==='custom';
+  const w=`calc((100% - 4px*17)/18)`;
   document.getElementById('parCells').innerHTML=pars.map((p,i)=>
     `<div class="pp-cell" style="width:${w}">
       <div class="pp-hole">${i+1}</div>
@@ -329,27 +331,61 @@ function renderParPreview(){
     </div>`
   ).join('');
 }
+function renderLogPlayerRadios(names){
+  document.getElementById('logPlayerRadios').innerHTML=names.map((n,i)=>
+    `<label class="${i===0?'sel':''}">
+      <input type="radio" name="logp" value="${i}" ${i===0?'checked':''} onchange="G.logPlayerIdx=${i};document.querySelectorAll('.radio-group label').forEach((l,j)=>l.classList.toggle('sel',j===${i}))">
+      ${n}
+    </label>`
+  ).join('');
+}
 function startGame(){
   const names=[];
-  for(let i=1;i<=_sN;i++){const v=document.getElementById('p'+i).value.trim();names.push(v||'P'+i);}
-  G.players=names;G.n=_sN;
+  for(let i=1;i<=4;i++){const v=document.getElementById('p'+i).value.trim();names.push(v||'P'+i);}
+  G.players=names;G.n=4;
+  G.logPlayerIdx=parseInt(document.querySelector('input[name="logp"]:checked')?.value||0);
   if(_sCourse==='custom'){
-    G.courseName=document.getElementById('courseName').value.trim()||'커스텀 코스';
-    G.totalHoles=_sHoles;G.pars=[..._sPars.slice(0,_sHoles)];
+    G.courseName=document.getElementById('courseName').value.trim()||'Custom Course';
+    G.pars=[..._sPars];
   }else{
-    const c=COURSES[_sCourse];G.courseName=c.name;G.totalHoles=c.holes;G.pars=[...c.pars];
+    const c=COURSES[_sCourse];G.courseName=c.name;G.pars=[...c.pars];
   }
-  G.bet=parseInt(document.getElementById('betAmt').value)||100;
-  G.sideBet=parseInt(document.getElementById('sideBetAmt').value)||50;
-  G.holes={};G.cur=1;G.totals=Array(G.n).fill(0);G.carryOver=0;
+  G.totalHoles=18;
+  G.bet=parseInt(document.getElementById('betAmt').value)||10;
+  G.sideBet=parseInt(document.getElementById('sideBetAmt').value)||20;
+  G.holes={};G.cur=1;G.totals=Array(4).fill(0);G.carryMult=1;G.nextMult=1;
   document.getElementById('gameCourseTitle').textContent=G.courseName;
   showScreen('game');loadHole(1);
 }
 function showScreen(name){
   ['setup','game','final'].forEach(s=>document.getElementById('screen-'+s).classList.toggle('hidden',s!==name));
 }
-function confirmBackToSetup(){if(confirm('설정으로 돌아가면 게임이 초기화됩니다. 계속할까요?'))showScreen('setup');}
+function confirmBackToSetup(){if(confirm('Return to setup? Game progress will be lost.'))showScreen('setup');}
 function backToGame(){showScreen('game');loadHole(G.cur);}
+/* BG IMAGE */
+function setBgImage(e){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    const data=ev.target.result;
+    localStorage.setItem('handi0_game_bg',data);
+    applyBgImage(data);
+    document.getElementById('btnClearBg').style.display='';
+  };
+  reader.readAsDataURL(file);
+}
+function clearBgImage(){
+  localStorage.removeItem('handi0_game_bg');
+  document.body.style.backgroundImage='';
+  document.body.style.backgroundSize='';
+  document.getElementById('btnClearBg').style.display='none';
+}
+function applyBgImage(data){
+  document.body.style.backgroundImage=`url(${data})`;
+  document.body.style.backgroundSize='cover';
+  document.body.style.backgroundPosition='center';
+  document.body.style.backgroundAttachment='fixed';
+}
 
 /* ===== GAME SCREEN ===== */
 function loadHole(h){
@@ -363,9 +399,6 @@ function loadHole(h){
   if(G.carryOver>0){pb.classList.remove('hidden');document.getElementById('potAmt').textContent=G.carryOver;}
   else pb.classList.add('hidden');
   // Par quick-set buttons
-  document.getElementById('parBtns').innerHTML=[3,4,5,6,7,8].map(v=>
-    `<button class="par-btn${v===par?' active':''}" onclick="setAllPar(${v})">${v}타</button>`
-  ).join('');
   // Score inputs
   const confirmed=!!hd.confirmed;
   document.getElementById('scoreInputs').innerHTML=G.players.map((name,i)=>{
@@ -403,10 +436,6 @@ function adjScore(idx,delta){
   const el=document.getElementById('sv'+idx);
   el.textContent=Math.max(1,parseInt(el.textContent)+delta);
 }
-function setAllPar(par){
-  for(let i=0;i<G.n;i++){const el=document.getElementById('sv'+i);if(el)el.textContent=par;}
-  document.querySelectorAll('.par-btn').forEach(b=>b.classList.toggle('active',parseInt(b.textContent)===par));
-}
 function getScores(){return G.players.map((_,i)=>parseInt(document.getElementById('sv'+i).textContent)||4);}
 function renderHoleMap(){
   document.getElementById('holeMap').innerHTML=Array.from({length:G.totalHoles},(_,i)=>{
@@ -426,19 +455,20 @@ function renderRunning(){
     const v=G.totals[i],sign=v>0?'+':'',cls=v>0?'pos':v<0?'neg':'zero';
     return `<div class="rt-row"><div class="rt-name">${name}</div><div class="rt-score ${cls}">${sign}${v}</div></div>`;
   }).join('');
-  const meta=`<div class="rt-meta">${G.bet}점/타 · ${countConfirmed()}/${G.totalHoles}홀 완료${G.carryOver>0?' · 🏆이월 '+G.carryOver+'점':''}</div>`;
+  const multInfo=(G.carryMult>1||G.nextMult>1)?` · <span style="color:#ffb300">×${G.carryMult*G.nextMult} 적용중</span>`:'';
+  const meta=`<div class="rt-meta">${G.bet}점/타 · ${countConfirmed()}/${G.totalHoles}홀 완료${multInfo}</div>`;
   document.getElementById('runningTotal').innerHTML=rows+meta;
 }
 function renderManualSideBets(h,par,confirmed){
-  const needNP=G.sideOpts.nearpin&&par===3,needLD=G.sideOpts.longdrive;
+  const needNP=par===3,needLD=par===5;
   const card=document.getElementById('manualSideCard');
   if(!needNP&&!needLD){card.classList.add('hidden');return;}
   card.classList.remove('hidden');
   const hd=G.holes[h]||{};
-  const opts=G.players.map((n,i)=>`<option value="${i}" ${hd.nearpin==i||hd.longdrive==i?'':''}>${n}</option>`).join('');
+  const dis=confirmed?'disabled':'';
   let html='';
-  if(needNP)html+=`<div class="form-group"><label>📍 니어핀</label><select id="sel-nearpin" ${confirmed?'disabled':''}><option value="">-선택-</option>${G.players.map((n,i)=>`<option value="${i}" ${hd.nearpin===i?'selected':''}>${n}</option>`).join('')}</select></div>`;
-  if(needLD)html+=`<div class="form-group"><label>🚀 롱드라이브</label><select id="sel-longdrive" ${confirmed?'disabled':''}><option value="">-선택-</option>${G.players.map((n,i)=>`<option value="${i}" ${hd.longdrive===i?'selected':''}>${n}</option>`).join('')}</select></div>`;
+  if(needNP)html+=`<div class="form-group"><label>📍 니어핀</label><select id="sel-nearpin" ${dis}><option value="">-선택-</option>${G.players.map((n,i)=>`<option value="${i}" ${hd.nearpin===i?'selected':''}>${n}</option>`).join('')}</select></div>`;
+  if(needLD)html+=`<div class="form-group"><label>🚀 롱드라이브</label><select id="sel-longdrive" ${dis}><option value="">-선택-</option>${G.players.map((n,i)=>`<option value="${i}" ${hd.longdrive===i?'selected':''}>${n}</option>`).join('')}</select></div>`;
   document.getElementById('manualSideInputs').innerHTML=html;
 }
 function getManualWinner(type){
@@ -452,46 +482,69 @@ function doConfirmHole(){
   const scores=getScores(),h=G.cur,par=G.pars[h-1];
   const hd=G.holes[h]||{};
   hd.scores=scores;hd.par=par;hd.confirmed=true;
-  if(G.sideOpts.nearpin&&par===3)hd.nearpin=getManualWinner('nearpin');
-  if(G.sideOpts.longdrive)hd.longdrive=getManualWinner('longdrive');
+  if(par===3)hd.nearpin=getManualWinner('nearpin');
+  if(par===5)hd.longdrive=getManualWinner('longdrive');
   G.holes[h]=hd;
   recalcAll();
   showResultModal(h);
 }
 function recalcAll(){
   G.totals=Array(G.n).fill(0);
-  let co=0;
+  let cMult=1,nMult=1; // carryMult(4-way tie doubler), nextMult(2x rule)
   for(let h=1;h<=G.totalHoles;h++){
     const hd=G.holes[h];
     if(!hd||!hd.confirmed)continue;
-    const scores=hd.scores,min=Math.min(...scores);
-    const winners=scores.map((s,i)=>s===min?i:-1).filter(i=>i>=0);
-    const pot=G.bet+co;
-    if(winners.length===1){
+    const scores=hd.scores,par=hd.par;
+    // Birdie bonus: effective score -1 for birdie or better (game scoring only)
+    const eff=scores.map(s=>(par-s>=1)?s-1:s);
+    const effMin=Math.min(...eff);
+    const winners=eff.map((s,i)=>s===effMin?i:-1).filter(i=>i>=0);
+    const pot=G.bet*cMult*nMult;
+    let newCMult=cMult,newNMult=1;
+    if(winners.length===4){
+      // All 4 tie → carryover, carryMult doubles
+      newCMult=cMult*2;
+    }else if(winners.length===1){
       const wi=winners[0];
       for(let i=0;i<G.n;i++)G.totals[i]+=(i===wi)?pot*(G.n-1):-pot;
-      co=0;
-    }else{co+=G.bet;}
-    // Birdie / eagle side bets (any player who makes it)
-    for(let i=0;i<G.n;i++){
-      const diff=hd.par-scores[i];
-      let bonus=0;
-      if(G.sideOpts.eagle&&diff>=2)bonus+=G.sideBet*2;
-      else if(G.sideOpts.birdie&&diff===1)bonus+=G.sideBet;
-      if(bonus>0)for(let j=0;j<G.n;j++)if(j!==i){G.totals[i]+=bonus;G.totals[j]-=bonus;}
+      newCMult=1; // reset on clear win
+    }else{
+      // 2 or 3-way tie → carry with same cMult
     }
-    // Nearpin
-    if(hd.nearpin!==undefined&&hd.nearpin!==null){
-      const ni=hd.nearpin;
-      for(let j=0;j<G.n;j++)if(j!==ni){G.totals[ni]+=G.sideBet;G.totals[j]-=G.sideBet;}
+    // 2배 룰: conditions → newNMult for next hole
+    const hasBirdie=scores.some(s=>par-s>=1);
+    const hasTriple=scores.some(s=>s>=par+3);
+    const is3WayTie=winners.length===3;
+    if(hasBirdie)newNMult*=2;
+    if(hasTriple)newNMult*=2;
+    if(is3WayTie)newNMult*=2;
+    cMult=newCMult;nMult=newNMult;
+    // Nearpin (with eraser rule)
+    if(hd.nearpin!=null&&par===3){
+      const erased=scores.some((s,i)=>i!==hd.nearpin&&s===par);
+      if(!erased){const ni=hd.nearpin;for(let j=0;j<G.n;j++)if(j!==ni){G.totals[ni]+=G.sideBet;G.totals[j]-=G.sideBet;}}
     }
-    // Longdrive
-    if(hd.longdrive!==undefined&&hd.longdrive!==null){
-      const li=hd.longdrive;
-      for(let j=0;j<G.n;j++)if(j!==li){G.totals[li]+=G.sideBet;G.totals[j]-=G.sideBet;}
+    // Longdrive (par 5 only)
+    if(hd.longdrive!=null&&par===5){
+      const li=hd.longdrive;for(let j=0;j<G.n;j++)if(j!==li){G.totals[li]+=G.sideBet;G.totals[j]-=G.sideBet;}
     }
   }
-  G.carryOver=co;
+  G.carryMult=cMult;G.nextMult=nMult;
+}
+function _getPrePot(h){
+  // Compute pot before hole h (for modal display)
+  let cM=1,nM=1;
+  for(let hh=1;hh<h;hh++){
+    const p=G.holes[hh];if(!p||!p.confirmed)continue;
+    const par=p.par,eff=p.scores.map(s=>(par-s>=1)?s-1:s),eMin=Math.min(...eff);
+    const wn=eff.filter(s=>s===eMin).length;
+    const hasBirdie=p.scores.some(s=>par-s>=1),hasTriple=p.scores.some(s=>s>=par+3),is3=wn===3;
+    let newN=1;
+    if(hasBirdie)newN*=2;if(hasTriple)newN*=2;if(is3)newN*=2;
+    if(wn===4)cM*=2;else if(wn===1)cM=1;
+    nM=newN;
+  }
+  return {pot:G.bet*cM*nM,cMult:cM,nMult:nM};
 }
 function editCurrentHole(){
   closeModal();
@@ -506,50 +559,49 @@ function nextHole(){
 /* ===== MODAL ===== */
 function showResultModal(h){
   const hd=G.holes[h];
-  const scores=hd.scores,min=Math.min(...scores);
-  const winners=scores.map((s,i)=>s===min?i:-1).filter(i=>i>=0);
-  // Compute pot that was at stake (carryOver before this hole)
-  let co=0;
-  for(let hh=1;hh<h;hh++){
-    const p=G.holes[hh];if(!p||!p.confirmed)continue;
-    const pm=Math.min(...p.scores);
-    if(p.scores.filter(s=>s===pm).length===1)co=0;else co+=G.bet;
-  }
-  const pot=G.bet+co;
+  const scores=hd.scores,par=hd.par;
+  const eff=scores.map(s=>(par-s>=1)?s-1:s);
+  const effMin=Math.min(...eff);
+  const winners=eff.map((s,i)=>s===effMin?i:-1).filter(i=>i>=0);
+  const {pot,cMult,nMult}=_getPrePot(h);
   const isWin=winners.length===1;
-  const wi=isWin?winners[0]:-1;
   let title,detHtml;
   if(isWin){
+    const wi=winners[0];
     title='🏆 Hole '+h+' — '+G.players[wi]+' 승리!';
     detHtml=G.players.map((name,i)=>{
       const amt=(i===wi)?pot*(G.n-1):-pot;
       const cls=amt>0?'pos':'neg',sign=amt>0?'+':'';
       return `<div class="modal-row"><span>${name}</span><span class="val ${cls}">${sign}${amt}</span></div>`;
     }).join('');
+  }else if(winners.length===4){
+    title='🔄 Hole '+h+' — 전원 동타! ×'+(cMult*2)+' 이월';
+    detHtml=`<div style="color:var(--sub);text-align:center;padding:8px">다음 홀 배율: ×${cMult*2}</div>`;
   }else{
-    title='🤝 Hole '+h+' — 동타! 이월';
-    detHtml=`<div style="color:var(--sub);text-align:center;padding:8px">이월 +${G.bet} → 다음 홀 팟: ${G.carryOver}점</div>`;
+    title='🤝 Hole '+h+' — 동타 이월';
+    detHtml=`<div style="color:var(--sub);text-align:center;padding:8px">동타 이월 (현재 ×${cMult})</div>`;
   }
-  // Side bet results
+  // Side bets & 2배 룰 info
   const sides=[];
-  for(let i=0;i<G.n;i++){
-    const diff=hd.par-scores[i];
-    if(G.sideOpts.eagle&&diff>=2)sides.push({label:'🦅 이글 '+G.players[i],amt:G.sideBet*2*(G.n-1)});
-    else if(G.sideOpts.birdie&&diff===1)sides.push({label:'🐦 버디 '+G.players[i],amt:G.sideBet*(G.n-1)});
+  const hasBirdie=scores.some(s=>par-s>=1),hasTriple=scores.some(s=>s>=par+3),is3=winners.length===3;
+  if(hasBirdie)sides.push({label:'🐦 버디 보너스 → 다음홀 ×2',amt:null});
+  if(hasTriple)sides.push({label:'⚡ 트리플보기+ → 다음홀 ×2',amt:null});
+  if(is3)sides.push({label:'⚡ 3명 동타 → 다음홀 ×2',amt:null});
+  if(hd.nearpin!=null){
+    const erased=scores.some((s,i)=>i!==hd.nearpin&&s===par);
+    sides.push({label:(erased?'🧹 지우개! 니어핀 무효':'📍 니어핀 '+G.players[hd.nearpin]),amt:erased?0:G.sideBet*(G.n-1)});
   }
-  if(hd.nearpin!==undefined&&hd.nearpin!==null)sides.push({label:'📍 니어핀 '+G.players[hd.nearpin],amt:G.sideBet*(G.n-1)});
-  if(hd.longdrive!==undefined&&hd.longdrive!==null)sides.push({label:'🚀 롱드라이브 '+G.players[hd.longdrive],amt:G.sideBet*(G.n-1)});
+  if(hd.longdrive!=null)sides.push({label:'🚀 롱드라이브 '+G.players[hd.longdrive],amt:G.sideBet*(G.n-1)});
   let sideHtml='';
-  if(sides.length>0){
+  if(sides.length){
     sideHtml='<div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.08)">'+
-      sides.map(r=>`<div class="modal-row"><span>${r.label}</span><span class="val pos">+${r.amt}</span></div>`).join('')+
+      sides.map(r=>`<div class="modal-row"><span>${r.label}</span>${r.amt!=null?`<span class="val ${r.amt>0?'pos':'zero'}">${r.amt>0?'+'+r.amt:r.amt===0?'무효':''}</span>`:''}</div>`).join('')+
       '</div>';
   }
   document.getElementById('modalTitle').textContent=title;
   document.getElementById('modalDet').innerHTML=detHtml;
   document.getElementById('sideResultDet').innerHTML=sideHtml;
-  const isLast=h===G.totalHoles;
-  document.getElementById('btnModalNext').textContent=isLast?'🏆 최종 결과':'다음 홀 →';
+  document.getElementById('btnModalNext').textContent=(h===G.totalHoles)?'🏆 최종 결과':'다음 홀 →';
   document.getElementById('modal').classList.remove('hidden');
   renderHoleMap();renderRunning();
 }
@@ -561,8 +613,7 @@ function modalNext(){closeModal();if(G.cur>=G.totalHoles)showFinal();else nextHo
 function showFinal(){
   closeModal();
   // Save to localStorage for Log Round pre-fill
-  const p1name=localStorage.getItem('handi0_player_name')||G.players[0];
-  const p1idx=Math.max(0,G.players.indexOf(p1name));
+  const p1idx=G.logPlayerIdx;
   let p1strokes=0;
   for(let h=1;h<=G.totalHoles;h++){const hd=G.holes[h];if(hd&&hd.confirmed&&hd.scores[p1idx]!==undefined)p1strokes+=hd.scores[p1idx];}
   localStorage.setItem('handi0_pending_game',JSON.stringify({date:new Date().toISOString().slice(0,10),courseName:G.courseName,totalScore:p1strokes}));
@@ -620,6 +671,17 @@ function shareResult(){
   const pn=localStorage.getItem('handi0_player_name');
   if(pn) document.getElementById('p1').value=pn;
   renderParPreview();
+  renderLogPlayerRadios(['P1','P2','P3','P4']);
+  // Apply saved background
+  const bg=localStorage.getItem('handi0_game_bg');
+  if(bg){applyBgImage(bg);document.getElementById('btnClearBg').style.display='';}
+  // Update radio labels when names change
+  ['p1','p2','p3','p4'].forEach((id,i)=>{
+    document.getElementById(id).addEventListener('input',()=>{
+      const names=[1,2,3,4].map(n=>document.getElementById('p'+n).value.trim()||'P'+n);
+      renderLogPlayerRadios(names);
+    });
+  });
 })();
 </script>
 </body>

@@ -104,6 +104,7 @@ export default function RoundInput() {
         ...(g.date && { date: g.date }),
         ...(g.courseName && { courseName: g.courseName }),
         ...(g.totalScore && { totalScore: String(g.totalScore) }),
+        ...(g.holes && { holes: g.holes }),
       }));
     } catch {}
     localStorage.removeItem('handi0_pending_game');

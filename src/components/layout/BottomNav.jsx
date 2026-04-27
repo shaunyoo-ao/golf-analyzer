@@ -11,11 +11,12 @@ const TABS = [
     ),
   },
   {
-    to: '/round/new',
-    label: 'Log Round',
+    to: '/play',
+    label: 'Play',
     icon: (
       <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3 21c0 0 4-1 7-4l7-7a2.828 2.828 0 00-4-4l-7 7c-3 3-4 7-4 7z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M14.5 5.5l4 4" />
       </svg>
     ),
   },

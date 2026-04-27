@@ -93,6 +93,22 @@ export default function RoundInput() {
     }
   }, [existingRound]);
 
+  useEffect(() => {
+    if (id) return;
+    const raw = localStorage.getItem('handi0_pending_game');
+    if (!raw) return;
+    try {
+      const g = JSON.parse(raw);
+      setForm((f) => ({
+        ...f,
+        ...(g.date && { date: g.date }),
+        ...(g.courseName && { courseName: g.courseName }),
+        ...(g.totalScore && { totalScore: String(g.totalScore) }),
+      }));
+    } catch {}
+    localStorage.removeItem('handi0_pending_game');
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   const set = (key, val) => setForm((f) => ({ ...f, [key]: val }));
 
   // Load a favorite course into the form

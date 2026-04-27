@@ -20,6 +20,9 @@ export function AuthProvider({ children }) {
       })
       .finally(() => {
         unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+          if (firebaseUser?.displayName) {
+            localStorage.setItem('handi0_player_name', firebaseUser.displayName);
+          }
           setUser(firebaseUser);
           setLoading(false);
         });

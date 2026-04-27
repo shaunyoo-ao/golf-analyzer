@@ -14,6 +14,8 @@ import RoundInput from './pages/RoundInput';
 import Profile from './pages/Profile';
 import History from './pages/History';
 import AIFeedback from './pages/AIFeedback';
+import Play from './pages/Play';
+import GolfGame from './pages/GolfGame';
 
 const router = createBrowserRouter([
   {
@@ -33,8 +35,10 @@ const router = createBrowserRouter([
           { path: 'round/:id/ai', element: <AIFeedback /> },
           { path: 'profile', element: <Profile /> },
           { path: 'history', element: <History /> },
+          { path: 'play', element: <Play /> },
         ],
       },
+      { path: 'golf-game', element: <GolfGame /> },
     ],
   },
   {

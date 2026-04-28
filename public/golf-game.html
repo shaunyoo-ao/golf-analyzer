@@ -217,17 +217,16 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
     <div class="card">
       <div class="card-title">점수 설정</div>
       <div class="form-group"><label>1타당 점수</label><input type="number" id="betAmt" value="10" min="0" inputmode="numeric"></div>
-      <div class="form-group"><label>사이드벳 점수</label><input type="number" id="sideBetAmt" value="20" min="0" inputmode="numeric"></div>
     </div>
     <!-- Rules -->
     <div class="rules-card card">
       <div class="card-title">📋 적용 룰</div>
       <div class="rule-item">💰 <b>정산</b>: 플레이어 별 (타수 차) × 베팅 × 배율</div>
-      <div class="rule-item">🐦 <b>버디 보너스</b>: 버디 이하 시 유효 타수 −1 (이 홀 정산에만 적용)</div>
-      <div class="rule-item">⚡ <b>2배 룰</b>: 버디+, 3명 동타, 트리플보기+, 니어핀, 롱드라이브 → 이 홀 ×2 (중첩 불가)</div>
+      <div class="rule-item">🎯 <b>보너스 룰</b>: 버디·니어핀·롱드라이브 수상자 → 유효 타수 −1 (이 홀 정산에만 적용)</div>
+      <div class="rule-item">⚡ <b>2배 룰</b>: 버디+, 3명 동타, 트리플보기+ → 이 홀 ×2 (중첩 불가)</div>
       <div class="rule-item">🔄 <b>캐리오버</b>: 4명 전원 동타만 → 정산 없음, 다음 홀 배율 ×2 (누적)</div>
-      <div class="rule-item">🧹 <b>지우개</b>: 파3에서 체크박스 선택 시 니어핀 무효</div>
-      <div class="rule-item">📍 니어핀 파3만 · 🚀 롱드라이브 파5만 · 사이드벳은 고정금액</div>
+      <div class="rule-item">🧹 <b>지우개</b>: 파3에서 체크박스 선택 시 니어핀 무효 (보너스 미적용)</div>
+      <div class="rule-item">📍 니어핀 파3만 · 🚀 롱드라이브 파5만</div>
     </div>
     <!-- Background image -->
     <div class="card">
@@ -327,7 +326,7 @@ const COURSES = {
 
 /* ===== STATE ===== */
 const G={
-  players:[],n:4,totalHoles:18,bet:10,sideBet:20,
+  players:[],n:4,totalHoles:18,bet:10,
   courseName:'',pars:[],holes:{},cur:1,totals:[],
   carryMult:1,nextMult:1,logPlayerIdx:0,
 };
@@ -378,7 +377,6 @@ function startGame(){
   }
   G.totalHoles=18;
   G.bet=parseInt(document.getElementById('betAmt').value)||10;
-  G.sideBet=parseInt(document.getElementById('sideBetAmt').value)||20;
   G.holes={};G.cur=1;G.totals=Array(4).fill(0);G.carryMult=1;G.nextMult=1;
   document.getElementById('gameCourseTitle').textContent=G.courseName;
   showScreen('game');loadHole(1);
@@ -559,6 +557,13 @@ function doConfirmHole(){
   recalcAll();
   showResultModal(h);
 }
+function _eff(scores,par,nearpin,ld,erased){
+  return scores.map((s,i)=>{
+    const npB=nearpin!=null&&nearpin===i&&!erased;
+    const ldB=ld!=null&&ld===i;
+    return(par-s>=1||npB||ldB)?s-1:s;
+  });
+}
 function recalcAll(){
   G.totals=Array(G.n).fill(0);
   let carryMult=1;
@@ -566,19 +571,15 @@ function recalcAll(){
     const hd=G.holes[h];
     if(!hd||!hd.confirmed)continue;
     const scores=hd.scores,par=hd.par;
-    // Birdie bonus: effective score -1 for birdie or better
-    const eff=scores.map(s=>(par-s>=1)?s-1:s);
+    const eff=_eff(scores,par,hd.nearpin,hd.longdrive,hd.eraserApplied);
     const effMin=Math.min(...eff);
     const allTied=eff.every(s=>s===effMin);
     const nTied=eff.filter(s=>s===effMin).length;
-    // 2배룰 triggers for CURRENT hole (stack multiplicatively)
     const hasBirdie=scores.some(s=>par-s>=1);
     const hasTriple=scores.some(s=>s-par>=3);
     const is3WayTie=nTied===3;
-    const hasNearpin=hd.nearpin!=null&&!hd.eraserApplied;
-    const hasLongdrive=hd.longdrive!=null;
     let twoXMult=1;
-    if(hasBirdie||hasTriple||is3WayTie||hasNearpin||hasLongdrive)twoXMult=2;
+    if(hasBirdie||hasTriple||is3WayTie)twoXMult=2;
     const holeMult=carryMult*twoXMult;
     if(!hd.skipGameRules){
       if(allTied){
@@ -596,14 +597,6 @@ function recalcAll(){
           }
         }
       }
-      // Nearpin (par 3 only, manual eraser)
-      if(hd.nearpin!=null&&par===3){
-        if(!hd.eraserApplied){const ni=hd.nearpin;for(let j=0;j<G.n;j++)if(j!==ni&&scores[j]-par<=1){G.totals[ni]+=G.sideBet;G.totals[j]-=G.sideBet;}}
-      }
-      // Longdrive (par 5 only)
-      if(hd.longdrive!=null&&par===5){
-        const li=hd.longdrive;for(let j=0;j<G.n;j++)if(j!==li&&scores[j]-par<=1){G.totals[li]+=G.sideBet;G.totals[j]-=G.sideBet;}
-      }
     }
   }
   G.carryMult=carryMult;G.nextMult=1;
@@ -613,7 +606,7 @@ function _getCarryMultBefore(h){
   for(let hh=1;hh<h;hh++){
     const p=G.holes[hh];if(!p||!p.confirmed)continue;
     if(p.skipGameRules)continue; // neutral hole — preserve carry as-is
-    const par=p.par,eff=p.scores.map(s=>(par-s>=1)?s-1:s);
+    const par=p.par,eff=_eff(p.scores,par,p.nearpin,p.longdrive,p.eraserApplied);
     if(eff.every(s=>s===eff[0]))c*=2;else c=1;
   }
   return c;
@@ -623,18 +616,17 @@ function _getHoleMult(h){
   const hd=G.holes[h];
   if(!hd||!hd.scores)return{holeMult:carryMult,carryMult,twoXMult:1,hasBirdie:false,hasTriple:false,is3WayTie:false,allTied:false};
   const par=hd.par,scores=hd.scores;
-  const eff=scores.map(s=>(par-s>=1)?s-1:s);
+  const eff=_eff(scores,par,hd.nearpin,hd.longdrive,hd.eraserApplied);
   const effMin=Math.min(...eff);
   const allTied=eff.every(s=>s===effMin);
   const nTied=eff.filter(s=>s===effMin).length;
   const hasBirdie=scores.some(s=>par-s>=1);
   const hasTriple=scores.some(s=>s-par>=3);
   const is3WayTie=nTied===3;
-  const hasNearpin=hd.nearpin!=null&&!hd.eraserApplied;
-  const hasLongdrive=hd.longdrive!=null;
   let twoXMult=1;
-  if(hasBirdie||hasTriple||is3WayTie||hasNearpin||hasLongdrive)twoXMult=2;
-  return{holeMult:carryMult*twoXMult,carryMult,twoXMult,hasBirdie,hasTriple,is3WayTie,allTied,hasNearpin,hasLongdrive};
+  if(hasBirdie||hasTriple||is3WayTie)twoXMult=2;
+  const hasBonus=eff.some((e,i)=>e<scores[i]);
+  return{holeMult:carryMult*twoXMult,carryMult,twoXMult,hasBirdie,hasTriple,is3WayTie,allTied,hasBonus};
 }
 function editCurrentHole(){
   closeModal();
@@ -650,8 +642,8 @@ function nextHole(){
 function showResultModal(h){
   const hd=G.holes[h];
   const scores=hd.scores,par=hd.par;
-  const{holeMult,carryMult,twoXMult,hasBirdie,hasTriple,is3WayTie,allTied,hasNearpin,hasLongdrive}=_getHoleMult(h);
-  const eff=scores.map(s=>(par-s>=1)?s-1:s);
+  const{holeMult,carryMult,twoXMult,hasBirdie,hasTriple,is3WayTie,allTied,hasBonus}=_getHoleMult(h);
+  const eff=_eff(scores,par,hd.nearpin,hd.longdrive,hd.eraserApplied);
   // skipGameRules — show score-only modal and return early
   if(hd.skipGameRules){
     const sL=(s,p)=>{const d=p-s;if(d>=2)return'이글';if(d===1)return'버디 🐦';if(d===0)return'파';if(s-p===1)return'보기';if(s-p===2)return'더블보기';return'트리플+';};
@@ -672,11 +664,10 @@ function showResultModal(h){
   // Applied rules header
   const applied=[];
   if(carryMult>1)applied.push('캐리오버 ×'+carryMult);
-  if(hasBirdie)applied.push('🐦버디보너스');
+  if(hasBonus){const bNames=eff.map((e,i)=>e<scores[i]?G.players[i]:null).filter(Boolean);applied.push('🎯보너스: '+bNames.join(', '));}
   if(hasTriple)applied.push('⚡트리플+');
   if(is3WayTie)applied.push('⚡3명동타');
-  if(hasNearpin)applied.push('📍니어핀');
-  if(hasLongdrive)applied.push('🚀롱드라이브');
+  if(hasBirdie)applied.push('🐦버디→×2');
   if(twoXMult>1)applied.push('→ 이 홀 ×'+twoXMult);
   const appliedHtml=applied.length?`<div style="font-size:11px;color:rgba(255,213,79,0.85);text-align:center;margin-bottom:8px">적용: ${applied.join(' ')}</div>`:'';
   // Per-player net deltas (main + side bets)
@@ -687,14 +678,6 @@ function showResultModal(h){
       const amt=Math.abs(diff)*G.bet*holeMult;
       if(diff>0){deltas[i]+=amt;deltas[j]-=amt;}else{deltas[j]+=amt;deltas[i]-=amt;}
     }
-  }
-  // Side bets (merged into deltas)
-  const nearpinErased=!!hd.eraserApplied;
-  if(hd.nearpin!=null&&par===3){
-    if(!nearpinErased){const ni=hd.nearpin;for(let j=0;j<G.n;j++){if(j!==ni&&scores[j]-par<=1){deltas[ni]+=G.sideBet;deltas[j]-=G.sideBet;}}}
-  }
-  if(hd.longdrive!=null&&par===5){
-    const li=hd.longdrive;for(let j=0;j<G.n;j++){if(j!==li&&scores[j]-par<=1){deltas[li]+=G.sideBet;deltas[j]-=G.sideBet;}}
   }
   // Score label helper
   function sLabel(s,p){const d=p-s;if(d>=2)return'이글';if(d===1)return'버디 🐦';if(d===0)return'파';if(s-p===1)return'보기';if(s-p===2)return'더블보기';return'트리플+';}
@@ -727,8 +710,8 @@ function showResultModal(h){
   }
   // Side events
   const events=[];
-  if(hd.nearpin!=null){events.push(nearpinErased?'🧹 지우개! 니어핀 무효 ('+G.players[hd.nearpin]+')':'📍 니어핀: '+G.players[hd.nearpin]);}
-  if(hd.longdrive!=null)events.push('🚀 롱드라이브: '+G.players[hd.longdrive]);
+  if(hd.nearpin!=null){events.push(hd.eraserApplied?'🧹 지우개! 니어핀 무효 ('+G.players[hd.nearpin]+')':'🎯 니어핀 보너스: '+G.players[hd.nearpin]+' (−1타 적용)');}
+  if(hd.longdrive!=null)events.push('🎯 롱드라이브 보너스: '+G.players[hd.longdrive]+' (−1타 적용)');
   const sideHtml=events.length?'<div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.08)">'+
     events.map(e=>`<div style="font-size:12px;color:var(--sub);padding:2px 0">${e}</div>`).join('')+'</div>':'';
   document.getElementById('modalTitle').textContent=title;

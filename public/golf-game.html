@@ -224,7 +224,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       <div class="card-title">📋 적용 룰</div>
       <div class="rule-item">💰 <b>정산</b>: 플레이어 별 (타수 차) × 베팅 × 배율</div>
       <div class="rule-item">🐦 <b>버디 보너스</b>: 버디 이하 시 유효 타수 −1 (이 홀 정산에만 적용)</div>
-      <div class="rule-item">⚡ <b>2배 룰</b>: 버디+, 3명 동타, 트리플보기+ → 이 홀 ×2 (중첩 불가)</div>
+      <div class="rule-item">⚡ <b>2배 룰</b>: 버디+, 3명 동타, 트리플보기+, 니어핀, 롱드라이브 → 이 홀 ×2 (중첩 불가)</div>
       <div class="rule-item">🔄 <b>캐리오버</b>: 4명 전원 동타만 → 정산 없음, 다음 홀 배율 ×2 (누적)</div>
       <div class="rule-item">🧹 <b>지우개</b>: 파3에서 체크박스 선택 시 니어핀 무효</div>
       <div class="rule-item">📍 니어핀 파3만 · 🚀 롱드라이브 파5만 · 사이드벳은 고정금액</div>
@@ -575,8 +575,10 @@ function recalcAll(){
     const hasBirdie=scores.some(s=>par-s>=1);
     const hasTriple=scores.some(s=>s-par>=3);
     const is3WayTie=nTied===3;
+    const hasNearpin=hd.nearpin!=null&&!hd.eraserApplied;
+    const hasLongdrive=hd.longdrive!=null;
     let twoXMult=1;
-    if(hasBirdie||hasTriple||is3WayTie)twoXMult=2;
+    if(hasBirdie||hasTriple||is3WayTie||hasNearpin||hasLongdrive)twoXMult=2;
     const holeMult=carryMult*twoXMult;
     if(!hd.skipGameRules){
       if(allTied){
@@ -628,9 +630,11 @@ function _getHoleMult(h){
   const hasBirdie=scores.some(s=>par-s>=1);
   const hasTriple=scores.some(s=>s-par>=3);
   const is3WayTie=nTied===3;
+  const hasNearpin=hd.nearpin!=null&&!hd.eraserApplied;
+  const hasLongdrive=hd.longdrive!=null;
   let twoXMult=1;
-  if(hasBirdie||hasTriple||is3WayTie)twoXMult=2;
-  return{holeMult:carryMult*twoXMult,carryMult,twoXMult,hasBirdie,hasTriple,is3WayTie,allTied};
+  if(hasBirdie||hasTriple||is3WayTie||hasNearpin||hasLongdrive)twoXMult=2;
+  return{holeMult:carryMult*twoXMult,carryMult,twoXMult,hasBirdie,hasTriple,is3WayTie,allTied,hasNearpin,hasLongdrive};
 }
 function editCurrentHole(){
   closeModal();
@@ -646,7 +650,7 @@ function nextHole(){
 function showResultModal(h){
   const hd=G.holes[h];
   const scores=hd.scores,par=hd.par;
-  const{holeMult,carryMult,twoXMult,hasBirdie,hasTriple,is3WayTie,allTied}=_getHoleMult(h);
+  const{holeMult,carryMult,twoXMult,hasBirdie,hasTriple,is3WayTie,allTied,hasNearpin,hasLongdrive}=_getHoleMult(h);
   const eff=scores.map(s=>(par-s>=1)?s-1:s);
   // skipGameRules — show score-only modal and return early
   if(hd.skipGameRules){
@@ -671,6 +675,8 @@ function showResultModal(h){
   if(hasBirdie)applied.push('🐦버디보너스');
   if(hasTriple)applied.push('⚡트리플+');
   if(is3WayTie)applied.push('⚡3명동타');
+  if(hasNearpin)applied.push('📍니어핀');
+  if(hasLongdrive)applied.push('🚀롱드라이브');
   if(twoXMult>1)applied.push('→ 이 홀 ×'+twoXMult);
   const appliedHtml=applied.length?`<div style="font-size:11px;color:rgba(255,213,79,0.85);text-align:center;margin-bottom:8px">적용: ${applied.join(' ')}</div>`:'';
   // Per-player net deltas (main + side bets)

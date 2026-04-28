@@ -598,11 +598,11 @@ function recalcAll(){
       }
       // Nearpin (par 3 only, manual eraser)
       if(hd.nearpin!=null&&par===3){
-        if(!hd.eraserApplied){const ni=hd.nearpin;for(let j=0;j<G.n;j++)if(j!==ni){G.totals[ni]+=G.sideBet;G.totals[j]-=G.sideBet;}}
+        if(!hd.eraserApplied){const ni=hd.nearpin;for(let j=0;j<G.n;j++)if(j!==ni&&scores[j]-par<=1){G.totals[ni]+=G.sideBet;G.totals[j]-=G.sideBet;}}
       }
       // Longdrive (par 5 only)
       if(hd.longdrive!=null&&par===5){
-        const li=hd.longdrive;for(let j=0;j<G.n;j++)if(j!==li){G.totals[li]+=G.sideBet;G.totals[j]-=G.sideBet;}
+        const li=hd.longdrive;for(let j=0;j<G.n;j++)if(j!==li&&scores[j]-par<=1){G.totals[li]+=G.sideBet;G.totals[j]-=G.sideBet;}
       }
     }
   }
@@ -691,10 +691,10 @@ function showResultModal(h){
   // Side bets (merged into deltas)
   const nearpinErased=!!hd.eraserApplied;
   if(hd.nearpin!=null&&par===3){
-    if(!nearpinErased){const ni=hd.nearpin;for(let j=0;j<G.n;j++){if(j===ni)deltas[j]+=G.sideBet*(G.n-1);else deltas[j]-=G.sideBet;}}
+    if(!nearpinErased){const ni=hd.nearpin;for(let j=0;j<G.n;j++){if(j!==ni&&scores[j]-par<=1){deltas[ni]+=G.sideBet;deltas[j]-=G.sideBet;}}}
   }
   if(hd.longdrive!=null&&par===5){
-    const li=hd.longdrive;for(let j=0;j<G.n;j++){if(j===li)deltas[j]+=G.sideBet*(G.n-1);else deltas[j]-=G.sideBet;}
+    const li=hd.longdrive;for(let j=0;j<G.n;j++){if(j!==li&&scores[j]-par<=1){deltas[li]+=G.sideBet;deltas[j]-=G.sideBet;}}
   }
   // Score label helper
   function sLabel(s,p){const d=p-s;if(d>=2)return'이글';if(d===1)return'버디 🐦';if(d===0)return'파';if(s-p===1)return'보기';if(s-p===2)return'더블보기';return'트리플+';}

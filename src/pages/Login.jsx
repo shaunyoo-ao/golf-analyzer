@@ -77,7 +77,7 @@ export default function Login() {
         <p className="text-[11px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.25)' }}>
           Copyright ⓒ 2026, shaun.yoo.ao All rights reserved.
           <br />
-          Version 1.0.7
+          Version 1.1.2
         </p>
       </footer>
     </div>

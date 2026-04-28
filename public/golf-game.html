@@ -33,11 +33,11 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .btn{border:none;border-radius:10px;padding:10px 16px;font-size:15px;font-weight:600;cursor:pointer;transition:opacity .15s;min-height:44px;width:100%;display:flex;align-items:center;justify-content:center;gap:8px}
 .btn:active{opacity:.7}
 .btn-sm{min-height:36px;padding:6px 14px;font-size:14px}
-.btn-primary{background:rgba(100,200,100,0.70);color:rgba(100,200,100,0.95);border:1px solid rgba(100,200,100,0.70)}
-.btn-success{background:rgba(76,175,80,0.75);color:#4caf50;border:1px solid rgba(76,175,80,0.75)}
+.btn-primary{background:rgba(40,130,40,0.92);color:#fff;border:1px solid rgba(20,90,20,0.90)}
+.btn-success{background:rgba(46,125,50,0.95);color:#fff;border:1px solid rgba(20,90,20,0.90)}
 .btn-danger{background:rgba(239,83,80,0.25);color:#ef5350;border:1px solid rgba(239,83,80,0.40)}
 .btn-gold{background:linear-gradient(135deg,rgba(255,213,79,0.30),rgba(255,160,0,0.30));color:#ffd54f;border:1px solid rgba(255,213,79,0.40)}
-.btn-outline{background:transparent;color:rgba(100,200,100,0.85);border:2px solid rgba(100,200,100,0.40)}
+.btn-outline{background:rgba(0,0,0,0.30);color:#fff;border:2px solid rgba(100,200,100,0.70)}
 .btn-gray{background:rgba(255,255,255,0.10);color:rgba(255,255,255,0.55);border:1px solid rgba(255,255,255,0.12)}
 .btn-group{display:flex;gap:6px}
 .btn-group .btn{flex:1}
@@ -514,9 +514,14 @@ function renderHoleMap(){
   setTimeout(()=>{const el=document.querySelector('.hole-cell.current');if(el)el.scrollIntoView({inline:'center',behavior:'smooth',block:'nearest'});},50);
 }
 function renderRunning(){
+  const overUnder=G.players.map((_,i)=>{
+    let d=0;for(let h=1;h<=G.totalHoles;h++){const hd=G.holes[h];if(hd&&hd.confirmed)d+=(hd.scores[i]||0)-hd.par;}return d;
+  });
   const rows=G.players.map((name,i)=>{
     const v=G.totals[i],sign=v>0?'+':'',cls=v>0?'pos':v<0?'neg':'zero';
-    return `<div class="rt-row"><div class="rt-name">${name}</div><div class="rt-score ${cls}">${sign}${v}</div></div>`;
+    const ou=overUnder[i],ouSign=ou>0?'+':'',ouCls=ou>0?'lbl-bogey':ou<0?'lbl-birdie':'lbl-par';
+    const ouLabel=`<span class="score-lbl ${ouCls}" style="margin-left:4px">${ou===0?'E':ouSign+ou}</span>`;
+    return `<div class="rt-row"><div class="rt-name">${name}${ouLabel}</div><div class="rt-score ${cls}">${sign}${v}</div></div>`;
   }).join('');
   const multInfo=G.carryMult>1?` · <span style="color:#ff8c00">🔄 캐리 ×${G.carryMult}</span>`:'';
   const meta=`<div class="rt-meta">${G.bet}점/타×타수차 · ${countConfirmed()}/${G.totalHoles}홀 완료${multInfo}</div>`;
@@ -603,6 +608,7 @@ function _getCarryMultBefore(h){
   let c=1;
   for(let hh=1;hh<h;hh++){
     const p=G.holes[hh];if(!p||!p.confirmed)continue;
+    if(p.skipGameRules)continue; // neutral hole — preserve carry as-is
     const par=p.par,eff=p.scores.map(s=>(par-s>=1)?s-1:s);
     if(eff.every(s=>s===eff[0]))c*=2;else c=1;
   }
@@ -640,6 +646,19 @@ function showResultModal(h){
   const scores=hd.scores,par=hd.par;
   const{holeMult,carryMult,twoXMult,hasBirdie,hasTriple,is3WayTie,allTied}=_getHoleMult(h);
   const eff=scores.map(s=>(par-s>=1)?s-1:s);
+  // skipGameRules — show score-only modal and return early
+  if(hd.skipGameRules){
+    const sL=(s,p)=>{const d=p-s;if(d>=2)return'이글';if(d===1)return'버디 🐦';if(d===0)return'파';if(s-p===1)return'보기';if(s-p===2)return'더블보기';return'트리플+';};
+    const row=i=>`<div class="modal-row"><span><b>${G.players[i]}</b>: ${scores[i]}타 (${sL(scores[i],par)})</span><span class="val zero">−</span></div>`;
+    const skipDet=`<div style="font-size:11px;color:var(--sub);margin-bottom:3px">🚗 Cart 1</div>${row(0)}${row(1)}<div style="font-size:11px;color:var(--sub);margin:6px 0 3px">🚗 Cart 2</div>${row(2)}${row(3)}<div style="color:rgba(255,160,0,0.70);font-size:11px;text-align:center;margin-top:8px">게임룰 미적용 (타수기록만)</div>`;
+    document.getElementById('modalTitle').textContent='⏭ Hole '+h+' — 타수기록만';
+    document.getElementById('modalDet').innerHTML=skipDet;
+    document.getElementById('sideResultDet').innerHTML='';
+    document.getElementById('btnModalNext').textContent=(h===G.totalHoles)?'🏆 최종 결과':'다음 홀 →';
+    document.getElementById('modal').classList.remove('hidden');
+    renderHoleMap();renderRunning();
+    return;
+  }
   // Title
   let title;
   if(allTied)title='🔄 Hole '+h+' — 4명 전원 동타! ×'+(carryMult*2)+' 이월';

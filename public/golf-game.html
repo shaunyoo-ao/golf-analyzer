@@ -226,7 +226,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       <div class="rule-item">🐦 <b>버디 보너스</b>: 버디 이하 시 유효 타수 −1 (이 홀 정산에만 적용)</div>
       <div class="rule-item">⚡ <b>2배 룰</b>: 버디+, 3명 동타, 트리플보기+ → 이 홀 ×2 (중첩 불가)</div>
       <div class="rule-item">🔄 <b>캐리오버</b>: 4명 전원 동타만 → 정산 없음, 다음 홀 배율 ×2 (누적)</div>
-      <div class="rule-item">🧹 <b>지우개</b>: 파3에서 니어핀 외 플레이어가 파 기록 시 니어핀 무효</div>
+      <div class="rule-item">🧹 <b>지우개</b>: 파3에서 체크박스 선택 시 니어핀 무효</div>
       <div class="rule-item">📍 니어핀 파3만 · 🚀 롱드라이브 파5만 · 사이드벳은 고정금액</div>
     </div>
     <!-- Background image -->
@@ -535,7 +535,10 @@ function renderManualSideBets(h,par,confirmed){
   const hd=G.holes[h]||{};
   const dis=confirmed?'disabled':'';
   let html='';
-  if(needNP)html+=`<div class="form-group"><label>📍 니어핀</label><select id="sel-nearpin" ${dis}><option value="">-선택-</option>${G.players.map((n,i)=>`<option value="${i}" ${hd.nearpin===i?'selected':''}>${n}</option>`).join('')}</select></div>`;
+  if(needNP){
+    html+=`<div class="form-group"><label>📍 니어핀</label><select id="sel-nearpin" ${dis}><option value="">-선택-</option>${G.players.map((n,i)=>`<option value="${i}" ${hd.nearpin===i?'selected':''}>${n}</option>`).join('')}</select></div>`;
+    html+=`<div class="form-group"><label>🧹 지우개</label><label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="chk-eraser" ${hd.eraserApplied?'checked':''} ${dis} style="width:18px;height:18px;accent-color:#ef5350;cursor:pointer"><span style="font-size:13px;color:var(--text)">니어핀 무효 적용</span></label></div>`;
+  }
   if(needLD)html+=`<div class="form-group"><label>🚀 롱드라이브</label><select id="sel-longdrive" ${dis}><option value="">-선택-</option>${G.players.map((n,i)=>`<option value="${i}" ${hd.longdrive===i?'selected':''}>${n}</option>`).join('')}</select></div>`;
   document.getElementById('manualSideInputs').innerHTML=html;
 }
@@ -550,7 +553,7 @@ function doConfirmHole(){
   const scores=getScores(),h=G.cur,par=G.pars[h-1];
   const hd=G.holes[h]||{};
   hd.scores=scores;hd.par=par;hd.confirmed=true;hd.skipGameRules=(G._parMode!=='normal');
-  if(par===3)hd.nearpin=getManualWinner('nearpin');
+  if(par===3){hd.nearpin=getManualWinner('nearpin');const ec=document.getElementById('chk-eraser');hd.eraserApplied=ec?ec.checked:false;}
   if(par===5)hd.longdrive=getManualWinner('longdrive');
   G.holes[h]=hd;
   recalcAll();
@@ -591,10 +594,9 @@ function recalcAll(){
           }
         }
       }
-      // Nearpin (par 3 only, with eraser rule)
+      // Nearpin (par 3 only, manual eraser)
       if(hd.nearpin!=null&&par===3){
-        const erased=scores.some((s,i)=>i!==hd.nearpin&&s===par);
-        if(!erased){const ni=hd.nearpin;for(let j=0;j<G.n;j++)if(j!==ni){G.totals[ni]+=G.sideBet;G.totals[j]-=G.sideBet;}}
+        if(!hd.eraserApplied){const ni=hd.nearpin;for(let j=0;j<G.n;j++)if(j!==ni){G.totals[ni]+=G.sideBet;G.totals[j]-=G.sideBet;}}
       }
       // Longdrive (par 5 only)
       if(hd.longdrive!=null&&par===5){
@@ -681,9 +683,8 @@ function showResultModal(h){
     }
   }
   // Side bets (merged into deltas)
-  let nearpinErased=false;
+  const nearpinErased=!!hd.eraserApplied;
   if(hd.nearpin!=null&&par===3){
-    nearpinErased=scores.some((s,i)=>i!==hd.nearpin&&s===par);
     if(!nearpinErased){const ni=hd.nearpin;for(let j=0;j<G.n;j++){if(j===ni)deltas[j]+=G.sideBet*(G.n-1);else deltas[j]-=G.sideBet;}}
   }
   if(hd.longdrive!=null&&par===5){

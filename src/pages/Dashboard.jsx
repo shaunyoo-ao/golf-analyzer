@@ -131,6 +131,10 @@ export default function Dashboard() {
   const recentScores = recentRounds.map((r) => Number(r.totalScore)).filter(Boolean);
   const avgScore = recentScores.length ? Math.round(mean(recentScores)) : null;
 
+  const last20 = [...rounds].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 20);
+  const last20Scores = last20.map((r) => Number(r.totalScore)).filter(Boolean);
+  const avgGross = last20Scores.length ? Math.round(mean(last20Scores)) : null;
+
   const driveVals = recentRounds.map((r) => r.longestDriveMeter ? Number(r.longestDriveMeter) : null).filter(Boolean);
   const lostVals = recentRounds.map((r) => (r.lostBalls != null && r.lostBalls !== '') ? Number(r.lostBalls) : null).filter((v) => v !== null);
   const girVals = recentRounds.map((r) => r.avgGir ? Number(r.avgGir) : null).filter(Boolean);
@@ -170,17 +174,30 @@ export default function Dashboard() {
         />
       )}
 
-      {/* Handicap card */}
-      <div className="glass-card text-center py-6">
-        <p className="text-sm font-medium uppercase tracking-wide" style={{ color: 'var(--text-secondary)' }}>
-          Handicap Index
-        </p>
-        <p className="text-6xl font-black mt-2" style={{ color: 'var(--text-primary)' }}>
-          {handicapIndex != null ? handicapIndex : '—'}
-        </p>
-        {handicapIndex == null && (
-          <p className="text-xs mt-2" style={{ color: 'var(--text-secondary)' }}>Log 8+ rounds to unlock</p>
-        )}
+      {/* Handicap + Avg. Gross cards */}
+      <div className="flex gap-2">
+        <div className="glass-card text-center py-5 flex-1 min-w-0">
+          <p className="text-xs font-medium uppercase tracking-wide" style={{ color: 'var(--text-secondary)' }}>
+            Handicap Index
+          </p>
+          <p className="text-5xl font-black mt-2" style={{ color: 'var(--text-primary)' }}>
+            {handicapIndex != null ? handicapIndex : '—'}
+          </p>
+          {handicapIndex == null && (
+            <p className="text-[10px] mt-1" style={{ color: 'var(--text-secondary)' }}>8+ rounds to unlock</p>
+          )}
+        </div>
+        <div className="glass-card text-center py-5 flex-1 min-w-0">
+          <p className="text-xs font-medium uppercase tracking-wide" style={{ color: 'var(--text-secondary)' }}>
+            Avg. Gross
+          </p>
+          <p className="text-5xl font-black mt-2" style={{ color: 'var(--text-primary)' }}>
+            {avgGross != null ? avgGross : '—'}
+          </p>
+          <p className="text-[10px] mt-1" style={{ color: 'var(--text-secondary)' }}>
+            {last20Scores.length > 0 ? `Last ${last20Scores.length} rounds` : 'No rounds yet'}
+          </p>
+        </div>
       </div>
 
       {/* Stats grid — 4×2 */}

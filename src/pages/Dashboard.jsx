@@ -155,7 +155,7 @@ export default function Dashboard() {
   const puttsData = recentRounds
     .map((r) => {
       const hv = Object.values(r.holes || {}).filter((h) => h?.putts);
-      const val = hv.length >= 9 ? hv.reduce((a, h) => a + Number(h.putts || 0), 0) / hv.length : null;
+      const val = hv.length >= 9 ? hv.reduce((a, h) => a + Number(h.putts || 0), 0) : null;
       return val != null ? { date: r.date, score: val } : null;
     })
     .filter(Boolean)
@@ -243,9 +243,9 @@ export default function Dashboard() {
         />
         <StatCard
           label="Avg. Putts"
-          value={mPutts != null ? mPutts.toFixed(1) : null}
+          value={mPutts != null ? Math.round(mPutts) : null}
           trendVal={trend(puttsVals, false)}
-          onClick={() => setTrendModal({ label: 'Avg. Putts / Hole', data: puttsData })}
+          onClick={() => setTrendModal({ label: 'Avg. Putts / Round', data: puttsData })}
         />
         <StatCard
           label="Avg. Lost"

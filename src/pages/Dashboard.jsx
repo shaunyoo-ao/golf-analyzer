@@ -21,9 +21,13 @@ function trend(values, higherIsBetter) {
   return higherIsBetter ? r > o : r < o;
 }
 
-function StatCard({ label, value, trendVal }) {
+function StatCard({ label, value, trendVal, onClick }) {
   return (
-    <div className="glass-card !p-3 !rounded-2xl flex flex-col items-center min-w-0 gap-0.5">
+    <div
+      className="glass-card !p-3 !rounded-2xl flex flex-col items-center min-w-0 gap-0.5"
+      onClick={onClick}
+      style={onClick ? { cursor: 'pointer', WebkitTapHighlightColor: 'transparent' } : {}}
+    >
       <span className="text-xl font-black leading-tight" style={{ color: 'var(--text-primary)' }}>
         {value ?? '—'}
       </span>
@@ -110,6 +114,7 @@ export default function Dashboard() {
   const { profile, profileLoading, rounds, roundsLoading, hasLoaded, upcomingRound, deleteUpcomingRound } = useData();
   const [period, setPeriod] = useState('6m');
   const [showUpcomingModal, setShowUpcomingModal] = useState(false);
+  const [trendModal, setTrendModal] = useState(null);
 
   if (!hasLoaded && (profileLoading || roundsLoading)) return <LoadingSpinner />;
 
@@ -135,13 +140,31 @@ export default function Dashboard() {
   const last20Scores = last20.map((r) => Number(r.totalScore)).filter(Boolean);
   const avgGross = last20Scores.length ? Math.round(mean(last20Scores)) : null;
 
-  const driveVals = recentRounds.map((r) => r.longestDriveMeter ? Number(r.longestDriveMeter) : null).filter(Boolean);
-  const lostVals = recentRounds.map((r) => (r.lostBalls != null && r.lostBalls !== '') ? Number(r.lostBalls) : null).filter((v) => v !== null);
-  const girVals = recentRounds.map((r) => r.avgGir ? Number(r.avgGir) : null).filter(Boolean);
-  const puttsVals = recentRounds.map((r) => {
-    const hv = Object.values(r.holes || {}).filter((h) => h?.putts);
-    return hv.length >= 9 ? hv.reduce((a, h) => a + Number(h.putts || 0), 0) / hv.length : null;
-  }).filter((v) => v !== null);
+  const driveData = recentRounds
+    .filter((r) => r.longestDriveMeter)
+    .map((r) => ({ date: r.date, score: Number(r.longestDriveMeter) }))
+    .sort((a, b) => a.date.localeCompare(b.date));
+  const lostData = recentRounds
+    .filter((r) => r.lostBalls != null && r.lostBalls !== '')
+    .map((r) => ({ date: r.date, score: Number(r.lostBalls) }))
+    .sort((a, b) => a.date.localeCompare(b.date));
+  const girData = recentRounds
+    .filter((r) => r.avgGir)
+    .map((r) => ({ date: r.date, score: Number(r.avgGir) }))
+    .sort((a, b) => a.date.localeCompare(b.date));
+  const puttsData = recentRounds
+    .map((r) => {
+      const hv = Object.values(r.holes || {}).filter((h) => h?.putts);
+      const val = hv.length >= 9 ? hv.reduce((a, h) => a + Number(h.putts || 0), 0) / hv.length : null;
+      return val != null ? { date: r.date, score: val } : null;
+    })
+    .filter(Boolean)
+    .sort((a, b) => a.date.localeCompare(b.date));
+
+  const driveVals = driveData.map((d) => d.score);
+  const lostVals  = lostData.map((d) => d.score);
+  const girVals   = girData.map((d) => d.score);
+  const puttsVals = puttsData.map((d) => d.score);
 
   const mDrive = mean(driveVals);
   const mLost = mean(lostVals);
@@ -210,21 +233,25 @@ export default function Dashboard() {
           label="Avg. Driver (m)"
           value={mDrive != null ? Math.round(mDrive) : null}
           trendVal={trend(driveVals, true)}
+          onClick={() => setTrendModal({ label: 'Avg. Driver (m)', data: driveData })}
         />
         <StatCard
           label="Avg. GIR %"
           value={mGir != null ? `${Math.round(mGir)}%` : null}
           trendVal={trend(girVals, true)}
+          onClick={() => setTrendModal({ label: 'Avg. GIR %', data: girData })}
         />
         <StatCard
           label="Avg. Putts"
           value={mPutts != null ? mPutts.toFixed(1) : null}
           trendVal={trend(puttsVals, false)}
+          onClick={() => setTrendModal({ label: 'Avg. Putts / Hole', data: puttsData })}
         />
         <StatCard
           label="Avg. Lost"
           value={mLost != null ? mLost.toFixed(1) : null}
           trendVal={trend(lostVals, false)}
+          onClick={() => setTrendModal({ label: 'Avg. Lost Balls', data: lostData })}
         />
       </div>
 
@@ -268,6 +295,42 @@ export default function Dashboard() {
           <p className="font-medium" style={{ color: 'var(--text-primary)' }}>No rounds yet</p>
           <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>Log your first round to get started</p>
         </Card>
+      )}
+
+      {/* Stat trend modal */}
+      {trendModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-end justify-center"
+          style={{ background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)' }}
+          onClick={() => setTrendModal(null)}
+        >
+          <div
+            className="w-full max-w-[412px] rounded-t-3xl p-4 pb-10"
+            style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-center mb-3">
+              <p className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--text-secondary)' }}>
+                {trendModal.label}
+              </p>
+              <button
+                onClick={() => setTrendModal(null)}
+                className="text-lg leading-none px-1"
+                style={{ color: 'var(--text-secondary)' }}
+              >✕</button>
+            </div>
+            {trendModal.data.length >= 2 ? (
+              <ScoreTrendChart data={trendModal.data} startDate={sixMoStr} endDate={todayStr} />
+            ) : (
+              <p className="text-center text-sm py-10" style={{ color: 'var(--text-secondary)' }}>
+                Not enough data in last 6 months
+              </p>
+            )}
+            <p className="text-[10px] text-center mt-2" style={{ color: 'var(--text-secondary)' }}>
+              * Last 6 months
+            </p>
+          </div>
+        </div>
       )}
     </div>
   );

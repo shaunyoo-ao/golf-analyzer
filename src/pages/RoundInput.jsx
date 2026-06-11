@@ -82,6 +82,7 @@ export default function RoundInput() {
   const [saveError, setSaveError] = useState(null);
   const [errors, setErrors] = useState({});
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [showFavMenu, setShowFavMenu] = useState(false);
 
   useEffect(() => {
     if (existingRound) {
@@ -202,16 +203,35 @@ export default function RoundInput() {
           />
           {/* 2. Load Favorite Course */}
           {favoriteCourses.length > 0 && (
-            <Select
-              label="Load Favorite Course"
-              id="favLoad"
-              options={[
-                { value: '', label: 'Select to preload…' },
-                ...favoriteCourses.map((f, i) => ({ value: String(i), label: `${f.courseName} (${f.country})` })),
-              ]}
-              value=""
-              onChange={(e) => { if (e.target.value !== '') loadFavorite(e.target.value); }}
-            />
+            <div className="flex flex-col gap-1 relative">
+              <label className="glass-label">Load Favorite Course</label>
+              <button
+                type="button"
+                onClick={() => setShowFavMenu((v) => !v)}
+                className="glass-input appearance-none text-left flex items-center justify-between"
+              >
+                <span style={{ color: 'var(--text-secondary)' }}>Select to preload…</span>
+                <span style={{ color: 'var(--text-secondary)' }}>{showFavMenu ? '▲' : '▼'}</span>
+              </button>
+              {showFavMenu && (
+                <div
+                  className="absolute top-full left-0 right-0 mt-1 z-10 rounded-xl overflow-hidden"
+                  style={{ background: '#0d1f0d', border: '1px solid rgba(255,255,255,0.12)' }}
+                >
+                  {favoriteCourses.map((f, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => { loadFavorite(i); setShowFavMenu(false); }}
+                      className="w-full text-left px-3 py-3 text-sm min-h-[44px]"
+                      style={{ color: 'rgba(255,255,255,0.92)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}
+                    >
+                      {f.courseName} ({f.country})
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           )}
           {/* 3. Country */}
           <Select

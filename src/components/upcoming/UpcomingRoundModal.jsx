@@ -53,6 +53,12 @@ export default function UpcomingRoundModal({ upcomingRound, onDelete, onClose })
             <p className="text-xs mt-0.5" style={{ color: 'var(--text-secondary)' }}>
               {upcomingRound.country} · {formatDate(upcomingRound.date)}
             </p>
+            {(upcomingRound.geocodedName || upcomingRound.lat) && (
+              <p className="text-[10px] mt-1" style={{ color: 'rgba(100,200,100,0.65)' }}>
+                📍 {upcomingRound.geocodedName || '—'}
+                {upcomingRound.lat != null && upcomingRound.lng != null && ` (${upcomingRound.lat.toFixed(4)}, ${upcomingRound.lng.toFixed(4)})`}
+              </p>
+            )}
           </div>
           <div className="flex items-center gap-1">
             {upcomingRound.lat && (

@@ -24,6 +24,7 @@ export const wmoDesc = (c) => WMO_DESC[c] ?? 'Unknown';
 // Session-level weather cache — persists across modal opens until page reload
 const _weatherCache = new Map();
 const _cacheTimestamps = new Map(); // key → epoch ms when data was fetched
+const _inFlight = new Map(); // key → in-progress fetch promise (dedupes concurrent requests)
 
 // Extract the most distinctive part of a course name for search
 function extractSearchKeyword(courseName) {
@@ -113,20 +114,35 @@ export async function fetchWeather(lat, lng, date, force = false) {
     return { hours: _weatherCache.get(key), fetchedAt: _cacheTimestamps.get(key) };
   }
 
-  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&hourly=temperature_2m,precipitation_probability,weathercode,windspeed_10m&timezone=auto&start_date=${date}&end_date=${date}`;
-  const r = await fetch(url);
-  const d = await r.json();
-  if (!d.hourly) throw new Error('Weather data unavailable');
-  const hours = d.hourly.time.map((t, i) => ({
-    time: t.slice(11, 16),
-    icon: wmoIcon(d.hourly.weathercode[i]),
-    desc: wmoDesc(d.hourly.weathercode[i]),
-    temp: d.hourly.temperature_2m[i],
-    precip: d.hourly.precipitation_probability[i],
-    wind: Math.round(d.hourly.windspeed_10m[i]),
-  }));
-  const fetchedAt = Date.now();
-  _weatherCache.set(key, hours);
-  _cacheTimestamps.set(key, fetchedAt);
-  return { hours, fetchedAt };
+  // Dedupe concurrent requests for the same location/date (e.g. dashboard slot
+  // and modal both fetching on mount) — share a single in-flight request.
+  if (_inFlight.has(key)) {
+    return _inFlight.get(key);
+  }
+
+  const promise = (async () => {
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&hourly=temperature_2m,precipitation_probability,weathercode,windspeed_10m&timezone=auto&start_date=${date}&end_date=${date}`;
+    const r = await fetch(url);
+    const d = await r.json();
+    if (!d.hourly) throw new Error('Weather data unavailable');
+    const hours = d.hourly.time.map((t, i) => ({
+      time: t.slice(11, 16),
+      icon: wmoIcon(d.hourly.weathercode[i]),
+      desc: wmoDesc(d.hourly.weathercode[i]),
+      temp: d.hourly.temperature_2m[i],
+      precip: d.hourly.precipitation_probability[i],
+      wind: Math.round(d.hourly.windspeed_10m[i]),
+    }));
+    const fetchedAt = Date.now();
+    _weatherCache.set(key, hours);
+    _cacheTimestamps.set(key, fetchedAt);
+    return { hours, fetchedAt };
+  })();
+
+  _inFlight.set(key, promise);
+  try {
+    return await promise;
+  } finally {
+    _inFlight.delete(key);
+  }
 }

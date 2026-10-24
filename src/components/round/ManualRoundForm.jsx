@@ -197,7 +197,7 @@ export default function ManualRoundForm({ onSave, onClose, favoriteCourses = [] 
             </div>
 
             {/* Optional hole-by-hole */}
-            <CollapsibleSection title="Hole-by-Hole" subtitle="Optional · Score & Putts">
+            <CollapsibleSection title="Hole-by-Hole" subtitle="Optional · Par, Score & Putts">
               <div className="flex flex-col gap-4">
                 <Input
                   label="Average GIR (%)"

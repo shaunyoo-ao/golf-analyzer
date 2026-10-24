@@ -325,7 +325,7 @@ export default function RoundInput() {
       </CollapsibleSection>
 
       {/* ── Section 2: Hole-by-hole ── */}
-      <CollapsibleSection title="Hole-by-Hole" subtitle="Optional · Score & Putts per hole" defaultOpen>
+      <CollapsibleSection title="Hole-by-Hole" subtitle="Optional · Par, Score & Putts per hole" defaultOpen>
         <div className="flex flex-col gap-4">
           <Input
             label="Average GIR (%)"
